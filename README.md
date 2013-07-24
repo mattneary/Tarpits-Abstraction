@@ -21,7 +21,9 @@ There will be some early renders posted as I progress. `SExpr-0.1.pdf` was my fi
 Notes
 -----
 ###Defining Symbolic Expressions
-__TODO:__ Dotted Lists
+- __TODO:__ Dotted Lists
+- __TODO:__ Discuss McCarthy's Influence
+- __TODO:__ A library of useful functions
 
 ###Pulling Our Language up by Its Bootstraps
-A chance to add features like `define`.
+- A chance to add features like `define`.

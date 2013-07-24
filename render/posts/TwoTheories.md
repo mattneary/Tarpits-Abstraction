@@ -22,6 +22,8 @@ This can be summarized using Backus-Naur Form as follows. An expression is said 
 \end{align*}
 </div>				
 
+As far as the semantic meaning of this language, there is only one operation. Any expression of the second form (`2.`) can be reduced by substituting the passed value for instances of the argument in the function body.
+
 The elegance and minimalism of this language is striking. Despite its appearance, this language is capable of universal computation; shis tiny language is sufficient for expression of any algorithm, i.e., any concept or thought. This language, however simple, can become tedious with the heavy nesting of expressions and very difficult to actually evaluate to something meaningful. A more practical outlook is necessary when dealing with implementation by a machine.
 
 Turing Machines

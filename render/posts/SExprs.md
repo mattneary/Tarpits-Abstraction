@@ -45,8 +45,8 @@ Additionally, we provide a default case for our S-Expressions. Should no other m
 
 <div>
 \begin{align*}
-\\ & (fn \space val) = (fn)val
-\\ & (fn \space val \space rest...) = ((fn)val \space rest)
+\\ (fn \space val) &= (fn)val
+\\ (fn \space val \space rest...) &= ((fn)val \space rest)
 \end{align*}
 </div>
 
@@ -109,7 +109,7 @@ $$\text{Arithmetic}$$
 \end{align*}
 </div>
 
-Addition merely takes advantage of the iterative nature of our numbers to apply the successor `n` times, starting with `m`. In a similar manner, multiplication applies addition repeatedly starting with zero. The predecessor is much more complicated, so let's work our way through its evaluation. In doing this we will return temporarily to our symbolic forms.
+Addition merely takes advantage of the iterative nature of our numbers to apply the successor `n` times, starting with `m`. In a similar manner, multiplication applies addition repeatedly starting with zero. The predecessor is much more complicated, so let's work our way through its evaluation.
 
 We'll begin our exploration of the `pred` function by looking at the value of two. Since two equals `(succ)(succ)0` we can work out its Lambda form, or simply take as a given that is the following.
 
@@ -129,7 +129,7 @@ Now that we have reduced the expression to the form of our prior rendering of `p
 
 $$(\lambda f \lambda z (((\lambda g \lambda h (h)(g)f) \space (\lambda g \lambda h (h)(g)f)) \space \lambda u z) \space \lambda u u)$$
 
-In the following conversions our reductions will need to take place in a right-to-left direction when evaluating expressions of the form `(f)(g)x`. Recall that our goal here is to reduce a complex form to simplistic result, and we have already made significant progress.
+In the following conversions, as in all, our reductions will need to take place in a right-to-left direction when evaluating expressions of the form `(f)(g)x`. Recall that our goal here is to reduce a complex form to simplistic result, and we have already made significant progress.
 
 $$(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) \space (\lambda h (h)(\lambda u z)f)) \space \lambda u u)$$
 
@@ -150,7 +150,7 @@ Our result was a single application of `f` to `z`, i.e., one. Hence you have see
 With our complex definition of the predecessor complete, subtraction is trivial. Once again we perform an iterative process on a base value, this time that process is `pred`.
 
 ###Booleans
-Having defined numbers and their manipulations, we will work on booleans. Booleans are the values of true and false, or in our syntax, `#t` and `#f`. Booleans are quite necessary in expressing conditional statements; hence we will define an `if` function as well. These values will give us great power in their ability to branch results to a function, in a sense constructing piece-wise functions. It is by this ability that we are able to form a multitude of recursive definitions, as well as other important forms.
+Having defined numbers and their manipulations, we will work on booleans. Booleans are the values of true and false, or in our syntax, `#t` and `#f`. Booleans are quite necessary in expressing conditional statements; thus the concomitant `if` function. These values will give us great power in their ability to branch results to a function, in a sense constructing piece-wise functions. It is by this ability that we are able to form a multitude of inductive definitions, as well as other important forms.
 
 <div>
 $$\text{Booleans}$$
@@ -163,7 +163,7 @@ $$\text{Booleans}$$
 
 The key to our booleans is that they accept two functions as parameters, functions that serve to encapsulate values, of which one will be chosen. Once chosen, that function is executed with the arbitrarily-chosen identity as an argument. This method of wrapping the decision serves as a means of lazy evaluation, and is fully realized in the lambda-underscores wrapping the branches of an `if` statement.
 
-Now, since of course no boolean system is complete without some boolean algebra, we define `and` and `or`. These functions perform the operation you would expect, `(and a b)` is true only when both `a` and `b` is true, but `(or a b)` is true if either argument is true. Their definitions follow easily from our `if` function. Keep in mind that both of these functions operate only on booleans.
+Now, since of course no boolean system is complete without some boolean algebra, we define `and` and `or`. These functions perform the operations you would expect; `(and a b)` is true only when both `a` and `b` is true, but `(or a b)` is true if either argument is true. Their definitions follow easily from our `if` function. Keep in mind that both of these functions operate only on booleans.
 
 <div>
 $$\text{Boolean Algebra}$$
@@ -173,21 +173,21 @@ and &= \lambda a \lambda b (((if)a)b)\text{#f}
 \end{align*}
 </div>
 
-With boolean manipulation and conditionals in hand, we need some useful predicates to make use of them. We define some basic predicates on numbers with the following. `eq` will be very useful in later developments; it is one of McCarthy's elementary functions.
+With boolean manipulation and conditionals in hand, we need some useful predicates to utilize them. We define some basic predicates on numbers with the following. `eq` will be very useful in later developments; it is one of McCarthy's elementary functions.
 
 <div>
 $$\text{Numerical Predicates}$$
 \begin{align*}
 \\ zero? &= \lambda n ((n)λx\text{#f})\text{#t}
 \\ leq &= \lambda a \lambda b (zero?)((-)m)n
-\\ eq &= \lambda a \lambda b (and \space (\leq \space a \space b) (\leq \space b \space a))
+\\ eq &= \lambda a \lambda b (and \space (leq \space a \space b) (leq \space b \space a))
 \end{align*}
 </div>
 
 The above predicates serve to identify traits of a given number or given numbers. `zero?` is true when a number is zero, `leq` is true when the first number is less than or equal to the second, and `eq` determines whether two numbers are equal.
 
 ###Pairs
-Finally we reach the most important part of our S-Expressions, their underlying lists. To construct lists we will opt for a sort of linked-list implementation in our lambda definitions. We begin with a pair and a `nil` definition, each readily revealing their type by opting for either the passed `c` or `n`.
+Finally we reach the most important part of our S-Expressions, their underlying lists. That is to say, every Symbolic Expression is innately a list of other expressions, whether atomic or symbolic, and these lists serve as an analog to that data-type. To construct lists we will opt for a sort of linked-list implementation in our lambda definitions. We begin with a pair and a `nil` definition, each readily revealing their type by opting for either the passed `c` or `n` function.
 
 <div>
 $$\text{Pairs}$$
@@ -199,7 +199,7 @@ cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
 
 `cons` constructs a pair when given two values, and accepts a function which will receive the two items to manipulate. `nil` on the other hand serves as a sort of empty pair, and instead fires the second provided function to identify itself as such.
 
-Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` and `null?` complements to each other in determining the end of a list. `car` return the first value of a pair, and `cdr` the second. Their names are quite historical and refer to address access of a pair in memory, but you can just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
+Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` and `null?` serving as complements to each other in determining the end of a list. `car` return the first value of a pair, and `cdr` the second. Their names are quite historical and refer to address access of a pair in memory, but you can just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
 
 <div>
 $$\text{Pair Operations}$$
@@ -211,17 +211,21 @@ car &= \lambda l (((l)\lambda a \lambda b a)id)
 \end{align*}
 </div>
 
+`car` provides that pair with a pair handling function that returns the first element, and an arbitrary `nil` handling function. Similarly, `cdr` provides a pair handling function returning the second element. `pair?` and `nil?` are logical opposites to each other, each provides a pair- and nil-handling function, returning either `#t` or `#f` as is appropriate.
+
+Together, these functions are sufficient for designing a list implementation. The implementation that comes naturally is known as a linked-list. A linked-list is essentially either a pair of an element and a linked-list or `nil`. If that is unclear, think of a tree with a fractal structure. The tree consists of a leaf and a child tree, which in turn has both leaf and child tree, until the tree ends with `nil` for a child tree.
+
 ###Recursion
-Our last definition will be a bit more esoteric, or at least complex. We define a *Y Combinator*. This function, `Y`, will allow another to perform recursion accepting itself as an argument.
+Our last definition will be a bit more esoteric, or at least complex. We define a *Y Combinator*. This function, `Y`, will allow another to be executed accepting itself as an argument.
 
 <div>
-$$\text{Recursion by a Combinator}$$
+$$\text{Self-Reference by a Combinator}$$
 \begin{align*}
 Y = λf(λx(f)(x)x)λx(f)(x)x
 \end{align*}
 </div>
 
-You need not work out its innerworkings; rather, let's work through an example. Let's say you want to define a function that will perform factorial of a number `n`. Well then the most basic idea would be to do something like the following.
+You need not delve into its innerworkings; rather, let's work through an example. Let's say you want to define a function that will evaluate the factorial of a number `n`. Well then the fundamental idea would be to do something like the following.
 
 $$fact = (\text{lambda } (n) \space (* \space n \space \dots))$$
 
@@ -235,23 +239,23 @@ $$\text{Inductive Definition of Factorial}$$
 \end{align*}
 </div>
 
-Our task is to translate this into our Symbolic Language; however, we wish to generalize this idea a bit, not add a special expression type for every inductive definition we think of. Hence our duty is to make a factorial function which is self-aware, if you will. The following is a rough form of the concept.
+Our task is to translate this into our Symbolic Language; however, we wish to generalize this idea a bit, not to add a special expression type for every inductive definition we think of. Hence our duty is to make a factorial function which is self-aware, if you will. The following is a rough form of the concept.
 
-$$fact = (\text{lambda } (fact n) \space (* \space n \space (fact \space (pred \space n))))$$
+$$fact = (\text{lambda } (fact \space n) \space (* \space n \space (fact \space (pred \space n))))$$
 
-There is one issue! We have not handled the base case present in our prior definition. To achieve this in the Lambda Calculus we will utilize an if statement; this use case was alluded to earlier.
+There remains one issue! We have not handled the base case present in our prior definition. To achieve this in the Lambda Calculus we will utilize an if statement; this use case was alluded to earlier.
 
-$$fact = (\text{lambda } (fact n) \space (if \space (zero? \space n) \space 1 \space (* \space n \space (fact \space (pred \space n))))$$
+$$fact = (\text{lambda } (fact \space n) \space (if \space (zero? \space n) \space (succ \space 0) \space (* \space n \space (fact \space (pred \space n))))$$
 
 This is a complete realization of the definition, but there remains one problem. How are we to pass `fact` the value of `fact`? This is when the Y Combinator comes in. The invocation of `(Y fact)` will form a factorial function, aware of itself for the sake of recursion, accepting the single variable `n`.
 
 ###Conclusion
 We have now laid a good foundation upon which our Symbolic Expressions can exist. As should be expected, lists will be our primary data-structure in our language of S-Expressions.
 
-A Language of S-Expressions
----------------------------
+Special Forms of S-Expressions
+------------------------------
 ###Numbers
-Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits. As you can see, the following defines numbers by either matching single digits and defining them as a successor, or by matching leading digits and a single final digit and evaluating them separately.
+Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits. As you can see, the following defines numbers by either matching single digits and defining them as a successor, or by matching leading digits and a final digit and evaluating them separately.
 
 <div>
 \begin{align*}
@@ -272,7 +276,7 @@ Hopefully the above is a clear embodiment of our decimal number system. Place va
 ###List Literals
 We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than as a symbolic expression. More importantly, the syntax of passed lists is indistinguishable from a regular S-Expression, hence we are utilizing the *quoted* form of such an expression.
 
-The following definition has a rather sensitive notation. Quotes show that an atomic value is being matched rather than a portion of a pattern being labeled. Additionally, the italicized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
+The following definition has a rather sensitive notation. Quotes show that an atomic value, that is, a value referred to in our grammar as `<atom>` or more importantly, a value referred to as `<var>` in our grammar of the Lambda Calculus, is being matched. This is unique from most cases in which a portion of a pattern is being labeled by a variable. Additionally, the italicized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
 
 <div>
 \begin{align*}
