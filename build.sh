@@ -1,0 +1,1 @@
+cp *.md render/posts/

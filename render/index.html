@@ -1,0 +1,129 @@
+<!DOCTYPE>
+<html>
+	<head>
+		<title>Matt Neary</title>
+		<meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+		
+		<link rel="stylesheet" href="styles/github.css">
+		<link rel="stylesheet" href="styles/funky-prism.css">		
+		<link rel="stylesheet" href="styles/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Great+Vibes' rel='stylesheet' type='text/css'>
+		
+		<script src="scripts/knockout-2.2.1.js"></script>
+		<script src="scripts/ko-model.js"></script>
+		<script src="scripts/showdown.js"></script>
+		<script src="scripts/prism.js"></script>
+		
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+		  	"HTML-CSS": { linebreaks: { automatic: true } },
+		  	tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+		  });
+		</script>
+		<script type="text/javascript"
+		  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+		<style>
+			#hero {
+				width: 100%;
+				position: absolute;
+				top: -20px;
+			}
+			#header {
+				height: 240px;
+				overflow: hidden;
+				position: relative;
+			}
+			#header h1 {
+				font-family: 'Helvetica Neue', sans-serif;
+				font-weight: bolder;
+				font-size: 45px;
+				line-height: 45px;
+				background: #333;
+				color: white;
+				padding: 5px;
+				width: 75px;
+				position: absolute;
+				bottom: 10px;
+				left: 10px;
+				border: 1px solid #333;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>				
+		<select data-bind="options: Posts.all(), optionsText: function(item) {return item.title}, event: { click: Posts.click.bind(Posts) }"></select>
+		<ul id="posts" data-bind="foreach: Posts.all()">
+			<li><a data-bind="text: title, event: { click: Posts.click.bind(Posts) }"></a></li>
+		</ul>
+		
+		<div id="content" data-bind="html: Posts.current()"></div>				
+		<script>
+			// syntax highlighting for obscure languages
+			Prism.languages.lambda = {
+				'operator': /-&gt;|=/g,
+				'punctuation': /[\)\(]/g,
+				'keyword': /\u03BB/g
+			};			
+			Prism.languages.types = {
+				'operator': /::=|\||:|-&gt;/g,
+				'punctuation': /[,.]/g,
+				'keyword': /&lt;[^&]+&gt;/g
+			};	
+			Prism.languages.ruby = {
+				'comment': /#[^\r\n]*(\r?\n|$)/g,
+				'string': /("|')(\\?.)*?\1/g,
+				'regex': {
+					pattern: /(^|[^/])\/(?!\/)(\[.+?]|\\.|[^/\r\n])+\/[gim]{0,3}(?=\s*($|[\r\n,.;})]))/g,
+					lookbehind: true
+				},
+				'keyword': /\b(alias|and|BEGIN|begin|break|case|class|def|define_method|defined|do|each|else|elsif|END|end|ensure|false|for|if|in|module|new|next|nil|not|or|raise|redo|rescue|retry|return|self|super|then|throw|true|undef|unless|until|when|while|yield)\b/g,
+			  'builtin': /\b(Array|Bignum|Binding|Class|Continuation|Dir|Exception|FalseClass|File|Stat|File|Fixnum|Fload|Hash|Integer|IO|MatchData|Method|Module|NilClass|Numeric|Object|Proc|Range|Regexp|String|Struct|TMS|Symbol|ThreadGroup|Thread|Time|TrueClass)\b/,
+				'boolean': /\b(true|false)\b/g,
+				'number': /\b-?(0x)?\d*\.?\d+\b/g,
+				'operator': /[-+]{1,2}|!|=?&lt;|=?&gt;|={1,2}|(&amp;){1,2}|\|?\||\?|\*|\//g,
+			  'inst-var': /[@&]\b[a-zA-Z_][a-zA-Z_0-9]*[?!]?\b/g,
+			  'symbol': /:\b[a-zA-Z_][a-zA-Z_0-9]*[?!]?\b/g,
+			  'const': /\b[A-Z][a-zA-Z_0-9]*[?!]?\b/g,
+				'ignore': /&(lt|gt|amp);/gi,
+				'punctuation': /[{}[\];(),.:]/g
+			};					
+			
+			var converter = new Showdown.converter();
+			var Posts = new Model('post', {
+				content: function(x) { 
+					console.log("x", x);
+					return converter.makeHtml(x)+'<br><a class="byline">by Matt Neary</a>';
+				},
+				link: function(link) {
+					// provide default value for article link
+					return this.link() || (location.hash ? location.hash.substr(3) : (this.all().length ? this.all()[0].link : 'derivingrubik.md'));
+				},
+				click: function(item, evt) {									
+					// change article upon link click						
+					return typeof evt.target.selectedIndex != 'undefined' ? (this.all().length ? this.all()[evt.target.selectedIndex].link : '') : item.link;
+				},
+				hash: function() {
+					// listen for link changes and reflect in hash
+					setTimeout(function() {
+						Prism.highlightAll();
+						MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+						(function(d, t) {
+						        var g = d.createElement(t),
+						            s = d.getElementsByTagName(t)[0];
+						        g.src = '//hnbutton.appspot.com/static/hn.min.js';
+						        s.parentNode.insertBefore(g, s);
+						    }(document, 'script'))
+					}, 2e3);
+					if( this.link().match(/^http/) ) {
+						location.href = this.link();
+					} else if( this.link() ) {
+						location.hash = '#!/'+this.link();
+					}
+				}
+			});
+			ko.applyBindings(Posts);
+		</script>
+	</body>
+</html>
