@@ -8,9 +8,9 @@ The Lambda Calculus
 -------------------
 The language developed by Church was one of very simple syntax. All expressions in the language were one of the following three types.
 
-1. A function definition of the form $\lambda a b$ where $a$ is a variable and $b$ is an expression.
-2. A function evaluation of the form $(a)b$ where $a$ is a function and $b$ an expression.
-3. A variable reference.
+- A function definition of the form $\lambda a b$ where $a$ is a variable and $b$ is an expression.
+- A function evaluation of the form $(a)b$ where $a$ is a function and $b$ an expression.
+- A variable reference.
 
 This can be summarized using Backus-Naur Form as follows. An expression is said to be replaceable by one of the values separated by a vertical pipe; each of these can then in turn be reduced by referring again to the definition of `<expr>`.
 
