@@ -20,5 +20,8 @@ There will be some early renders posted as I progress. `SExpr-0.1.pdf` was my fi
 
 Notes
 -----
+###Defining Symbolic Expressions
+__TODO:__ Dotted Lists
+
 ###Pulling Our Language up by Its Bootstraps
 A chance to add features like `define`.
