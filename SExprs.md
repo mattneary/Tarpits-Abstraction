@@ -4,7 +4,7 @@ Introduction
 ------------
 You have been told that the Lambda Calculus is computationally universal, capable of expressing any algorithm. However, this most likely seems intangible. We will begin to define a layer of abstraction over the Lambda Calculus which makes design of programs begin to seem conceivable.
 
-Our layer of abstraction will be a uniform language of Symbolic Expressions, which is a dialect of the language called Lisp. These symbolic expressions are parentheses enclosed arrays of symbols, taking on different meanings based on their matching of patterns which we will define.
+Our layer of abstraction will be a uniform language of Symbolic Expressions which is a dialect of the language called Lisp. These symbolic expressions are parentheses enclosed arrays of symbols, taking on different meanings based on their matching of patterns which we will define.
 
 Here's an example:
 
@@ -29,12 +29,13 @@ $$\text{A Symbolic Expression}$$
 
 A Symbolic Language
 -------------------
+###Primitive Forms
 Now, these Symbolic Expressions or *S-Expressions* can take any of a multitude of forms. Of these, we will define meaning for forms of interesting patterns. We begin, unsurprisingly, with an S-Expression which serves to create lambdas. All forms matching the patterns which we discuss will be converted to the provided form, labeled as the consequent.
 
 <div>
 \begin{align*}
 (\text{lambda } (var) \space expr) &\implies \lambda var \space expr
-\\ (\text{lambda } (var \space rest...)) &\implies \lambda var \space (\text{lambda }rest \space expr)
+\\ (\text{lambda } (var \space rest...) \space expr) &\implies \lambda var \space (\text{lambda }rest \space expr)
 \end{align*}
 </div>
 
@@ -51,6 +52,8 @@ Additionally, we provide a default case for our S-Expressions. Should no other m
 
 The Lambda Calculus has now been fully implemented in our symbolic forms; however, we will add many more features for the sake of convenience. After all, our goal was to add abstraction, not move a few symbols around!
 
+
+###Evaluation of Symbolic Forms
 Before we continue, we'll look at some examples of our syntax as implemented so far.
 
 Let's begin with a simple function of two variables. The following performs a function `f` on a value `x`, and then `f` once more on the value of that.
@@ -92,7 +95,7 @@ $$\text{Numbers}$$
 \end{align*}
 </div>
 
-Our definition of numbers is just like the examples from the previous section. Later on when we return to syntactic features we will define all numbers in this way.
+Our definition of numbers is just like the examples from the previous section. Later on when we return to syntactic features we will define all numbers in this way. The numbers will take on their usual form as a string of decimal digits.
 
 Numbers are our first data-type. Their definition is iterative in nature, with zero meaning no applications of the function `f` to `x`. We now will define some elementary manipulations of this data-type, i.e., basic arithmetic.
 
@@ -135,8 +138,6 @@ $$(\lambda f \lambda z (\lambda h (h)(f)z) \space \lambda u u)$$
 $$(\lambda f \lambda z (\lambda u u)(f)z$$
 
 $$(\lambda f \lambda z (f)z$$
-
-__TODO:__ finish this part.
 
 With the predecessor defined, however, subtraction is trivial. Once again we perform an iterative process on a base value, this time that process is `pred`.
 
@@ -212,8 +213,10 @@ We have now laid a good foundation upon which our Symbolic Expressions can exist
 
 A Language of S-Expressions
 ---------------------------
+__TODO:__ dotted lists
+
 ###Numbers
-Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits.
+Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits. As you can see, the following defines numbers by either matching single digits and defining them as a successor, or by matching leading digits and a single final digit and evaluating them separately.
 
 <div>
 \begin{align*}
@@ -229,10 +232,12 @@ Returning to our prior definition of numbers, we will now define arbitrarily lon
 \end{align*}
 </div>
 
+This pattern of recursive definition and symbolic pattern matching will be at the heart of our language constructs.
+
 ###List Literals
 We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than as a symbolic expression.
 
-The following has a rather sensitive notation. Quotes show that an atomic value is being matched rather than a portion of a pattern being labeled. Additionally, the italized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
+The following has a rather sensitive notation. Quotes show that an atomic value is being matched rather than a portion of a pattern being labeled. Additionally, the italicized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
 
 <div>
 \begin{align*}

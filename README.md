@@ -10,12 +10,11 @@ Currently, it is planned to have a preface (*A Tale of Two Theories*) and five p
 4. Pulling Our Language up by Its Bootstraps
 5. Communicating Symbolic Forms to a Register Machine
 
+Reading
+-------
+To get the best reading experience, you will want to run the node server in `render/` and connect to `localhost:8080`. Once there the LaTeX and Markdown can both render well.
+
 Notes
 -----
-###Defining Symbolic Expressions
-__TODO__: 
-
-- Equivalence between Numbers, Atoms, and Lists - an atomic `eq` based on numbers (`and (le ...) (le ...)`) and a symbolic `equal` that's recursive.
-
 ###Pulling Our Language up by Its Bootstraps
 A chance to add features like `define`.
