@@ -81,11 +81,14 @@ This is really beginning to appear complex, but let's step our way through the e
 => (lambda (f x) (f (f (f x))))
 ```
 
-That looks much better! What we arrived at was only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. Hopefully these examples have given you a feel for how this syntax can work, and maybe even an maybe an early sense of how useful functions will emerge from the Lambda Calculus.
+That looks much better! What we arrived at was only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. Hopefully these examples have given you a feel for how this syntax can work, and maybe even an early sense of how useful functions will emerge from the Lambda Calculus.
 
 Foundations in Lambda Calculus
 ------------------------------
-To accompany our syntactic constructs, we will need to define some forms in the Lambda Calculus, especially data-types and their manipulations. Our definitions will be illustrated as equalities, like $id = \lambda xx$; however, syntactic patterns will be expressed as implications. We begin with a means of defining all natural numbers inductively, via the successor.
+To accompany our syntactic constructs, we will need to define some forms in the Lambda Calculus, especially data-types and their manipulations. Our definitions will be illustrated as equalities, like $id = \lambda xx$; however, syntactic patterns will be expressed as implications. 
+
+###Numbers
+We begin with a means of defining all natural numbers inductively, via the successor.
 
 <div>
 $$\text{Numbers}$$
@@ -95,18 +98,48 @@ $$\text{Numbers}$$
 \end{align*}
 </div>
 
-This is our first data-type. The definition is iterative in nature, with zero meaning no applications of the function `f` to `x`. We now will define some elementary manipulations of this data-type, i.e., basic arithmetic.
+Our definition of numbers is just like the examples from the previous section. Later on when we return to syntactic features we will define all numbers in this way.
+
+Numbers are our first data-type. Their definition is iterative in nature, with zero meaning no applications of the function `f` to `x`. We now will define some elementary manipulations of this data-type, i.e., basic arithmetic.
 
 <div>
 $$\text{Arithmetic}$$
 \begin{align*}
 + &= \lambda n \lambda m ((n)succ)m
 \\ * &= \lambda n \lambda m ((n)(sum)m)0
-\\ pred &= \lambda n \lambda f \lambda z (((n \lambda g \lambda h (h)(g)f)\lambda u z)\lambda u u)
+\\ pred &= \lambda n \lambda f \lambda z ((((n) \lambda g \lambda h (h)(g)f)\lambda u z)\lambda u u)
 \\	- &= \lambda n \lambda m ((m)pred)n
 \end{align*}
 </div>
 
+Addition merely takes advantage of the iterative nature of our numbers to apply the successor `n` times, starting with `m`. In a similar manner, multiplication applies addition repeatedly starting with zero. The predecessor is much more complicated, so let's work our way through its evaluation. In doing this we will return temporarily to our symbolic forms.
+
+We'll begin with the value of two. Since two equals `(succ)(succ)0` we can work out its Lambda form, or simply take as a given that is the following.
+
+```scheme
+(lambda (fn x) (fn (fn x)))
+```
+
+Now `pred` in Symbolic form is the following.
+
+```scheme
+(lambda (n f z) (n (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u)))
+```
+
+Hence the application of `pred` to two evaluates as follows.
+
+```scheme
+((lambda (n f z) (n (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u))) (lambda (fn x) (fn (fn x))))
+=> ((lambda (fn x) (fn (fn x))) (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u))
+=> ((lambda (x) ((lambda (g h) (h (g f))) ((lambda (g h) (h (g f))) x))) (lambda (u) x) (lambda (u) u))
+=> 
+```
+
+__TODO:__ finish this part.
+
+With the predecessor defined, however, subtraction is trivial. Once again we perform an iterative process on a base value, this time that process is `pred`.
+
+###Booleans
 Having defined numbers and their manipulations, we will work on booleans. Booleans are the values of true and false, or in our syntax, `#t` and `#f`. Booleans quite necessary in expressing conditional statements; hence we will define an `if` function as well.
 
 <div>
@@ -141,6 +174,7 @@ $$\text{Numerical Predicates}$$
 \end{align*}
 </div>
 
+###Pairs
 Finally we reach the most important part of our S-Expressions, their underlying lists. To construct lists we will opt for a sort of linked-list implementation in our lambda definitions. We begin with a pair and a `nil` definition, each readily revealing their type by opting for either the passed `c` or `n`.
 
 <div>
@@ -163,6 +197,7 @@ car &= \lambda l (((l)\lambda a \lambda b a)id)
 \end{align*}
 </div>
 
+###Recursion
 Our last definition will be a bit more esoteric, or at least complex. We define a *Y Combinator*. This function, `Y`, will allow another to perform recursion accepting itself as an argument.
 
 <div>
@@ -176,6 +211,7 @@ We have now laid a good foundation upon which our Symbolic Expressions can exist
 
 A Language of S-Expressions
 ---------------------------
+###Numbers
 Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits.
 
 <div>
@@ -192,6 +228,7 @@ Returning to our prior definition of numbers, we will now define arbitrarily lon
 \end{align*}
 </div>
 
+###List Literals
 We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than as a symbolic expression.
 
 The following has a rather sensitive notation. Quotes show that an atomic value is being matched rather than a portion of a pattern being labeled. Additionally, the italized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
@@ -220,6 +257,7 @@ In addition to defining this quote function, we will provide a shorthand for the
 \end{align*}
 </div>
 
+###Equality
 We have built up an array of atomic values, and a way of keeping them literal. Now we need a way of recognizing them, by means of equivalence. `eq` already solves this problem for numbers, but not for other quoted atoms. We generalize `eq` to all expressions in our definition of `equal?`.
 
 <div>
@@ -229,6 +267,7 @@ We have built up an array of atomic values, and a way of keeping them literal. N
 \end{align*}
 </div>
 
+###Variable Definition
 Now we add some *syntactic sugar* that will make it easier to store values that will be used in an expression. `let` and `let*` set a single value and a list of values, respectively, to be utilized in a given expression. `letrec` takes this idea in another direction, performing the Y-Combinator on a passed function to prepare it for recursion in the passed expression.
 
 <div>
