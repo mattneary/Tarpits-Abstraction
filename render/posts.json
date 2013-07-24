@@ -5,6 +5,9 @@
 	"title": "Defining Symbolic Expressions",
 	"link": "SExprs.md"
 }, {
+	"title": "A Library of Symbolic Functions",
+	"link": "SFuncs.md"
+}, {
 	"title": "Simulating a Tape Machine",
 	"link": "Simulate.md"
 }, {
