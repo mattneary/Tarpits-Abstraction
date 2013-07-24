@@ -4,6 +4,16 @@ Introduction
 ------------
 You have been told that the Lambda Calculus is computationally universal, capable of expressing any algorithm. However, this most likely seems intangible. We will begin to define a layer of abstraction over the Lambda Calculus which makes design of programs begin to seem conceivable.
 
+Our layer of abstraction will be a uniform language of Symbolic Expressions, which is a dialect of the language called Lisp. These symbolic expressions are parentheses enclosed arrays of symbols, taking on different meanings based on their matching of patterns which we will define.
+
+Here's an example:
+
+```scheme
+(+ 2 3)
+```
+
+The above evaluates to 5. In this case our expression is a function application receiving a two numbers as arguments. This syntax is very simple, uniform and legible. Additionally, as you will see later on in this book, it is very easily interpreted by program.
+
 Symbolic Expressions
 --------------------
 The language into which we are entering is one of symbolic expressions. All of our expressions will take the form defined by the following grammar. This uniformity will make its definition in terms of Lambda Calculus far easier, and simplify its later interpretation or compilation.
@@ -43,6 +53,35 @@ Additionally, we provide a default case for our S-Expressions. Should no other m
 
 The Lambda Calculus has now been fully implemented in our symbolic forms; however, we will add many more features for the sake of convenience. After all, our goal was to add abstraction, not move a few symbols around!
 
+Before we continue, we'll look at some examples of our syntax as implemented so far.
+
+Let's begin with a simple function of two variables. The following performs a function `f` on a value `x`, and then `f` once more on the value of that.
+
+```scheme
+(lambda (f x) (f (f x)))
+```
+
+The following is a function similar to the above, but now accept another argument, `g`, which changes the inner `(f x)` to `(g f x)`. This is a bit convoluted, so we'll evaluate it with an example.
+
+```scheme
+(lambda (g f x) (f (g f x)))
+```
+
+Now we combine our prior two examples into a single Symbolic Expression in the following.
+
+```scheme
+((lambda (g f x) (f (g f x))) (lambda (f x) (f (f x))))
+```
+
+This is really beginning to appear complex, but let's step our way through the evaluation of this expression.
+
+```scheme
+((lambda (g f x) (f (g f x))) (lambda (f x) (f (f x))))
+=> (lambda (f x) (f ((lambda (f x) (f (f x))) f x)))
+=> (lambda (f x) (f (f (f x))))
+```
+
+That looks much better! What we arrived at was only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. Hopefully these examples have given you a feel for how this syntax can work, and maybe even an maybe an early sense of how useful functions will emerge from the Lambda Calculus.
 
 Foundations in Lambda Calculus
 ------------------------------
@@ -185,7 +224,7 @@ We have built up an array of atomic values, and a way of keeping them literal. N
 
 <div>
 \begin{align*}
-(\text{equal } (a \space b...) \space (c \space d...)) &\implies (and \space (\text{equal } a \space c) \space (\text{equal } (b...) \space (d...)))
+(\text{equal? } (a \space b...) \space (c \space d...)) &\implies (and \space (\text{equal? } a \space c) \space (\text{equal? } (b...) \space (d...)))
 \\ (\text{equal? } a \space b) &\implies (eq \space a \space b)
 \end{align*}
 </div>

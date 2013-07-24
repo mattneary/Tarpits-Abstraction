@@ -15,4 +15,18 @@ A Turing Machine is governed by a ruleset. Hence to simulate one, we will need a
   ((N 1) (0 R H))
   ((Y 0) (1 R H))
   ((Y 1) (1 R H))
+fold, (lambda (func accum lst)
+  (if (null? lst)
+    accum
+    (fold func (func accum (car lst)) (cdr lst)))) 
+assoc, (lambda (x list)
+  (fold 
+    (lambda 
+      (accum item) 
+      (if 
+        (equal? item (car x))
+        (cdr x)
+        accum)))
+    #f
+    list)
 ```
