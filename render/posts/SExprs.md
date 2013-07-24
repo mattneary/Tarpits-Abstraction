@@ -8,11 +8,9 @@ Our layer of abstraction will be a uniform language of Symbolic Expressions, whi
 
 Here's an example:
 
-```scheme
-(+ 2 3)
-```
+$$(+ \space 2 \space 3)$$
 
-The above evaluates to 5. In this case our expression is a function application receiving a two numbers as arguments. This syntax is very simple, uniform and legible. Additionally, as you will see later on in this book, it is very easily interpreted by program.
+The above evaluates to 5. In this case our expression is a function application receiving two numbers as arguments. This syntax is very simple, uniform and legible. Additionally, as you will see later on in this book, it is very easily interpreted by program.
 
 Symbolic Expressions
 --------------------
@@ -57,29 +55,25 @@ Before we continue, we'll look at some examples of our syntax as implemented so 
 
 Let's begin with a simple function of two variables. The following performs a function `f` on a value `x`, and then `f` once more on the value of that.
 
-```scheme
-(lambda (f x) (f (f x)))
-```
+$$(\text{lambda } (f \space x) \space (f \space (f \space x)))$$
 
 The following is a function similar to the above, but now accept another argument, `g`, which changes the inner `(f x)` to `(g f x)`. This is a bit convoluted, so we'll evaluate it with an example.
 
-```scheme
-(lambda (g f x) (f (g f x)))
-```
+$$(\text{lambda } (g \space f \space x) \space (f \space (g \space f \space x)))$$
 
 Now we combine our prior two examples into a single Symbolic Expression in the following.
 
-```scheme
-((lambda (g f x) (f (g f x))) (lambda (f x) (f (f x))))
-```
+$$((\text{lambda } (g \space f \space x) \space (f \space (g \space f \space x))) \quad (\text{lambda } (f \space x) \space (f \space (f \space x))))$$
 
 This is really beginning to appear complex, but let's step our way through the evaluation of this expression.
 
-```scheme
-((lambda (g f x) (f (g f x))) (lambda (f x) (f (f x))))
-=> (lambda (f x) (f ((lambda (f x) (f (f x))) f x)))
-=> (lambda (f x) (f (f (f x))))
-```
+<div>
+\begin{align*}
+\\	&((\text{lambda } (g \space f \space x) \space (f \space (g \space f \space x))) \quad (\text{lambda } (f \space x) \space (f \space (f \space x))))
+\\	\implies &(\text{lambda } (f \space x) \space (f \space ((\text{lambda } (f \space x) \space (f \space (f \space x))) \space f \space x)))
+\\	\implies &(\text{lambda } (f \space x) \space (f \space (f \space (f \space x))))
+\end{align*}
+</div>
 
 That looks much better! What we arrived at was only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. Hopefully these examples have given you a feel for how this syntax can work, and maybe even an early sense of how useful functions will emerge from the Lambda Calculus.
 
@@ -116,24 +110,31 @@ Addition merely takes advantage of the iterative nature of our numbers to apply 
 
 We'll begin with the value of two. Since two equals `(succ)(succ)0` we can work out its Lambda form, or simply take as a given that is the following.
 
-```scheme
-(lambda (fn x) (fn (fn x)))
-```
+$$\lambda f \lambda x (f)(f)x$$
 
-Now `pred` in Symbolic form is the following.
+Now we can evaluate `pred` for this value. Let's, however, briefly reflect on a simpler expression of `pred`.
 
-```scheme
-(lambda (n f z) (n (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u)))
-```
+$$\lambda n \lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^{n} \space \lambda u z) \space \lambda u u$$
 
-Hence the application of `pred` to two evaluates as follows.
+Now we wish to, as an example, evaluate this function for two.
 
-```scheme
-((lambda (n f z) (n (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u))) (lambda (fn x) (fn (fn x))))
-=> ((lambda (fn x) (fn (fn x))) (lambda (g h) (h (g f))) (lambda (u) x) (lambda (u) u))
-=> ((lambda (x) ((lambda (g h) (h (g f))) ((lambda (g h) (h (g f))) x))) (lambda (u) x) (lambda (u) u))
-=> 
-```
+$$(\lambda n \lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^{n} \space \lambda u z) \space \lambda u u) \space 2$$
+
+$$(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^2 \space \lambda u z) \space \lambda u u)$$
+
+$$(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) \space (\lambda g \lambda h (h)(g)f) \space \lambda u z) \space \lambda u u)$$
+
+$$(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) \space (\lambda h (h)(\lambda u z)f)) \space \lambda u u)$$
+
+$$(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) \space (\lambda h (h)z)) \space \lambda u u)$$
+
+$$(\lambda f \lambda z (\lambda h (h)(\lambda h (h)z)f) \space \lambda u u)$$
+
+$$(\lambda f \lambda z (\lambda h (h)(f)z) \space \lambda u u)$$
+
+$$(\lambda f \lambda z (\lambda u u)(f)z$$
+
+$$(\lambda f \lambda z (f)z$$
 
 __TODO:__ finish this part.
 
