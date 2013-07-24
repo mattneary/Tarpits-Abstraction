@@ -39,7 +39,18 @@ select {
 		font-size: 40px;
 		font-family: 'Great Vibes', Helvetica Neue, sans-serif;
 	}
-@media screen and (max-width: 900px) {
+	
+h1 {
+	font-size: 2em;
+}	
+h2 {
+	font-size: 1.5em;
+}
+h3 {
+	font-size: 1.2em;
+}
+
+/* Responsive Mode Generalized */
 	body {
 		left: 0;
 		box-sizing: border-box;
@@ -58,4 +69,16 @@ select {
 		display: block;
 		margin-left: 40px;
 	}
-}
+	
+@media print {
+	body {
+		font-size: 30px;		
+		padding: 0;
+	}
+	#content {
+		padding: 0;
+	}
+	select {
+		display: none;		
+	}
+}	
