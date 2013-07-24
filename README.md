@@ -24,7 +24,7 @@ Notes
 ###Defining Symbolic Expressions
 - __TODO:__ Dotted Lists
 - __TODO:__ Discuss McCarthy's Influence
-- __TODO:__ A library of useful functions
+- __TODO:__ Modulo function
 
 ###Pulling Our Language up by Its Bootstraps
 - A chance to add features like `define`.
