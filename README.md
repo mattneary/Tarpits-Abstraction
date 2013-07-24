@@ -15,9 +15,7 @@ Notes
 ###Defining Symbolic Expressions
 __TODO__: 
 
-- Numbers.
-- Atoms (numbers evaluated; everything else left literal).
-- Equivalence between Numbers, Atoms, and Lists.
+- Equivalence between Numbers, Atoms, and Lists - an atomic `eq` based on numbers (`and (le ...) (le ...)`) and a symbolic `equal` that's recursive.
 
 ###Pulling Our Language up by Its Bootstraps
 A chance to add features like `define`.

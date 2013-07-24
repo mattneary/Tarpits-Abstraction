@@ -115,14 +115,39 @@ We have now laid a good foundation upon which our Symbolic Expressions can exist
 
 A Language of S-Expressions
 ---------------------------
-We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than a symbolic expression.
+Returning to our prior definition of numbers, we will now define arbitrarily long strings of decimal digits.
+
+<div>
+\begin{align*}
+1 &= (succ)0
+\\ 2 &= (succ)1
+\\ \dots
+\\ 9 &= (succ)8
+\\ ten &= (succ)9
+\\ d...0 &= ((mul)d...)ten
+\\ d...1 &= ((sum)((mul)d...)ten)(1)
+\\ \dots
+\\ d...9 &= ((sum)((mul)d...)ten)(9)
+\end{align*}
+</div>
+
+We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than as a symbolic expression.
+
+The following has a rather sensitive notation. Quotes show that an atomic value is being matched rather than a portion of a pattern being labeled. Additionally, the italized *ab...* is meant to label the first letter and rest of a string as `a` and `b`, respectively.
 
 <div>
 \begin{align*}
 (\text{quote } (a)) &\implies cons \space a \space nil
 \\ (\text{quote } (a \space rest...)) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
 \\ (\text{quote } a \space rest...) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
-\\ (\text{quote } a) &\implies a
+\\ (\text{quote } "0") &\implies 0
+\\ \dots
+\\ \\ (\text{quote } "99") &\implies 99
+\\ \dots
+\\ (\text{quote } "ab...") &\implies ((cons)a)(\text{quote } b...)
+\\ (\text{quote } \text{"a"}) &\implies ((cons)97)(nil)
+\\ \dots
+\\ (\text{quote } \text{"z"}) &\implies ((cons)122)(nil)
 \end{align*}
 </div>
 
