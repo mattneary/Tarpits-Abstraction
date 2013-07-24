@@ -6,7 +6,7 @@ You have been told that the Lambda Calculus is computationally universal, capabl
 
 Symbolic Expressions
 --------------------
-The language into which we are entering is one of symbolic expressions. All of our expressions will take the form defined by the following grammar. This uniformity will make its definition in terms of Lambda Calculus far easier, as well as it will its later interpretation or compilation.
+The language into which we are entering is one of symbolic expressions. All of our expressions will take the form defined by the following grammar. This uniformity will make its definition in terms of Lambda Calculus far easier, and simplify its later interpretation or compilation.
 
 <div>
 $$\text{A Symbolic Expression}$$
@@ -31,6 +31,17 @@ Now, these Symbolic Expressions or *S-Expressions* can take any of a multitude o
 </div>
 
 Essentially, we are saying that any expression of the form `(lambda args expr)` should be a function of the provided arguments bearing the provided expression. 
+
+Additionally, we provide a default case for our S-Expressions. Should no other mentioned pattern be a match to a given expression, we will default to function invocation. In other words, the following is a pattern we will match, with `fn` being some foreign form not selected for elsewhere. 
+
+<div>
+\begin{align*}
+\\ & (fn \space val) = (fn)val
+\\ & (fn \space val \space rest...) = ((fn)val \space rest)
+\end{align*}
+</div>
+
+The Lambda Calculus has now been fully implemented in our symbolic forms; however, we will add many more features for the sake of convenience. After all, our goal was to add abstraction, not move a few symbols around!
 
 
 Foundations in Lambda Calculus
@@ -80,6 +91,17 @@ and &= \lambda a \lambda b (((if)a)b)\text{#f}
 \end{align*}
 </div>
 
+With boolean manipulation and conditionals in hand, we need some useful predicates to make use of them. We define some basic predicates on numbers with the following. `eq` will be very useful in later developments; it is one of McCarthy's elementary functions.
+
+<div>
+$$\text{Numerical Predicates}$$
+\begin{align*}
+\\ zero? &= \lambda n ((n)λx\text{#f})\text{#t}
+\\ leq &= \lambda a \lambda b (zero?)((-)m)n
+\\ eq &= \lambda a \lambda b (and \space (\leq \space a \space b) (\leq \space b \space a))
+\end{align*}
+</div>
+
 Finally we reach the most important part of our S-Expressions, their underlying lists. To construct lists we will opt for a sort of linked-list implementation in our lambda definitions. We begin with a pair and a `nil` definition, each readily revealing their type by opting for either the passed `c` or `n`.
 
 <div>
@@ -90,7 +112,7 @@ cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
 \end{align*}
 </div>
 
-Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` serving as a close substitute-foundation for the operations made possible by `atom`. Of course we additionally provide the sibling to `pair?`, a nil-checker, in the form of `null?`.
+Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` and `null?` complements to each other in determining the end of a list.
 
 <div>
 $$\text{Pair Operations}$$
@@ -119,15 +141,15 @@ Returning to our prior definition of numbers, we will now define arbitrarily lon
 
 <div>
 \begin{align*}
-1 &= (succ)0
-\\ 2 &= (succ)1
+1 &= (succ \space 0)
+\\ 2 &= (succ \space 1)
 \\ \dots
-\\ 9 &= (succ)8
-\\ ten &= (succ)9
-\\ d...0 &= ((mul)d...)ten
-\\ d...1 &= ((sum)((mul)d...)ten)(1)
+\\ 9 &= (succ \space 8)
+\\ ten &= (succ \space 9)
+\\ d...0 &= (mul \space d... \space ten)
+\\ d...1 &= (sum \space (mul \space d... \space ten) \space 1)
 \\ \dots
-\\ d...9 &= ((sum)((mul)d...)ten)(9)
+\\ d...9 &= (sum \space (mul \space d... \space ten) \space 9)
 \end{align*}
 </div>
 
@@ -138,16 +160,16 @@ The following has a rather sensitive notation. Quotes show that an atomic value 
 <div>
 \begin{align*}
 (\text{quote } (a)) &\implies cons \space a \space nil
-\\ (\text{quote } (a \space rest...)) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
-\\ (\text{quote } a \space rest...) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
+\\ (\text{quote } (a \space rest...)) &\implies (cons \space (\text{quote } a) \space (\text{quote } (rest...))
+\\ (\text{quote } a \space rest...) &\implies (cons \space (\text{quote } a) \space (\text{quote } (rest...)))
 \\ (\text{quote } "0") &\implies 0
 \\ \dots
 \\ \\ (\text{quote } "99") &\implies 99
 \\ \dots
-\\ (\text{quote } "ab...") &\implies ((cons)a)(\text{quote } b...)
-\\ (\text{quote } \text{"a"}) &\implies ((cons)97)(nil)
+\\ (\text{quote } "ab...") &\implies (cons \space a \space (\text{quote } b...))
+\\ (\text{quote } \text{"a"}) &\implies (cons \space 97 \space nil)
 \\ \dots
-\\ (\text{quote } \text{"z"}) &\implies ((cons)122)(nil)
+\\ (\text{quote } \text{"z"}) &\implies (cons \space 122 \space nil)
 \end{align*}
 </div>
 
@@ -159,22 +181,22 @@ In addition to defining this quote function, we will provide a shorthand for the
 \end{align*}
 </div>
 
-Now we will add a couple methods purely for convenience. These will serve as a means of defining values for use in a given expression.
+We have built up an array of atomic values, and a way of keeping them literal. Now we need a way of recognizing them, by means of equivalence. `eq` already solves this problem for numbers, but not for other quoted atoms. We generalize `eq` to all expressions in our definition of `equal?`.
 
 <div>
 \begin{align*}
-(\text{let } var \space val \space expr) &\implies (\lambda var \space expr)val
-\\ (\text{let* } ((var \space val)) \space expr) &\implies (\lambda var \space expr)val
-\\ (\text{let* } ((var \space val) \space rest...) \space expr) &\implies (\lambda var \space (\text{let* } (rest...) \space expr))val
-\\ (\text{letrec } var \space fn \space expr) &\implies (\text{let } var \space (Y)(\text{lambda } f \space fn) \space expr)
+(\text{equal } (a \space b...) \space (c \space d...)) &\implies (and \space (\text{equal } a \space c) \space (\text{equal } (b...) \space (d...)))
+\\ (\text{equal? } a \space b) &\implies (eq \space a \space b)
 \end{align*}
 </div>
 
-Finally, we provide a default behavior for our Symbolic Expressions, as invocations of a function.
+Now we add some *syntactic sugar* that will make it easier to store values that will be used in an expression. `let` and `let*` set a single value and a list of values, respectively, to be utilized in a given expression. `letrec` takes this idea in another direction, performing the Y-Combinator on a passed function to prepare it for recursion in the passed expression.
 
 <div>
 \begin{align*}
-\\ & (fn \space val) = (fn)val
-\\ & (fn \space val \space rest...) = ((fn)val \space rest)
+(\text{let } var \space val \space expr) &\implies ((\text{lambda } (var) \space expr) \space val)
+\\ (\text{let* } ((var \space val)) \space expr) &\implies (\text{let } var \space val \space expr)
+\\ (\text{let* } ((var \space val) \space rest...) \space expr) &\implies ((\text{lambda } (var) \space (\text{let* } (rest...) \space expr)) \space val)
+\\ (\text{letrec } var \space fn \space expr) &\implies (\text{let } var \space (Y \space (\text{lambda } f \space fn)) \space expr)
 \end{align*}
 </div>
