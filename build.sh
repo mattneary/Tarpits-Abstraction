@@ -1,1 +1,1 @@
-cp *.md render/posts/
+cp chapters/*.md render/posts/
