@@ -2,7 +2,7 @@ Defining Symbolic Expressions
 =============================
 Introduction
 ------------
-You have been told that the Lambda Calculus is computationally unviersal, capable of expressing any algorithm. However, this most likely seems intangible. We will begin to define a layer of abstraction over the Lambda Calculus which makes design of programs begin to seem conceivable.
+You have been told that the Lambda Calculus is computationally universal, capable of expressing any algorithm. However, this most likely seems intangible. We will begin to define a layer of abstraction over the Lambda Calculus which makes design of programs begin to seem conceivable.
 
 Symbolic Expressions
 --------------------
@@ -115,12 +115,22 @@ We have now laid a good foundation upon which our Symbolic Expressions can exist
 
 A Language of S-Expressions
 ---------------------------
-We define our lists inductively based on the pair-constructing `cons` function we defined earlier.
+We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than a symbolic expression.
 
 <div>
 \begin{align*}
-(\text{list } a) &\implies cons \space a \space nil
-\\ (\text{list } a \space rest...) &\implies ((cons)a)(\text{list } rest)
+(\text{quote } (a)) &\implies cons \space a \space nil
+\\ (\text{quote } (a \space rest...)) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
+\\ (\text{quote } a \space rest...) &\implies ((cons) (\text{quote } a)) (\text{quote } (rest...))
+\\ (\text{quote } a) &\implies a
+\end{align*}
+</div>
+
+In addition to defining this quote function, we will provide a shorthand for the operation. So often will we need to define list literals that it makes perfect sense for us to make it as brief as possible.
+
+<div>
+\begin{align*}
+'a = (\text{quote } a)
 \end{align*}
 </div>
 
@@ -129,6 +139,8 @@ Now we will add a couple methods purely for convenience. These will serve as a m
 <div>
 \begin{align*}
 (\text{let } var \space val \space expr) &\implies (\lambda var \space expr)val
+\\ (\text{let* } ((var \space val)) \space expr) &\implies (\lambda var \space expr)val
+\\ (\text{let* } ((var \space val) \space rest...) \space expr) &\implies (\lambda var \space (\text{let* } (rest...) \space expr))val
 \\ (\text{letrec } var \space fn \space expr) &\implies (\text{let } var \space (Y)(\text{lambda } f \space fn) \space expr)
 \end{align*}
 </div>
