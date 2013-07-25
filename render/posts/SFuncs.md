@@ -29,21 +29,21 @@ An important conveniency to note in the above forms, is their nature given their
 \end{align*}
 </div>
 
-What we see is that when a single value is passed, we achieve a convenient function ready to compare in terms of that parameter. This may seem obvious, familiar, or redundant, but the convenience of this fact should not be taken for granted. This phenomenon is known as currying; it can prove very useful in providing clearness to your expressions, our look at `>` was only an example of what is going on in all of the functions we discuss.
+What we see is that when a single value is passed, we achieve a convenient function ready to compare in terms of that parameter. This may seem obvious, familiar, or redundant, but the convenience of this fact should not be taken for granted. This phenomenon is known as currying; it can prove very useful in providing clearness to your expressions; our look at `>` was only an example of what is going on in all of the functions we discuss.
 
 This ability to supply the arguments of a function one at a time makes for very legible code. Below is an example of an inductive definition utilizing this functionality. The predicate is `<` with the first argument supplied as two, the step is the `pred` function, and the combinator is multiplication.
 
 <div>
 $$\text{Generalized Inductive Calculator}$$
 \begin{align*}
-&(\text{let } 
+&(\text{letrec } 
 \\& \quad induct 
 \\& \quad (\text{lambda } 
-\\& \qquad    (pred \space num \space step \space combo) 
+\\& \qquad    (induct \space pred \space num \space step \space combo) 
 \\& \qquad	  (if 
 \\& \qquad \quad	(pred \space num) 
 \\& \qquad \quad	num 
-\\& \qquad \quad	(combo \space num \space (step \space num)))) 
+\\& \qquad \quad	(combo \space num \space (induct \space pred \space (step \space num) \space step \space combo)))) 
 \\& \quad  (induct \space (> \space 2) \space 6 \space pred \space *))
 \\& \implies 720
 \end{align*}
@@ -53,7 +53,7 @@ This reads very well, as "perform induction while greater than 2 from 6 by means
 
 <div>
 \begin{align*}
-&(\text{let } 
+&(\text{letrec } 
 \\& \quad induct 
 \\& \quad \dots
 \\& \quad  (induct \space (< \space 5) \space 1 \space (+ \space 2) \space +))
@@ -78,7 +78,7 @@ Higher-Order Functions
 ----------------------
 In writing clear and concise expressions, it is often useful to have at your disposal higher-order functions (*HOF*), that is, functions that (a) return functions, (b) accept functions as arguments, or (c) do both *a* and *b*.
 
-Hopefully you caught something odd in what I just said, the fact that everything, hence any possible argument or resultant value, is a function! However since we have defined some primitive data-types, I am referring to non-data-symbolizing functions. This may seem a fine line, but you will often seen this terminology tossed around, so you may as well utilize it even in when in the purest of functional languages.
+Hopefully you caught something odd in what I just said, the fact that everything, hence any possible argument or resultant value, is a function! However since we have defined some primitive data-types, I am referring to non-data-symbolizing functions. This may seem a fine line, but you will often see this terminology tossed around, so you may as well utilize it even in when in the purest of functional languages.
 
 We begin with a couple of type (c) HOFs. The first of the following serves to flip the argument ordering of a given function, and the second composes two functions.
 <div>
@@ -88,7 +88,7 @@ We begin with a couple of type (c) HOFs. The first of the following serves to fl
 \end{align*}
 </div>	
 
-The function `flip` is very convenient when aiming to apply only the second argument of a function, leaving the other free. The design of `flip` is quite simple, it merely accepts a function, then two arguments, and returns application of them in reverse order. Despite the simplicity of its operation, it can really greatly reduce the complexity of an expression. As an example, look at the following definition of a singleton constructor, that is, a creator of a pair with a single element.
+The function `flip` is very convenient when aiming to apply only the second argument of a function, leaving the other free. The design of `flip` is quite simple, it merely accepts a function, then two arguments, and returns application of them in reverse order. Despite the simplicity of its operation, it can very greatly reduce the complexity of an expression. As an example, look at the following definition of a singleton constructor, that is, a creator of a pair with a single element.
 
 $$\text{Singleton Constructor}$$
 $$((flip \space cons) \space nil)$$
@@ -138,7 +138,7 @@ As a complement to `fold` we define `reduce`. `reduce` is just like `fold` excep
 \end{align*}
 </div>	
 
-Our definition of `reduce` is as a manipulator of a list returning an accumulated value at the end of a list, and at other points returning a manipulation of a recursion with the `cdr`, manipulated by the passed function. If we do an expansion of an infix operator for `reduce` as we did for `fold` we achieve something like this following when dealing with a list $\dots , x, y, z$
+Our definition of `reduce` is as a manipulator of a list returning an accumulated value at the end of a list, and at other points returning a manipulation of a recursion with the `cdr`, manipulated by the passed function. If we do an expansion of an infix operator for `reduce` as we did for `fold` we achieve something like the following when dealing with a list $\dots , x, y, z$
 
 $$( \dots (x \bullet (y \bullet z)) \dots )$$
 
@@ -170,7 +170,7 @@ Reductive Forms
 ---------------
 We begin with some extensions to our basic binary operators of arithmetic and boolean algebra. The structure of these definitions is similar to that of our early definitions of arithmetic, an iterative process on a base value; however, in this case the conditions and multitude of application are determined by a provided list.
 
-All of the following forms, which we will refer to as *Reductive Forms* are dependent on either `fold`. `fold` provides the generic versatile power to combine a list in an arbitrary way; hence you will see a variety of operations used in folding, so you may want to think back to the examples of the nested operator.
+All of the following forms, which we will refer to as *Reductive Forms* are dependent on `fold`. `fold` provides the generic versatile power to combine a list in an arbitrary way; hence you will see a variety of operations used in folding, so you may want to think back to the examples of the nested operator.
 
 We begin with some definitions of arithmetic and boolean manipulations. The definitions of these forms are intuitive, each with an infix operator which fits the role very intuitively.
 
@@ -201,7 +201,7 @@ Now we expand our application field in defining some optimization functions, `mi
 \end{align*}
 </div>
 
-The application of this function to $'(1 \space 5 \space 3 \space 4)$, for example, would return 5. Our implementation of `min` is nearly identical, simply changing the criterion of the sort.
+The application of this function to $'(1 \space 5 \space 3 \space 4)$, for example, would return 5. Our implementation of `min` is nearly identical, simply changing the criterion of the fold.
 
 <div>
 \begin{align*}
