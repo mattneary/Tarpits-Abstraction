@@ -8,7 +8,7 @@
 	"title": "A Library of Symbolic Functions",
 	"link": "SFuncs.md"
 }, {
-	"title": "Simulating a Tape Machine",
+	"title": "Simulating Logical Devices",
 	"link": "Simulate.md"
 }, {
 	"title": "Interpreting a Language",

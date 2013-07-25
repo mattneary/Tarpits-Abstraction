@@ -6,7 +6,7 @@ Currently, it is planned to have a preface (*A Tale of Two Theories*) and six pa
 
 1. Defining Symbolic Expressions
 2. A Library of Symbolic Functions
-3. Simulating a Tape Machine
+3. Simulating Logical Devices
 4. Interpreting a Language
 5. Pulling Our Language up by Its Bootstraps
 6. Communicating Symbolic Forms to a Register Machine
@@ -24,7 +24,28 @@ Notes
 ###Defining Symbolic Expressions
 - __TODO:__ Dotted Lists
 - __TODO:__ Discuss McCarthy's Influence
-- __TODO:__ Modulo function
+- __TODO:__ Modulo and Division functions
+
+###A Library of Symbolic Functions
+- __TODO:__ Using conditionals
+- __TODO:__ Improve `induct` example
+- __TODO:__ Newton's Method: An Example
+- __TODO:__ Variables: Reference and Scope
+- __TODO:__ Expansion of Programs
+- __TODO:__ Exponentiation & Efficiency: An Example
+- __TODO:__ Primality
+- __TODO:__ Diverse Data Structures
+
+###Simulating Logical Devices
+- Lazy structures
+
+###Interpreting a Language
+- Interpret Lambda Calculus
+- Interpret a Query Language
+
+###Pulling Our Language up by Its Bootstraps
+- Laziness
+- Adding features
 
 ###Pulling Our Language up by Its Bootstraps
 - A chance to add features like `define`.
