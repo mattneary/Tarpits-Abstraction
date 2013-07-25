@@ -163,7 +163,7 @@ $$\text{Booleans}$$
 
 The key to our booleans is that they accept two functions as parameters, functions that serve to encapsulate values, of which one will be chosen. Once chosen, that function is executed with the arbitrarily-chosen identity as an argument. This method of wrapping the decision serves as a means of lazy evaluation, and is fully realized in the lambda-underscores wrapping the branches of an `if` statement.
 
-Now, since of course no boolean system is complete without some boolean algebra, we define `and` and `or`. These functions perform the operations you would expect; `(and a b)` is true only when both `a` and `b` is true, but `(or a b)` is true if either argument is true. Their definitions follow easily from our `if` function. Keep in mind that both of these functions operate only on booleans.
+Now, since of course no boolean system is complete without some boolean algebra, we define `and` and `or`. These functions perform the operations you would expect; `(and a b)` is true only when both `a` and `b` are true, but `(or a b)` is true if either argument is true. Their definitions follow easily from our `if` function. Keep in mind that both of these functions operate only on booleans.
 
 <div>
 $$\text{Boolean Algebra}$$
@@ -199,7 +199,7 @@ cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
 
 `cons` constructs a pair when given two values, and accepts a function which will receive the two items to manipulate. `nil` on the other hand serves as a sort of empty pair, and instead fires the second provided function to identify itself as such.
 
-Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` and `null?` serving as complements to each other in determining the end of a list. `car` return the first value of a pair, and `cdr` the second. Their names are quite historical and refer to address access of a pair in memory, but you can just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
+Now, once again we follow a defined data-type with its manipulations. Just as did McCarthy, we will provide `car` and `cdr` as additional elementary functions, with `pair?` and `null?` serving as complements to each other in determining the end of a list. `car` returns the first value of a pair, and `cdr` the second. Their names are quite historical and refer to address access of a pair in memory, but you can just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
 
 <div>
 $$\text{Pair Operations}$$
@@ -298,7 +298,7 @@ In addition to defining the `quote` function, we will provide a shorthand for th
 
 <div>
 \begin{align*}
-'a = (\text{quote } a)
+'a \implies (\text{quote } a)
 \end{align*}
 </div>
 
