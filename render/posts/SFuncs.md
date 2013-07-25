@@ -31,6 +31,38 @@ An important conveniency to note in the above forms, is their nature given their
 
 What we see is that when a single value is passed, we achieve a convenient function ready to compare in terms of that parameter. This may seem obvious, familiar, or redundant, but the convenience of this fact should not be taken for granted. This phenomenon is known as currying; it can prove very useful in providing clearness to your expressions, our look at `>` was only an example of what is going on in all of the functions we discuss.
 
+This ability to supply the arguments of a function one at a time makes for very legible code. Below is an example of an inductive definition utilizing this functionality. The predicate is `<` with the first argument supplied as two, the step is the `pred` function, and the combinator is multiplication.
+
+<div>
+$$\text{Generalized Inductive Calculator}$$
+\begin{align*}
+&(\text{let } 
+\\& \quad induct 
+\\& \quad (\text{lambda } 
+\\& \qquad    (pred \space num \space step \space combo) 
+\\& \qquad	  (if 
+\\& \qquad \quad	(pred \space num) 
+\\& \qquad \quad	num 
+\\& \qquad \quad	(combo \space num \space (step \space num)))) 
+\\& \quad  (induct \space (> \space 2) \space 6 \space pred \space *))
+\\& \implies 720
+\end{align*}
+</div> 
+
+This reads very well, as "perform induction while greater than 2 from 6 by means of decrement combining with multiplication", i.e., find the factorial of 6. Let's look at another instance of this, taking advantage of the interchangeability of the definition, and once again of partial function application. This time we induce addition up to and at five, stepping by two in each step up from one.
+
+<div>
+\begin{align*}
+&(\text{let } 
+\\& \quad induct 
+\\& \quad \dots
+\\& \quad  (induct \space (< \space 5) \space 1 \space (+ \space 2) \space +))
+\\& \implies 16
+\end{align*}
+</div>
+
+Our answer coincides with what you would expect, the sum of odd numbers one through seven. Hopefully you feel that our language displays complexity well. The above example handled a very generic problem type elegantly and concisely. It is thanks to our adding of abstraction as we go that we are able to make these creations both clear and versatile, and ones in which the creator can take pride.
+
 Lastly we provide predicates to determine whether a given number is even or odd. This function is once again very easy given our convenient Lambda Calculus primitives. The following two functions simply check for a specific value of the modulus division by two applied to a number; this is the essence of parity.
 
 <div>
@@ -39,6 +71,8 @@ Lastly we provide predicates to determine whether a given number is even or odd.
 \\	&(even? \space &(\text{lambda } \space (x) \space (eq \space (mod \space x \space 2) \space 0)))
 \end{align*}
 </div>	
+
+Use cases for these two predicates will arise later, but for now they are good at their simple duties, determining parity.
 
 Higher-Order Functions
 ----------------------
@@ -54,6 +88,25 @@ We begin with a couple of type (c) HOFs. The first of the following serves to fl
 \end{align*}
 </div>	
 
+The function `flip` is very convenient when aiming to apply only the second argument of a function, leaving the other free. The design of `flip` is quite simple, it merely accepts a function, then two arguments, and returns application of them in reverse order. Despite the simplicity of its operation, it can really greatly reduce the complexity of an expression. As an example, look at the following definition of a singleton constructor, that is, a creator of a pair with a single element.
+
+$$\text{Singleton Constructor}$$
+$$((flip \space cons) \space nil)$$
+
+
+`compose` allows the results of various manipulations to be piped from one to another. A beautiful example of this is a linear function creator. Below is the function accepting slope and y-intercept as its two arguments.
+
+<div>
+$$\text{Linear Function Generator}$$
+\begin{align*}
+&(\text{lambda } 
+\\& \quad (m \space b) 
+\\& \quad (compose 
+\\& \qquad (+ \space b) 
+\\& \qquad (* \space m)))
+\end{align*}
+</div>	
+
 One of the most important HOFs is defined next. `fold` serves to accumulate a list of values into a single resultant value, based on a function of combination and a starting value. Note that this function is recursive and will be provided using `letrec`. Other functions accepting their name as the first argument should be assumed to follow the same practice.
 
 <div>
@@ -65,7 +118,7 @@ One of the most important HOFs is defined next. `fold` serves to accumulate a li
 \end{align*}
 </div>	
 
-If the meaning of `fold` is still unclear to you, consider some of these examples.
+Our definition of `fold` is as a manipulator of a list returning an accumulated value at the end of a list, and at other points recursing with the `cdr` of the list and an accumulator as determined by the passed function. If the meaning of `fold` is still unclear to you, consider some of these examples.
 
 $$(fold \quad + \quad 0 \quad '(1 \space 2 \space 3)) \implies 6$$
 $$(fold \quad * \quad 0 \quad '(1 \space 2 \space 3 \space 4)) \implies 24$$
@@ -85,7 +138,7 @@ As a complement to `fold` we define `reduce`. `reduce` is just like `fold` excep
 \end{align*}
 </div>	
 
-If we do an expansion of an infix operator for `reduce` as we did for `fold` we achieve something like this following when dealing with a list $\dots , x, y, z$
+Our definition of `reduce` is as a manipulator of a list returning an accumulated value at the end of a list, and at other points returning a manipulation of a recursion with the `cdr`, manipulated by the passed function. If we do an expansion of an infix operator for `reduce` as we did for `fold` we achieve something like this following when dealing with a list $\dots , x, y, z$
 
 $$( \dots (x \bullet (y \bullet z)) \dots )$$
 
@@ -99,6 +152,17 @@ Together `reduce` and `fold` are sufficient basis for any iterative process. Now
 \\	&\qquad    (cons \space init \space (unfold \space func \space (func \space init) \space pred)))))
 \end{align*}
 </div>
+
+To clarify the distinction between `fold` and `reduce`, we display the manner in which they can be thought of as opposites.
+
+<div>
+\begin{align*}
+&(fold \quad (flip \space cons) \quad nil \quad '(1 \space 2 \space 3)) &\implies '(1 \space 2 \space 3)
+\\& (reduce \quad cons \quad nil \quad '(1 \space 2 \space 3)) &\implies '(1 \space 2 \space 3)
+\end{align*}
+</div>
+
+This examples drives home that the difference between the two is in direction of association, `reduce` is the natural operation for right associative operations and `fold` for left associative operations.
 
 Together our definitions of `fold` and `reduce` are sufficient for definition of any iterative process. `unfold` in addition provides us with a means of constructing arbitrary lists based on constructing rules. We will now implement a variety of derived iterative forms based on `fold` and `reduce`.
 
@@ -119,12 +183,39 @@ We begin with some definitions of arithmetic and boolean manipulations. The defi
 \end{align*}
 </div>
 
-Now we expand our application field in defining some optimization functions, `min` and `max`. Both of these works by comparing each element with a running extreme value, swapping if a new extreme is found.
+Now we expand our application field in defining some optimization functions, `min` and `max`. Both of these works by comparing each element with a running extreme value, swapping if a new extreme is found. The definition of `max` follows, a simple folding onto the higher value.
 
 <div>
 \begin{align*}
-&	(max \space &(list) \space (fold \space (\text{lambda } (old \space new) \space (if \space (> \space old \space new) \space old \space new)) \space (car \space list) \space (cdr \space list)))
-\\&	(min \space &(list) \space (fold \space (\text{lambda } (old \space new) \space (if \space (< \space old \space new) \space old \space new)) \space (car \space list) \space (cdr \space list)))
+&	(max 
+\\&	\quad (list)
+\\&	\quad (fold 
+\\&	\qquad  (\text{lambda } 
+\\&	\qquad \quad (old \space new)
+\\&	\qquad \quad (if
+\\&	\qquad \qquad (> \space old \space new)
+\\&	\qquad \qquad old
+\\&	\qquad \qquad new))
+\\&	\quad (car \space list)
+\\&	\quad (cdr \space list)))
+\end{align*}
+</div>
+
+The application of this function to $'(1 \space 5 \space 3 \space 4)$, for example, would return 5. Our implementation of `min` is nearly identical, simply changing the criterion of the sort.
+
+<div>
+\begin{align*}
+&	(min 
+\\&	\quad (list)
+\\&	\quad (fold 
+\\&	\qquad  (\text{lambda } 
+\\&	\qquad \quad (old \space new)
+\\&	\qquad \quad (if
+\\&	\qquad \qquad (> \space old \space new)
+\\&	\qquad \qquad old
+\\&	\qquad \qquad new))
+\\&	\quad (car \space list)
+\\&	\quad (cdr \space list)))
 \end{align*}
 </div>
 
@@ -164,7 +255,9 @@ In determining the association, we `fold` with the aim of reaching a value with 
 \end{align*}
 </div>    
 
-`assoc` is very important in modeling hash-tables, and in general keeping track of named values.
+`assoc` is very important in modeling hash-tables, and in general keeping track of named values. If `assoc` were applied to the table displayed prior with `banana` as a key, it would evaluate to `yellow`. Here is the full form, with `table` referring to the aforementioned table.
+
+$$(assoc \quad 'banana \quad table) \implies 'yellow$$
 
 List Manipulations
 ------------------
@@ -174,12 +267,47 @@ In mapping one list to another, we will provide two generic functions. The first
 
 <div>
 \begin{align*}
-&	(map &(\text{lambda } (func \space lst) \space (reduce \space (\text{lambda } (x \space y) \space (cons \space (func \space x) \space y)) \space nil \space lst)))
-\\&	(filter &(\text{lambda } (pred \space lst) \space (reduce \space (\text{lambda } (x \space y) \space (if \space (pred \space x) \space (cons \space x \space y) \space y)) \space nil \space lst)))
+&	(map 
+\\&	\quad (\text{lambda } 
+\\&	\qquad (func \space lst)
+\\&	\qquad (reduce
+\\&	\qquad \quad (\text{lambda } 
+\\&	\qquad \qquad (x \space y) 
+\\&	\qquad \qquad (cons \space (func \space x) \space y)) 
+\\&	\qquad \quad nil
+\\&	\qquad \quad lst)))
 \end{align*}
 </div>
 
-Now we provide functions for appending to a list, either a single element of a list of elements, i.e., *concatenation*. These functions serve as nice complements to the two which were defined above, as they allow for expansion to supersets, and the earlier two allow only for constructing a subset.
+Our map implementation works as a reduction with `cons`; if this were the extent of the function, the initial list would be returned. However, each element is passed through the provided function to result in a list with modified elements. `filter` takes advantage of the same aspect of `reduce`; however, in its definition it casts away values not matching a predicate.
+
+<div>
+\begin{align*}
+\\&	(filter 
+\\&	\quad (\text{lambda } 
+\\&	\qquad (pred \space lst)
+\\&	\qquad (reduce
+\\&	\qquad \quad (\text{lambda } 
+\\&	\qquad \qquad (x \space y)
+\\&	\qquad \qquad (if
+\\&	\qquad \qquad \quad (pred \space x)
+\\&	\qquad \qquad \quad (cons \space x \space y)
+\\&	\qquad \qquad \quad y))
+\\&	\qquad \quad nil
+\\&	\qquad \quad lst)))
+\end{align*}
+</div>
+
+Let's look at some examples of `map` and `reduce`; the extent of their usefulness was alluded to earlier, but below are some examples to clarify their usage.
+
+<div>
+\begin{align*}
+	&(map \quad &(* \space 2) \quad &'(1 \space 2 \space 3)) &\implies '(2 \space 4 \space 6)
+\\	&(filter \quad &odd? \quad &'(1 \space 2 \space 3 \space 4 \space 5 \space 6)) &\implies '(1 \space 3 \space 5)
+\end{align*}
+</div>
+
+The above were very clear in their meaning, as one would hope. Now that we have some strong ways of manipulating a list, we will move on to means of adding elements to a list. We provide some functions for appending to a list, either a single element of a list of elements, i.e., *concatenation*. These functions serve as nice complements to the two which were defined above, as they allow for expansion to supersets, and the earlier two allow only for constructing a subset.
 
 <div>
 \begin{align*}
@@ -188,4 +316,15 @@ Now we provide functions for appending to a list, either a single element of a l
 \end{align*}
 </div>
 
-These list manipulations will prove very useful, and given our prior definitions, were very concise and clear in definition.
+These list manipulations will prove very useful, and given our prior functions, were very concise and clear in definition. Below are some examples of `push` and `concat` applications.
+
+<div>
+\begin{align*}
+	&(push \quad &4 \quad &'(1 \space 2 \space 3)) &\implies '(1 \space 2 \space 3 \space 4)
+\\	&(concat \quad &'(1 \space 2) \quad &'(2 \space 4)) &\implies '(1 \space 2 \space 3 \space 4)
+\end{align*}
+</div>
+
+Conclusion
+----------
+We have amassed a variety of useful and versatile functions of symbolic expressions. With these in hand, we are ready to build complex and useful programs.
