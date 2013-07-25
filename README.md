@@ -17,7 +17,7 @@ Reading
 To get the best reading experience, you will want to run the node server in `render/` and connect to `localhost:8080`. Once there the LaTeX and Markdown can both render well.
 
 ###Pre-Rendered Versions
-There will be some early renders posted as I progress. `SExpr-0.1.pdf` was my first one posted. Others are coming soon.
+There will be some early renders posted as I progress. Browse the `pdfs/` folder for the latest renders.
 
 Notes
 -----
