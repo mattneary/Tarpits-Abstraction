@@ -27,6 +27,7 @@ Notes
 - __TODO:__ Modulo and Division functions
 
 ###A Library of Symbolic Functions
+- __TODO:__ `list` function
 - __TODO:__ Using conditionals
 - __TODO:__ Improve `induct` example
 - __TODO:__ Newton's Method: An Example

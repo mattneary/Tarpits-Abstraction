@@ -12,7 +12,7 @@ var posts = function(cb) {
 app.get({
 	path: /^/,
 	cb: function(req, res) {
-		res.writeHead(200, { 'Content-Type': 'text/html' });
+		res.writeHead(200, { 'Content-Type': req.url.match(/\.js$/)?'text/javascript':'text/html' });
 		var path = __dirname + (req.url=='/'?'/index.html':req.url);
 		fs.stat(path, function(err, stat) {
 		    if (!err) {
