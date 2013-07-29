@@ -36,8 +36,24 @@ A ruleset like the one above serves to tell a simulation in what way to behave g
 ###Fundamental States
 In order for our simulation to ever end we will need to designate a specific state the *halt-state*. In our implementation, `H` will signal the end of an algorithm. Additionally, the state in which our machine is initialized will not be the choice of the ruleset, and so we choose to once again arbitrarily designate a specific state value for this case. The state named `A` will be the initialization state of all simulations.
 
+Given these determined special states, we will need to set the initial state and provide checking for the halt state. Hence our recursive, rule-applying function needs to accept a state, as well as head position, rules, state, and tape values, and to check whether it is in the halt state. If this is not the case, it will then apply the current rule and recurse.
+
+```scheme
+(letrec iterate (lambda
+  (iterate index rules state tape) 
+  (if 
+    (equal? state 'H)
+    tape
+    (iterate-rule 
+  iterate
+      (cadr (assoc (list state index) rules))
+      rules
+      index
+      tape)))
+```
+
 ###Mutability
-The Lambda Calculus does not allow for mutation of values, thus all values we wish to mutate will need to be parameters to functions. Let's work out some examples of wokring around immutability in lists.
+The Lambda Calculus does not allow for mutation of values, thus all values we wish to mutate will need to be parameters to functions. Let's work out some examples of working around immutability in lists.
 
 ```scheme
 (set 
@@ -46,11 +62,55 @@ The Lambda Calculus does not allow for mutation of values, thus all values we wi
     (map 
       (lambda 
         (item) 
-	(if 
-	  (equal? item key) 
-	  (cons key (cons val)) 
-	  item)) 
+	    (if 
+  	      (equal? item key) 
+	      (cons key (cons val)) 
+	      item)) 
     hash)))
+```
+
+This definition is dependent upon a few helper functions. First of all, there are a couple very basic shorthands which are defined below.
+
+```scheme
+(cadr (lambda (x) (car (cdr x))))
+(caddr (lambda (x) (car (cdr (cdr x)))))
+```
+
+Now we move on to the functions provided for applying a rule and for applying a shift in the head.
+
+```scheme
+(move (lambda 
+ (index motion)
+ (if
+   (equal? motion 'R)
+   (+ 1 index)
+   (- 1 index))))   
+```
+
+The rule applier receives the earlier defined `iterate` function as an argument, and then applies it to the moved index, the ruleset, the rule-provided state, and the new tape.
+
+```scheme
+(iterate-rule (lambda
+  (iterate rule rules index tape)
+  (iterate
+    (move index (cadr rule))
+    rules
+    (caddr rule)
+    (write-rule tape index rule))))
+```
+
+Finally, we need to define the `write-rule` which is derived based on the ideas of simulating mutability.
+
+```scheme
+(letrec write-rule (lambda
+  (write-rule tape index rule)
+  (if
+    (null? tape)
+    tape
+    (if
+      (equal? index 0)
+      (cons (car rule) (cdr tape))
+      (cons (car tape) (write-rule (cdr tape) (- index 1) rule)))))
 ```
 
 ###The Event Loop
