@@ -78,7 +78,23 @@ This expression appears quite complex, so let's use the aforementioned reduction
 \end{align*}
 </div>
 
-That looks much better! What we have arrived at is only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. Hopefully these examples have given you a feel for how this syntax can work, and maybe even an early sense of how useful functions will emerge from the Lambda Calculus.
+That looks much better! What we have arrived at is only slightly different than our initial function of `f` and `x`. The only change was the number of times that `f` was applied. We have explored the reduction of a symbolic expression to a result; however, this result is far from tangible.
+
+In order for computation by means of the Lambda Calculus to render a human-readable result, we will need a notation of expression exhibited by function definitions. That means that, for example, the function $(\text{lambda } (a) \space (a \space (a \space (a \space a))))$ could serve to communicate the number four.
+
+The expressive power of this notation is clear; however, application of a function to itself as in `(a a)` is very rarely appropriate, and so we will slightly expand our expression of four to serve a more concrete purpose within the language. We now expand our numeric function representing some number `n` to accept two operators, and return the application of the first parameter `n` times to the second parameter. Hence, the number four would look like the following.
+
+<div>
+$$(\text{lambda } (f \space n) \space (f \space (f \space (f \space (f \space n)))))$$
+</div>
+
+This notation, of course, translates just as well into an expression of any number. The number three would look like the following.
+
+<div>
+$$(\text{lambda } (f \space n) \space (f \space (f \space (f \space n))))$$
+</div>
+
+Hopefully these examples have given you a feel for how this syntax can work, and maybe even an early sense of how useful functions will emerge from the Lambda Calculus.
 
 Foundations in Lambda Calculus
 ------------------------------
