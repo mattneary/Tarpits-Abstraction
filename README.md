@@ -39,7 +39,6 @@ Notes
 
 ###Simulating Logical Devices
 - Lazy structures
-- LaTeX codes
 
 ###Interpreting a Language
 - Interpret Lambda Calculus
