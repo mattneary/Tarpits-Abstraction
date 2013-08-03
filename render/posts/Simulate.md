@@ -17,16 +17,8 @@ All of this methodology is governed by a single ruleset. Hence to simulate one, 
 \begin{align*}
 &(let 
 \\& \quad rules
-\\& \quad '(((A \space 0) \space (0 \space R \space Z))
-\\& \qquad  ((A \space 1) \space (1 \space R \space C))
-\\& \qquad  ((Z \space 0) \space (0 \space R \space H))
-\\& \qquad  ((Z \space 1) \space (1 \space L \space N))
-\\& \qquad  ((C \space 0) \space (1 \space L \space N))
-\\& \qquad  ((C \space 1) \space (0 \space L \space Y))
-\\& \qquad  ((N \space 0) \space (0 \space R \space H))
-\\& \qquad  ((N \space 1) \space (0 \space R \space H))
-\\& \qquad  ((Y \space 0) \space (1 \space R \space H))
-\\& \qquad  ((Y \space 1) \space (1 \space R \space H))
+\\& \quad '(((A \space 0) \space (1 \space R \space H))
+\\& \qquad  ((A \space 1) \space (0 \space R \space H)))
 \\& \quad \dots)
 \end{align*}
 </div>
@@ -57,7 +49,11 @@ The Lambda Calculus does not allow for mutation of values, thus we will need to 
 \end{align*}
 </div>    
 
-In this case we utilized `map` to cycle through the items of the hash. Within the map we substituted for the value with the specified key. In our writing to the tape, we will need to use similar tactics. In the following function definition, we recurse with the tail of the list until we reach the specified index, and we then perform the substitution and the recursion ends.
+In this case we utilized `map` to cycle through the items of the hash. Within the map we substituted for the value with the specified key. In our writing to the tape, we will need to use similar tactics. 
+
+A Turing Machine writes a value to a specific slot of its tape, namely, the slot upon which the head is currently resting. Within our simulator, this slot is specified by the current index of the simulation. Hence, the writing function we will require is one designed to write to a specific index of a tape.
+
+In the following function definition, we recurse with the tail of the list until we reach the specified index, and we then perform the substitution, ending recursion.
 
 <div>
 \begin{align*}
@@ -71,7 +67,9 @@ In this case we utilized `map` to cycle through the items of the hash. Within th
 \\& \qquad \quad (cons \space (car \space rule) \space (cdr \space tape))
 \\& \qquad \quad (cons \space (car \space tape) \space (\text{write-rule} \space (cdr \space tape) \space (- \space index \space 1) \space rule)))))
 \end{align*}
-</div>      
+</div>  
+
+Above, we defined `write-rule` as a recursive function accepting a tape, index, and rule. If we have run out of tape, we return the empty tape; however, if we have tape left we take one of two paths in evaluation. If the index to which we wish to write is zero, we return the rule-specified value embedded into the list where the first item previously would have resided. If, however, we are writing to another index, we simply reduce the problem to writing to the item one less in index on tape, excluding the first item.
 
 ###The Event Loop
 The simulation is based on the idea of following rule to rule until the algorithm terminates. Hence rules are executed recursively until the halt-state is reached. At this point, a final table is returned. The iteration function is defined below.
@@ -90,7 +88,9 @@ The simulation is based on the idea of following rule to rule until the algorith
 \\& \qquad \quad index
 \\& \qquad \quad tape)))
 \end{align*}
-</div>      
+</div> 
+
+The `iterate` function definition above utilized `letrec` to receive itself as an argument. Its use of this value is subtly different from our past use cases. In `iterate`, we pass the function itself as an argument to another function, `iterate-rule`. For this reason, we can call `iterate` and `iterate-rule` *mutually recursive*, that is, because `iterate` invokes `iterate-rule` and `iterate-rule` in turn invokes `iterate`.     
 
 There are multiple dependencies to the above function which we have not yet defined. In the following section we will put them all together with the `iterate` function and achieve our final goal of simulation.
 
@@ -115,9 +115,20 @@ Now we move on to the functions provided for applying a rule and for applying a 
 \\& \qquad (+ \space 1 \space index)
 \\& \qquad (- \space 1 \space index))))
 \end{align*}
-</div>      
+</div>  
 
-The rule applier receives the earlier defined `iterate` function as an argument, and then applies it to the moved index, the ruleset, the rule-provided state, and the new tape.
+The definition of `move` above is very simple in nature. A current index and direction of motion are received as argument, and a new index is then returned. If the direction is `'R` then the index will increase, but if it is not, i.e., if it is `'L`, it will decrease. Furthermore, keeping in mind the earlier definition of subtraction based on Lambda Calculus primitives, you will recall that subtracting one from zero will result in zero. This behavior is convenient in this case, avoid strange edge-case behavior.
+
+Example usage of the `move` function would be as follows.
+
+<div>
+\begin{align*}
+&(move \space 5 \space 'R) &\implies 6
+\\&(move \space 3 \space 'L) &\implies 2
+\end{align*}
+</div>  
+
+Now we move on to a prior utilized function for the application of a rule to the tape. The rule applier receives the earlier defined `iterate` function as an argument, and then applies it to the moved index, the ruleset, the rule-provided state, and the new tape.
 
 <div>
 \begin{align*}
@@ -153,7 +164,7 @@ This function consists only of basic manipulations of the rule to parse out the 
 \\& \qquad (letrec \space iterate \space (lambda
 \\& \qquad \quad (iterate \space index \space rules \space state \space tape) 
 \\& \qquad \quad (\dots)
-\\& \qquad \quad (write \space (iterate \space index \space rules \space state \space '(0 \space 0 \space 0))))))
+\\& \quad (write \space (iterate \space index \space rules \space state \space '(0 \space 0 \space 0))))))
 \end{align*}
 </div>    
 
@@ -174,7 +185,7 @@ A half-adder as a Turing Ruleset would look like the following.
 \\& \qquad  ((N \space 0) \space (0 \space R \space H))
 \\& \qquad  ((N \space 1) \space (0 \space R \space H))
 \\& \qquad  ((Y \space 0) \space (1 \space R \space H))
-\\& \qquad  ((Y \space 1) \space (1 \space R \space H))
+\\& \qquad  ((Y \space 1) \space (1 \space R \space H)))
 \\& \quad (write \space (iterate \space 0 \space rules \space 'A \space '(0 \space 0 \space 0))))
 \end{align*}
 </div>
@@ -183,21 +194,32 @@ Circuits
 --------
 Circuits are quite different in nature from the previously discussed Turing Machine. The main reason for this difference is that components, analogous to the prior discussed rules, are dependent directly upon each other, while in a Turing Machine a single processing unit handled transitions between states.
 
-###Structure of Circuits (cf. #275)
+###Structure of Circuits
 Our model of circuits will consist of two component types, (a) relational boxes, and (b) wires. Relational boxes are atomic relations between circuit values, accepting input as electrical signals and outputting an electrical signal. Wires serve to connect these boxes to each other, bearing these electrical signals in one of two sates. A wire bearing current is said to have the boolean value true (`#t`), but a wire without current is said to be of the boolean value false (`#f`).
 
-The relational boxes we will take as primitive are similar to our boolean operators already defined. We utilize an `and-gate`, an `or-gate`, and a `not-gate`. The first two gates accept two wires as input values and output to another wire a current value based on their logical operation. Hence an `and-gate` accepting two current-bearing wires will direct current to its output wire. A `not-gate` on the other hand accepts a single wire for input value and outputs the opposite value to another wire.
-
-To begin our design of circuits, we design a relation constituent of the boolean operators listed above in the form of gates.
+Now, given these ideas of relational boxes and wires, we add abstraction to reach a view of relational boxes as logical primitives. For example, there may be a relational box named `gateA` which accepts a single wire and maps to the following specified outputs.
 
 <div>
 \begin{align*}
-&(let* 
-\\& \quad ((a \space \text{#t}) 
-\\& \quad \space (b \space \text{#f}) 
-\\& \quad \space (s \space (and \space (or \space a \space b) \space (not \space (and \space a \space b)))) 
-\\& \quad \space (r \space (and \space a \space b))) 
-\\& \quad (cons \space s \space (cons \space r \space nil)))
+&(gateA \space \text{#t}) &\implies \text{#f}
+\\&(gateA \space \text{#f}) &\implies \text{#t}
+\end{align*}
+</div>
+
+Of course, this sort of truth table maintains an electrical interpretation. Specifically, such a relational box would output current when receiving no current, but would output no current if receiving current.
+
+The relational boxes we will take as primitive are similar to our boolean operators already defined. We utilize an `and-gate`, an `or-gate`, and a `not-gate`. The first two gates accept two wires as input values and output to another wire a current value based on their logical operation. Hence an `and-gate` accepting two current-bearing wires will direct current to its output wire. A `not-gate` on the other hand accepts a single wire for input value and outputs the opposite value to another wire.
+
+To begin our design of circuits, we design a relation constituent of the boolean operators listed above as primitives.
+
+<div>
+\begin{align*}
+&(\text{half-adder }
+\\& \quad (\text{lambda } (a \space b)
+\\& \quad (let* 
+\\& \qquad ((s \space (and \space (or \space a \space b) \space (not \space (and \space a \space b)))) 
+\\& \qquad \space (r \space (and \space a \space b))) 
+\\& \qquad (cons \space r \space (cons \space s \space nil)))))
 \end{align*}
 </div>
 
@@ -205,10 +227,36 @@ The above procedure is known as a half-adder. Given two bits as input, this proc
 
 The methodology of the half-adder should be for the most part apparent. Given input values named `a` and `b`, output values named `s` and `r` need to be determined. `s` is true when one, but not both, of the inputs is true, and `r` when both are true. Hence `s` represents the first digit of a binary result, and `r` the second or carried value.
 
-###Inter-Dependency
-In our presentation of circuit design, we utilized `let*` to display relations in order of their dependency. However, you will notice that we repeated some computations without separating them out, and more importantly that all computed values were statically set to a primitive value, never to be changed. Hence, our definition did not accurately model an actual circuit.
+Let's look at some examples of the behavior of a half-adder.
 
-To better reflect the reality of circuit design, we will allow a circuit structure to be defined and for this structure to be utilized to compute the values of individual components of the circuit. Hence we will use a table like those which we have already seen for the basic structure. The table will be built up with named components, each being manipulations of the circuit. We begin with a basic realization of this idea.
+<div>
+\begin{align*}
+&(\text{half-adder } \text{#f} \space \text{#f}) &\implies '(\text{#f} \space \text{#f})
+\\&(\text{half-adder } \text{#f} \space \text{#t}) &\implies '(\text{#f} \space \text{#t})
+\\&(\text{half-adder } \text{#t} \space \text{#f}) &\implies '(\text{#f} \space \text{#t})
+\\&(\text{half-adder } \text{#t} \space \text{#t}) &\implies '(\text{#t} \space \text{#f})
+\end{align*}
+</div>
+
+If you are not familiar with the behavior of binary digits when adding, note that the above examples exhibit the basics of this behavior. If we were to represent current instead by either `1` or `0`, we would achieve the following, more clearly binary, behavior.
+
+<div>
+\begin{align*}
+&(\text{half-adder } 0 \space 0) &\implies '(0 \space 0)
+\\&(\text{half-adder } 0 \space 1) &\implies '(0 \space 1)
+\\&(\text{half-adder } 1 \space 0) &\implies '(0 \space 1)
+\\&(\text{half-adder } 1 \space 1) &\implies '(1 \space 0)
+\end{align*}
+</div>
+
+Hopefully this example has helped to illustrate the emergence of relatively high-level ideas like arithmetic from basic controlled flow of current. In the following sections we will attempt to depart from a purely boolean-arithmetic driven outlook on circuits toward a generic circuit structure definition process and simulator.
+
+###Inter-Dependency
+In our presentation of circuit design, we utilized `let*` to display relations in order of their dependency. However, you will notice that we repeated some computations without separating them out, and more importantly that all computed values were statically set to a primitive manipulation, never to be changed. Hence, our prior definition does not accurately model an actual circuit; currents cannot be updated and changes cannot propagate.
+
+To better reflect the reality of circuit design, we will allow a circuit structure to be defined *holistically* and *symbolically*, and for this structure to be utilized to compute the values of individual components. To say that our structure will be defined holistically means that the entire circuit blueprint may be laid prior to any computation, which brings us to our next point. Since definition will be symbolic, using names rather than values, our relations can be established between yet-to-be-defined values.
+
+We will use a table like those which we have already seen for our basic data-structure. The table will be built up with named components, each being manipulations of the circuit. We begin with a basic realization of this idea.
 
 <div>
 \begin{align*}
@@ -241,28 +289,24 @@ Usage of this convenience function would then look like the following, applying 
 
 $$(method \space person \space 'greet)$$
 
-We will utilize this concept in our design of gates. A gate will be a table containing some values and some methods. The only value will be named `value`, the boolean value of a gate, and the methods will be named `get` and `set`, performing manipulations of the value as their names would suggest. Hence we have a basic constructor of a gate like the following.
+In this case `person` serves as an object, and `greet` as a named method on that object. What does it mean to be an object? In the case of our implementation, an object is merely a data-structure, like any other table; however, the distinctive trait is the inclusion of methods. Methods allow for the coupling of functions to a specific data-set. In our example above, a greet function is attached to the `person`, and easily called by name to perform some action in the specific context of the `person` object.
+
+We will utilize the concepts of object-oriented programming (OOP) in our design of gates. A gate will be a table containing some values and some methods. The only value will be named `value`, the boolean value of the gate, and the methods will be named `get` and `set`, performing the manipulations of the value which their names would suggest. Hence, we would have a basic constructor of a gate like the following.
 
 <div>
 \begin{align*}
-&(pairing
-\\& \quad (\text{lambda }
-\\& \qquad (a \space b)
-\\& \qquad (cons \space a \space (cons \space b \space nil))))    
-\\&(\text{make-gate }
+&(\text{make-gate }
 \\& \quad (\text{lambda }
 \\& \qquad (value \space get \space set)
-\\& \qquad (cons
-\\& \qquad \quad (pairing \space 'value \space value)
-\\& \qquad \quad (cons 
-\\& \qquad \qquad (pairing \space 'get \space get)
-\\& \qquad \qquad (cons
-\\& \qquad \qquad \quad (pairing \space 'set \space set)
-\\& \qquad \qquad \quad nil)))))
+\\& \qquad (list
+\\& \qquad \quad (list \space 'value \space value \space nil)
+\\& \qquad \quad (list \space 'get \space get \space nil)
+\\& \qquad \quad (list \space 'set \space set \space nil)
+\\& \qquad \quad nil)))
 \end{align*}
 </div>
 
-Given this structure, we redefine out gate getter and setter to simplify interfacing with this structure as follows.
+Given this structure, we redefine our gate getter and setter to simplify interfacing with this structure as follows.
 
 <div>
 \begin{align*}
@@ -313,7 +357,9 @@ As you were made to expect in our discussion of object-oriented programming, bot
 \end{align*}
 </div>
 
-The above definition makes the value of the gate a method as well. The getter then applies the `value` method to the `get`-wrapped values of the two input components. The relation tying together these input components is passed as the first argument to the `fn-gate` constructor. We now define, in turn, children of the `fn-gate` constructor easily as follows.
+The above definition makes the value of the gate a method as well. The getter then applies the `value` method to the `get`-wrapped values of the two input components. The relation tying together these input components is passed as the first argument to the `fn-gate` constructor. This is to say that when getting the value of an `fn-gate`, the values upon which it depends will be gotten as well in a sort of cascading dependency. These dependencies will then be assessed based on the function specific to that instance of `fn-gate`, maybe logical or, for example.
+
+We now define, in turn, children of the `fn-gate` constructor easily as follows.
 
 <div>
 \begin{align*}
@@ -330,29 +376,17 @@ Putting together all prior defined functions we have the following.
 \begin{align*}
 &(let*      
 \\& \quad ((pairing
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (a \space b)
-\\& \qquad \quad (\dots)))    
+\\& \qquad (\text{lambda } (a \space b) \space (\dots)))    
 \\& \quad \space (\text{make-gate }
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (value \space get \space set)
-\\& \qquad \quad (\dots)))    
+\\& \qquad (\text{lambda } (value \space get \space set) \space (\dots)))    
 \\& \quad \space (\text{const-gate }
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (value)
-\\& \qquad \quad (\dots)))
+\\& \qquad (\text{lambda } (value) \space (\dots)))
 \\& \quad \space (\text{get-gate }
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (name \space env)
-\\& \qquad \quad (\dots)))
+\\& \qquad (\text{lambda } (name \space env) \space (\dots)))
 \\& \quad \space (\text{set-gate }
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (name \space value \space env)
-\\& \qquad \quad (\dots)))            
-\\& \quad \space (fn-gate 
-\\& \qquad (\text{lambda }
-\\& \qquad \quad (fn \space a \space b)
-\\& \qquad \quad (\dots)))
+\\& \qquad (\text{lambda } (name \space value \space env) \space (\dots)))            
+\\& \quad \space (\text{fn-gate }
+\\& \qquad (\text{lambda } (fn \space a \space b) \space (\dots)))
 \\& \quad \space (\text{or-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots))))
 \\& \quad \space (\text{and-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots))))
 \\& \quad \space (\text{not-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots)) \space \text{#f})))

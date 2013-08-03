@@ -261,6 +261,28 @@ $$(assoc \quad 'banana \quad table) \implies 'yellow$$
 
 List Manipulations
 ------------------
+Before we delve too far into manipulation of lists, we will define a very helpful list constructor as follows.
+
+<div>
+\begin{align*}
+&(list 
+\\&	\quad (\text{lambda } (list \space a) 
+\\&	\quad (if
+\\&	\qquad (null? \space a)
+\\&	\qquad nil
+\\&	\qquad (\text{lambda } (rest)
+\\&	\qquad \quad (cons \space a \space (list \space rest)))))
+\end{align*}
+</div>   
+
+Usage of `list` is very intuitive. To construct a list, pass each element as argument to the `list` function, ending with `nil`. The following is an example of usage.   
+
+<div>
+\begin{align*}
+&(list \space 1 \space 2 \space 3 \space nil) &\implies '(1 \space 2 \space 3)
+\end{align*}
+</div>
+
 In manipulating a list, there are two basic classes of operations, (a) mapping a list to a value, and (b) converting one list to another. We have thoroughly covered the former, starting first with general forms and then implementing some useful examples. Now we will move on to the latter.
 
 In mapping one list to another, we will provide two generic functions. The first, `map`, will apply a single function to each element of a list; the second will filter out items based on a predicate. These functions are very useful, imagine for example finding a sum of squares or constructing a list of primes.
