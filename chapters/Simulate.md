@@ -405,7 +405,7 @@ A half-adder utilizing our simulator would look like the following.
 \\& \quad \space (env \space (\text{set-gate } '1 \space (\text{or-gate } 'a \space 'b) \space env))
 \\& \quad \space (env \space (\text{set-gate } '2 \space (\text{and-gate } 'a \space 'b) \space env))
 \\& \quad \space (env \space (\text{set-gate } '3 \space (\text{not-gate } '2) \space env))
-\\& \quad \space (env \space (\text{set-gate } '4 \space (\text{and-gate } '1 \space '2) \space env)))
+\\& \quad \space (env \space (\text{set-gate } '4 \space (\text{and-gate } '1 \space '3) \space env)))
 \\& \quad (cons \space (\text{get-gate } '4 \space env) \space (cons \space (\text{get-gate } \space '2 \space env) \space nil)))
 \end{align*}
 </div>
