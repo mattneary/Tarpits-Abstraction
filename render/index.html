@@ -92,7 +92,9 @@
 			var converter = new Showdown.converter();
 			var Posts = new Model('post', {
 				content: function(x) { 
-					console.log("x", x);
+					setTimeout(function() {
+						document.title = $("h1").text();
+					}, 2e3);
 					return converter.makeHtml(x)+'<br><a class="byline">by Matt Neary</a>';
 				},
 				link: function(link) {
