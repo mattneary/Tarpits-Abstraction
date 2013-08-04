@@ -1,2 +1,2 @@
-cp chapters/*.md render/posts/
-cat chapters/*.md | ruby raw/filter.rb > raw/full.txt
+cp src/chapters/*.md src/render/posts/
+cat src/chapters/*.md | ruby build/raw/filter.rb > build/raw/full.txt
