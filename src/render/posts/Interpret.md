@@ -1,2 +1,0 @@
-Interpreting a Language
-=======================
