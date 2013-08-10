@@ -13,6 +13,8 @@ Currently, it is planned to have a preface (*A Tale of Two Theories*) and six pa
 5. Pulling Our Language up by Its Bootstraps
 6. Communicating Symbolic Forms to a Register Machine
 
+__TODO__: An imperative language
+
 Reading
 -------
 ###Rendering
@@ -29,7 +31,7 @@ Notes
 - __TODO:__ Modulo and Division functions
 
 ###A Library of Symbolic Functions
-- __TODO:__ Using conditionals
+- __TODO:__ Using conditionals and `cond` function
 - __TODO:__ Improve `induct` example
 - __TODO:__ Newton's Method: An Example
 - __TODO:__ Variables: Reference and Scope
@@ -40,6 +42,7 @@ Notes
 
 ###Simulating Logical Devices
 - Lazy structures
+- __TODO__: Register machines.
 
 ###Interpreting a Language
 - Interpret Lambda Calculus

@@ -289,6 +289,16 @@ Returning to our prior definition of numbers, we will now define arbitrarily lon
 
 Hopefully the above is a clear embodiment of our decimal number system. Place value is achieved by two measures, (a) inductive definition, and (b) multiplication by ten. This pattern of recursive definition and symbolic pattern matching will be at the heart of our language constructs.
 
+###A Predicate for Atoms
+In order that functions may have a sense for the value with which they have been presented, we provide a predicate for determining whether a given value is atomic.
+
+<div>
+\begin{align*}
+(\text{atom? } (a \space b...)) &\implies \text{#f}
+\\ (\text{atom? } a) &\implies \text{#t}
+\end{align*}
+</div>
+
 ###List Literals
 We define our lists inductively based on the pair-constructing `cons` function we defined earlier. We choose to name this function `quote` because it is treating the entire expression as a literal, rather than as a symbolic expression. More importantly, the syntax of passed lists is indistinguishable from a regular S-Expression, hence we are utilizing the *quoted* form of such an expression.
 
