@@ -1,9 +1,7 @@
-Simulating Logical Devices
-==========================
+#Simulating Logical Devices
 The key innovation in the study of computation was the development of machines for the mechanization of algorithms. We have already seen Turing's proposal for such a device; however, we have not seen any relationship between his and Church's theories. In this chapter we will compose with our symbolic language a simulation of different logical devices.
 
-Turing Machines
----------------
+##Turing Machines
 Having built up our language to a point of high-level abstraction, we will now try to simulate a trivial computational platform, a Turing Machine. In doing so we will address many key issues like immutability, hash-tables, and, once again, recursion. Additionally, we will become comfortable with the idea of interpreting one platform within another; this ability to interpret is the key to abstraction in computation.
 
 ###A Ruleset
@@ -13,15 +11,13 @@ Together these primitive capabilities are enough to compute any algorithm. The u
 
 All of this methodology is governed by a single ruleset. Hence to simulate one, we will undoubtedly need a representation of these rules. The following is one way, and the way which we will choose, of representing such a set. We have already seen use of lists as hash-tables, so this should not be a surprising design decision.
 
-<div>
-\begin{align*}
-&(let 
-\\& \quad rules
-\\& \quad '(((A \space 0) \space (1 \space R \space H))
-\\& \qquad  ((A \space 1) \space (0 \space R \space H)))
-\\& \quad \dots)
-\end{align*}
-</div>
+```scheme
+(let 
+  rules
+  '(((A 0) (1 R H))
+    ((A 1) (0 R H)))
+  ...)
+```
 
 A ruleset like the one above serves to tell a simulation in what way to behave given a certain input state. Hence together with our earlier defined `assoc` function and an actual executor of the matching behavior, this ruleset will handle all state logic.
 
@@ -33,21 +29,19 @@ Given these determined special states, we will need to set the initial state and
 ###Mutability
 The Lambda Calculus does not allow for mutation of values, thus we will need to model this behavior by maintaining a modified value upon each change, one that is the response of a given function. Let's work out an example of working around immutability in lists.
 
-<div>
-\begin{align*}
-&(set 
-\\& \quad (\text{lambda }
-\\& \qquad (key \space val \space hash) 
-\\& \qquad (map 
-\\& \qquad \quad (\text{lambda }
-\\& \qquad \qquad (item) 
-\\& \qquad \qquad (if 
-\\& \qquad \qquad \quad (equal? \space (car \space item) \space key) 
-\\& \qquad \qquad \quad (cons \space key \space (cons \space val)) 
-\\& \qquad \qquad \quad item)) 
-\\& \qquad \quad hash)))
-\end{align*}
-</div>    
+```scheme
+(set 
+  (lambda
+    (key val hash) 
+    (map 
+    (lambda
+      (item) 
+      (if 
+        (equal? (car item) key) 
+        (cons key (cons val)) 
+        item)) 
+    hash)))
+```    
 
 In this case we utilized `map` to cycle through the items of the hash. Within the map we substituted for the value with the specified key. In our writing to the tape, we will need to use similar tactics. 
 
@@ -55,40 +49,36 @@ A Turing Machine writes a value to a specific slot of its tape, namely, the slot
 
 In the following function definition, we recurse with the tail of the list until we reach the specified index, and we then perform the substitution, ending recursion.
 
-<div>
-\begin{align*}
-&(letrec \space \text{write-rule}
-\\& \quad (\text{lambda } (\text{write-rule} \space tape \space index \space rule)
-\\& \quad (if
-\\& \qquad (null? \space tape)
-\\& \qquad tape
-\\& \qquad (if
-\\& \qquad \quad (equal? \space index \space 0)
-\\& \qquad \quad (cons \space (car \space rule) \space (cdr \space tape))
-\\& \qquad \quad (cons \space (car \space tape) \space (\text{write-rule} \space (cdr \space tape) \space (- \space index \space 1) \space rule)))))
-\end{align*}
-</div>  
+```scheme
+(letrec write-rule
+  (lambda (write-rule tape index rule)
+  (if
+    (null? tape)
+    tape
+    (if
+      (equal? index 0)
+      (cons (car rule) (cdr tape))
+      (cons (car tape) (write-rule (cdr tape) (- index 1) rule)))))
+```  
 
 Above, we defined `write-rule` as a recursive function accepting a tape, index, and rule. If we have run out of tape, we return the empty tape; however, if we have tape left we take one of two paths in evaluation. If the index to which we wish to write is zero, we return the rule-specified value embedded into the list where the first item previously would have resided. If, however, we are writing to another index, we simply reduce the problem to writing to the item one less in index on tape, excluding the first item.
 
 ###The Event Loop
 The simulation is based on the idea of following rule to rule until the algorithm terminates. Hence rules are executed recursively until the halt-state is reached. At this point, a final table is returned. The iteration function is defined below.
 
-<div>
-\begin{align*}
-&(letrec \space iterate \space (\text{lambda }
-\\& \quad (iterate \space index \space rules \space state \space tape) 
-\\& \quad (if 
-\\& \qquad (equal? \space state \space 'H)
-\\& \qquad tape
-\\& \qquad (\text{iterate-rule }
-\\& \qquad \quad iterate
-\\& \qquad \quad (cadr \space (assoc \space (list \space state \space index) \space rules))
-\\& \qquad \quad rules
-\\& \qquad \quad index
-\\& \qquad \quad tape)))
-\end{align*}
-</div> 
+```scheme
+(letrec iterate (lambda
+  (iterate index rules state tape) 
+  (if 
+    (equal? state 'H)
+    tape
+    (iterate-rule
+      iterate
+      (cadr (assoc (list state index) rules))
+      rules
+      index
+      tape)))
+``` 
 
 The `iterate` function definition above utilized `letrec` to receive itself as an argument. Its use of this value is subtly different from our past use cases. In `iterate`, we pass the function itself as an argument to another function, `iterate-rule`. For this reason, we can call `iterate` and `iterate-rule` *mutually recursive*, that is, because `iterate` invokes `iterate-rule` and `iterate-rule` in turn invokes `iterate`.     
 
@@ -97,101 +87,88 @@ There are multiple dependencies to the above function which we have not yet defi
 ###A Simulator
 All of the above principles can be combined to form a Turing Machine simulator. The definition of `iterate` is dependent upon a few helper functions. First of all, there are a couple very basic shorthands which are defined below.
 
-<div>
-\begin{align*}
-&(cadr &(\text{lambda } (x) \space (car \space (cdr \space x))))
-\\& (caddr &(\text{lambda } (x) \space (car \space (cdr \space (cdr \space x)))))
-\end{align*}
-</div>
+```scheme
+(cadr &(lambda (x) (car (cdr x))))
+(caddr &(lambda (x) (car (cdr (cdr x)))))
+```
 
 Now we move on to the functions provided for applying a rule and for applying a shift in the head. To shift the index we simply handle the case of right motion, i.e., `'R` direction as an upward shift, as well as any other cases.
 
-<div>
-\begin{align*}
-&(move \space (\text{lambda } 
-\\& \quad (index \space motion)
-\\& \quad (if
-\\& \qquad (equal? \space motion \space 'R)
-\\& \qquad (+ \space 1 \space index)
-\\& \qquad (- \space 1 \space index))))
-\end{align*}
-</div>  
+```scheme
+(move (lambda 
+  (index motion)
+  (if
+    (equal? motion 'R)
+    (+ 1 index)
+    (- 1 index))))
+```  
 
 The definition of `move` above is very simple in nature. A current index and direction of motion are received as argument, and a new index is then returned. If the direction is `'R` then the index will increase, but if it is not, i.e., if it is `'L`, it will decrease. Furthermore, keeping in mind the earlier definition of subtraction based on Lambda Calculus primitives, you will recall that subtracting one from zero will result in zero. This behavior is convenient in this case, avoid strange edge-case behavior.
 
 Example usage of the `move` function would be as follows.
 
-<div>
-\begin{align*}
-&(move \space 5 \space 'R) &\implies 6
-\\&(move \space 3 \space 'L) &\implies 2
-\end{align*}
-</div>  
+```scheme
+(move 5 'R) &\implies 6
+(move 3 'L) &\implies 2
+```  
 
 Now we move on to a prior utilized function for the application of a rule to the tape. The rule applier receives the earlier defined `iterate` function as an argument, and then applies it to the moved index, the ruleset, the rule-provided state, and the new tape.
 
-<div>
-\begin{align*}
-&(\text{iterate-rule } (\text{lambda }
-\\& \quad (iterate \space rule \space rules \space index \space tape)
-\\& \quad (iterate
-\\& \qquad (move \space index \space (cadr \space rule))
-\\& \qquad rules
-\\& \qquad (caddr \space rule)
-\\& \qquad (\text{write-rule } tape \space index \space rule))))
-\end{align*}
-</div>      
+```scheme
+(iterate-rule (lambda
+  (iterate rule rules index tape)
+  (iterate
+    (move index (cadr rule))
+    rules
+    (caddr rule)
+    (write-rule tape index rule))))
+```      
 
 This function consists only of basic manipulations of the rule to parse out the modifications needing to be applied. With all of the dependencies defined, we achieve the following comprehensive definition of a Turing Machine simulator.
 
-<div>
-\begin{align*}
-&(let* 
-\\& \quad ((index \space 0)
-\\& \quad \space (rules \space '(((A \space 0) \space (1 \space R \space H))))
-\\& \quad \space (state \space 'A)
-\\& \quad \space (cadr \space (\dots))
-\\& \quad \space (caddr \space (\dots))
-\\& \quad \space (move \space (\text{lambda } 
-\\& \quad \quad   (index \space motion)
-\\& \quad \quad   (\dots)
-\\& \quad \space (\text{iterate-rule } (\text{lambda }
-\\& \quad \quad   (iterate \space rule \space rules \space index \space tape)
-\\& \quad \quad   (\dots)
-\\& \quad (letrec \space \text{write-rule } (\text{lambda }
-\\& \qquad (\text{write-rule } tape \space index \space rule)
-\\& \qquad (\dots)
-\\& \qquad (letrec \space iterate \space (lambda
-\\& \qquad \quad (iterate \space index \space rules \space state \space tape) 
-\\& \qquad \quad (\dots)
-\\& \quad (write \space (iterate \space index \space rules \space state \space '(0 \space 0 \space 0))))))
-\end{align*}
-</div>    
+```scheme
+(let* 
+  ((index 0)
+   (rules '(((A 0) (1 R H))))
+   (state 'A)
+   (cadr (...))
+   (caddr (...))
+   (move (lambda 
+    (index motion)
+    (...)
+   (iterate-rule (lambda
+    (iterate rule rules index tape)
+    (...)
+  (letrec write-rule (lambda
+    (write-rule tape index rule)
+    (...)
+    (letrec iterate (lambda
+    (iterate index rules state tape) 
+    (...)
+  (write (iterate index rules state '(0 0 0))))))
+```    
 
 ###Computation with Turing Machines
 
 A half-adder as a Turing Ruleset would look like the following.
 
-<div>
-\begin{align*}
-&(let 
-\\& \quad rules
-\\& \quad '(((A \space 0) \space (0 \space R \space Z))
-\\& \qquad  ((A \space 1) \space (1 \space R \space C))
-\\& \qquad  ((Z \space 0) \space (0 \space R \space H))
-\\& \qquad  ((Z \space 1) \space (1 \space L \space N))
-\\& \qquad  ((C \space 0) \space (1 \space L \space N))
-\\& \qquad  ((C \space 1) \space (0 \space L \space Y))
-\\& \qquad  ((N \space 0) \space (0 \space R \space H))
-\\& \qquad  ((N \space 1) \space (0 \space R \space H))
-\\& \qquad  ((Y \space 0) \space (1 \space R \space H))
-\\& \qquad  ((Y \space 1) \space (1 \space R \space H)))
-\\& \quad (write \space (iterate \space 0 \space rules \space 'A \space '(0 \space 0 \space 0))))
-\end{align*}
-</div>
+```scheme
+(let 
+  rules
+  '(((A 0) (0 R Z))
+    ((A 1) (1 R C))
+    ((Z 0) (0 R H))
+    ((Z 1) (1 L N))
+    ((C 0) (1 L N))
+    ((C 1) (0 L Y))
+    ((N 0) (0 R H))
+    ((N 1) (0 R H))
+    ((Y 0) (1 R H))
+    ((Y 1) (1 R H)))
+  (write (iterate 0 rules 'A '(0 0 0))))
+```
 
-Circuits
---------
+##Circuits
 Circuits are quite different in nature from the previously discussed Turing Machine. The main reason for this difference is that components, analogous to the prior discussed rules, are dependent directly upon each other, while in a Turing Machine a single processing unit handled transitions between states.
 
 ###Structure of Circuits
@@ -199,12 +176,10 @@ Our model of circuits will consist of two component types, (a) relational boxes,
 
 Now, given these ideas of relational boxes and wires, we add abstraction to reach a view of relational boxes as logical primitives. For example, there may be a relational box named `gateA` which accepts a single wire and maps to the following specified outputs.
 
-<div>
-\begin{align*}
-&(gateA \space \text{#t}) &\implies \text{#f}
-\\&(gateA \space \text{#f}) &\implies \text{#t}
-\end{align*}
-</div>
+```scheme
+(gateA #t) &\implies #f
+(gateA #f) &\implies #t
+```
 
 Of course, this sort of truth table maintains an electrical interpretation. Specifically, such a relational box would output current when receiving no current, but would output no current if receiving current.
 
@@ -212,16 +187,14 @@ The relational boxes we will take as primitive are similar to our boolean operat
 
 To begin our design of circuits, we design a relation constituent of the boolean operators listed above as primitives.
 
-<div>
-\begin{align*}
-&(\text{half-adder }
-\\& \quad (\text{lambda } (a \space b)
-\\& \quad (let* 
-\\& \qquad ((s \space (and \space (or \space a \space b) \space (not \space (and \space a \space b)))) 
-\\& \qquad \space (r \space (and \space a \space b))) 
-\\& \qquad (cons \space r \space (cons \space s \space nil)))))
-\end{align*}
-</div>
+```scheme
+(half-adder
+  (lambda (a b)
+  (let* 
+    ((s (and (or a b) (not (and a b)))) 
+     (r (and a b))) 
+    (cons r (cons s nil)))))
+```
 
 The above procedure is known as a half-adder. Given two bits as input, this procedure determines the added value, including any carried value. Recall that our language was designed not only for evaluation by machine, but for representation of ideas like the one presented above.
 
@@ -229,25 +202,21 @@ The methodology of the half-adder should be for the most part apparent. Given in
 
 Let's look at some examples of the behavior of a half-adder.
 
-<div>
-\begin{align*}
-&(\text{half-adder } \text{#f} \space \text{#f}) &\implies '(\text{#f} \space \text{#f})
-\\&(\text{half-adder } \text{#f} \space \text{#t}) &\implies '(\text{#f} \space \text{#t})
-\\&(\text{half-adder } \text{#t} \space \text{#f}) &\implies '(\text{#f} \space \text{#t})
-\\&(\text{half-adder } \text{#t} \space \text{#t}) &\implies '(\text{#t} \space \text{#f})
-\end{align*}
-</div>
+```scheme
+(half-adder #f #f) &\implies '(#f #f)
+(half-adder #f #t) &\implies '(#f #t)
+(half-adder #t #f) &\implies '(#f #t)
+(half-adder #t #t) &\implies '(#t #f)
+```
 
 If you are not familiar with the behavior of binary digits when adding, note that the above examples exhibit the basics of this behavior. If we were to represent current instead by either `1` or `0`, we would achieve the following, more clearly binary, behavior.
 
-<div>
-\begin{align*}
-&(\text{half-adder } 0 \space 0) &\implies '(0 \space 0)
-\\&(\text{half-adder } 0 \space 1) &\implies '(0 \space 1)
-\\&(\text{half-adder } 1 \space 0) &\implies '(0 \space 1)
-\\&(\text{half-adder } 1 \space 1) &\implies '(1 \space 0)
-\end{align*}
-</div>
+```scheme
+(half-adder 0 0) &\implies '(0 0)
+(half-adder 0 1) &\implies '(0 1)
+(half-adder 1 0) &\implies '(0 1)
+(half-adder 1 1) &\implies '(1 0)
+```
 
 Hopefully this example has helped to illustrate the emergence of relatively high-level ideas like arithmetic from basic controlled flow of current. In the following sections we will attempt to depart from a purely boolean-arithmetic driven outlook on circuits toward a generic circuit structure definition process and simulator.
 
@@ -258,154 +227,138 @@ To better reflect the reality of circuit design, we will allow a circuit structu
 
 We will use a table like those which we have already seen for our basic data-structure. The table will be built up with named components, each being manipulations of the circuit. We begin with a basic realization of this idea.
 
-<div>
-\begin{align*}
-&(\text{get-gate}
-\\& \quad (lambda
-\\& \qquad (name \space env)
-\\& \qquad (assoc \space name \space env)))
-\\&(\text{set-gate}
-\\& \quad (lambda
-\\& \qquad (name \space value \space env)
-\\& \qquad (set \space name \space value \space env)))
-\end{align*}
-</div>
+```scheme
+(get-gate
+  (lambda
+    (name env)
+    (assoc name env)))
+(set-gate
+  (lambda
+    (name value env)
+    (set name value env)))
+```
 
 The above definitions are simply aliases to the `assoc` and `set` functions of regular hash-tables. We have yet to implement the idea of gates as manipulations of the circuit. In order to do this, we will need a clear means of applying a manipulation to a given object. This idea is key to an object-oriented outlook on programming which we will discuss in the following.
 
 ###Methods on Objects
 There is a paradigm in programming known as object oriented programming. Under this methodology, everything is an object containing data and behavior, *values* and *methods*. We have already seen the functional architecture for associated values, that is, a table or list of pairs. However, the key to this object-oriented approach is that the methods are not regular functions but, rather, maintain a context in which they operate. These methods of an object should operate upon the object itself. To simulate this idea in our language, we will make all methods a function of the object in which they exist. Hence we can define a generic method applier as follows.
 
-<div>
-\begin{align*}
-&(method 
-\\& \quad (lambda
-\\& \qquad (obj \space mname)
-\\& \qquad ((assoc \space mname \space obj) \space obj)))
-\end{align*}
-</div>
+```scheme
+(method 
+  (lambda
+    (obj mname)
+    ((assoc mname obj) obj)))
+```
 
 Usage of this convenience function would then look like the following, applying a named function to an object.
 
-$$(method \space person \space 'greet)$$
+```scheme
+(method person 'greet)
+```
 
 In this case `person` serves as an object, and `greet` as a named method on that object. What does it mean to be an object? In the case of our implementation, an object is merely a data-structure, like any other table; however, the distinctive trait is the inclusion of methods. Methods allow for the coupling of functions to a specific data-set. In our example above, a greet function is attached to the `person`, and easily called by name to perform some action in the specific context of the `person` object.
 
 We will utilize the concepts of object-oriented programming (OOP) in our design of gates. A gate will be a table containing some values and some methods. The only value will be named `value`, the boolean value of the gate, and the methods will be named `get` and `set`, performing the manipulations of the value which their names would suggest. Hence, we would have a basic constructor of a gate like the following.
 
-<div>
-\begin{align*}
-&(\text{make-gate }
-\\& \quad (\text{lambda }
-\\& \qquad (value \space get \space set)
-\\& \qquad (list
-\\& \qquad \quad (list \space 'value \space value \space nil)
-\\& \qquad \quad (list \space 'get \space get \space nil)
-\\& \qquad \quad (list \space 'set \space set \space nil)
-\\& \qquad \quad nil)))
-\end{align*}
-</div>
+```scheme
+(make-gate
+  (lambda
+    (value get set)
+    (list
+    (list 'value value nil)
+    (list 'get get nil)
+    (list 'set set nil)
+    nil)))
+```
 
 Given this structure, we redefine our gate getter and setter to simplify interfacing with this structure as follows.
 
-<div>
-\begin{align*}
-&(\text{get-gate }
-\\& \quad (\text{lambda }
-\\& \qquad (name \space env)
-\\& \qquad (let
-\\& \qquad \quad gate \space (assoc \space name \space env)
-\\& \qquad \quad ((assoc \space 'get \space gate) \space gate \space env))))
-\\&(\text{set-gate }
-\\& \quad (\text{lambda }
-\\& \qquad (name \space value \space env)
-\\& \qquad (set \space name \space value \space env)))
-\end{align*}
-</div>
+```scheme
+(get-gate
+  (lambda
+    (name env)
+    (let
+    gate (assoc name env)
+    ((assoc 'get gate) gate env))))
+(set-gate
+  (lambda
+    (name value env)
+    (set name value env)))
+```
 
 Notice that the main change was in making the `get-gate` function get the boolean value of a gate rather than the gate itself. `set-gate` remained a function returning the mutated environment, for the sake of setting up a circuit initially.
 
 ###Child Object Definitions
 A *child* of an object is one inheriting the structure of its parent and either restricting or expanding the construction, value or method interfaces. The following is a child of the gate definition for constant-value gates.
 
-<div>
-\begin{align*}
-&(\text{const-gate }
-\\& \quad (\text{lambda }
-\\& \qquad (value)
-\\& \qquad (\text{make-gate } 
-\\& \qquad \quad value
-\\& \qquad \quad(\text{lambda } (obj \space env) \space (assoc \space 'value \space obj))
-\\& \qquad \quad(\text{lambda } (obj \space value) \space (set \space 'value \space value \space obj)))))
-\end{align*}
-</div>
+```scheme
+(const-gate
+  (lambda
+    (value)
+    (make-gate 
+      value
+      (lambda (obj env) (assoc 'value obj))
+      (lambda (obj value) (set 'value value obj)))))
+```
 
 As you were made to expect in our discussion of object-oriented programming, both of the methods accept as their first parameter the gate object itself. The getter and setter are very simple, based around the value attached to the gate object. Building upon this simple architecture, we will define a generic relational gate object.
 
-<div>
-\begin{align*}
-&(\text{fn-gate }
-\\& \quad (\text{lambda }
-\\& \qquad (fn \space a \space b)
-\\& \qquad (\text{make-gate }
-\\& \qquad \quad (\text{lambda } (a \space b) \space (fn \space a \space b))
-\\& \qquad \quad (\text{lambda } (obj \space env) 
-\\& \qquad \qquad ((assoc \space 'value \space obj) 
-\\& \qquad \qquad \space (\text{get-gate } a \space env)
-\\& \qquad \qquad \space (\text{get-gate } b \space env))
-\\& \qquad \quad (\text{lambda } (obj \space value) \space obj))))
-\end{align*}
-</div>
+```scheme
+(fn-gate
+  (lambda
+    (fn a b)
+    (make-gate
+    (lambda (a b) (fn a b))
+    (lambda (obj env) 
+        ((assoc 'value obj) 
+         (get-gate a env)
+         (get-gate b env))
+    (lambda (obj value) obj))))
+```
 
 The above definition makes the value of the gate a method as well. The getter then applies the `value` method to the `get`-wrapped values of the two input components. The relation tying together these input components is passed as the first argument to the `fn-gate` constructor. This is to say that when getting the value of an `fn-gate`, the values upon which it depends will be gotten as well in a sort of cascading dependency. These dependencies will then be assessed based on the function specific to that instance of `fn-gate`, maybe logical or, for example.
 
 We now define, in turn, children of the `fn-gate` constructor easily as follows.
 
-<div>
-\begin{align*}
-&(\text{or-gate } &(\text{fn-gate } (\text{lambda } (a \space b) \space (or \space a \space b))))
-\\&(\text{and-gate } &(\text{fn-gate } (\text{lambda } (a \space b) \space (or \space a \space b))))
-\\&(\text{not-gate } &(\text{fn-gate } (\text{lambda } (a \space b) \space (not \space b)) \space \text{#f}))
-\end{align*}
-</div>
+```scheme
+(or-gate &(fn-gate (lambda (a b) (or a b))))
+(and-gate &(fn-gate (lambda (a b) (or a b))))
+(not-gate &(fn-gate (lambda (a b) (not b)) #f))
+```
 
 ###A Simulator
 Putting together all prior defined functions we have the following.
 
-<div>
-\begin{align*}
-&(let*      
-\\& \quad ((pairing
-\\& \qquad (\text{lambda } (a \space b) \space (\dots)))    
-\\& \quad \space (\text{make-gate }
-\\& \qquad (\text{lambda } (value \space get \space set) \space (\dots)))    
-\\& \quad \space (\text{const-gate }
-\\& \qquad (\text{lambda } (value) \space (\dots)))
-\\& \quad \space (\text{get-gate }
-\\& \qquad (\text{lambda } (name \space env) \space (\dots)))
-\\& \quad \space (\text{set-gate }
-\\& \qquad (\text{lambda } (name \space value \space env) \space (\dots)))            
-\\& \quad \space (\text{fn-gate }
-\\& \qquad (\text{lambda } (fn \space a \space b) \space (\dots)))
-\\& \quad \space (\text{or-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots))))
-\\& \quad \space (\text{and-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots))))
-\\& \quad \space (\text{not-gate } (\text{fn-gate} \space (\text{lambda } (a \space b) \space (\dots)) \space \text{#f})))
-\\& \quad (\dots))
-\end{align*}
-</div>
+```scheme
+(let*      
+  ((pairing
+    (lambda (a b) (...)))    
+   (make-gate
+    (lambda (value get set) (...)))    
+   (const-gate
+    (lambda (value) (...)))
+   (get-gate
+    (lambda (name env) (...)))
+   (set-gate
+    (lambda (name value env) (...)))            
+   (fn-gate
+    (lambda (fn a b) (...)))
+   (or-gate (fn-gate (lambda (a b) (...))))
+   (and-gate (fn-gate (lambda (a b) (...))))
+   (not-gate (fn-gate (lambda (a b) (...)) #f)))
+  (...))
+```
 
 ###Computation with Circuits
 A half-adder utilizing our simulator would look like the following.
 
-<div>
-\begin{align*}
-&(let*
-\\& \quad ((env \space (\text{set-gate} 'a \space (\text{const-gate #t}) \space env))
-\\& \quad \space (env \space (\text{set-gate } 'b \space (\text{const-gate #t}) \space env))
-\\& \quad \space (env \space (\text{set-gate } '1 \space (\text{or-gate } 'a \space 'b) \space env))
-\\& \quad \space (env \space (\text{set-gate } '2 \space (\text{and-gate } 'a \space 'b) \space env))
-\\& \quad \space (env \space (\text{set-gate } '3 \space (\text{not-gate } '2) \space env))
-\\& \quad \space (env \space (\text{set-gate } '4 \space (\text{and-gate } '1 \space '3) \space env)))
-\\& \quad (cons \space (\text{get-gate } '4 \space env) \space (cons \space (\text{get-gate } \space '2 \space env) \space nil)))
-\end{align*}
-</div>
+```scheme
+(let*
+  ((env (set-gate 'a (const-gate #t) env))
+   (env (set-gate 'b (const-gate #t) env))
+   (env (set-gate '1 (or-gate 'a 'b) env))
+   (env (set-gate '2 (and-gate 'a 'b) env))
+   (env (set-gate '3 (not-gate '2) env))
+   (env (set-gate '4 (and-gate '1 '3) env)))
+  (cons (get-gate '4 env) (cons (get-gate '2 env) nil)))
+```
