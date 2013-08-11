@@ -38,7 +38,7 @@ app.get({
 			post = parts[2];
 		res.writeHead(200, { 'Content-Type': 'text/plain' });
 		if( post ) {
-			var path = __dirname + '/../chapters/' + post;
+			var path = __dirname + '/../../chapters/' + post;
 			fs.stat(path, function(err, stat) {
 			    if (!err) {
 					fs.createReadStream(path).pipe(res);
