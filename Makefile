@@ -1,16 +1,13 @@
 LATEX = latex
 TEXODE = texode
-FLAGS = --document
+FLAGS = --book
 DVIOUT = dvi
 TEXOUT = ./build/latex
 define render
-	$(TEXODE) $(FLAGS) chapters/$(1).md $(TEXOUT)
-	$(LATEX) build/latex/$(1).md.tex
-	mv $(1).md.dvi build/dvi/
-	dvipdf build/dvi/$(1).md.dvi build/pdf/$(1).pdf
+	$(TEXODE) $(FLAGS) chapters/$(1).md $(TEXOUT)	
 endef	
 
-all: bootstrap interpret register sexprs sfuncs twotheories clean
+all: bootstrap interpret register sexprs sfuncs twotheories simulate compile clean
 
 bootstrap: chapters/Bootstrap.md
 	$(call render,Bootstrap)
@@ -21,6 +18,9 @@ interpret: chapters/Interpret.md
 register: chapters/RegisterMachines.md
 	$(call render,RegisterMachines)
 	
+simulate: chapters/Simulate.md
+	$(call render,Simulate)
+	
 sexprs: chapters/SExprs.md
 	$(call render,SExprs)
 	
@@ -29,6 +29,11 @@ sfuncs: chapters/SFuncs.md
 	
 twotheories: chapters/TwoTheories.md
 	$(call render,TwoTheories)		
+	
+compile: chapters/*.md
+	$(LATEX) $(TEXOUT)/book.tex
+	mv book.dvi build/dvi/
+	dvipdf build/dvi/book.dvi build/pdf/book.pdf	
 
 clean:
 	- $(RM) *.aux *.log

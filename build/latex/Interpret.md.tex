@@ -1,18 +1,5 @@
-\documentclass[11pt]{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
 
-% {{{ LaTeX document
-\begin{document}
-% {{{ Title page
-\begin{titlepage}
-\title{Interpreting a Language}
-\author{Matt Neary}
-\date{August 2013}
-\maketitle
-\thispagestyle{empty}
-\end{titlepage}
-% }}}
+\chapter{Interpreting a Language}
 The most important revelation in learning the art of programming is that the 
 language in which you work is completely arbitrary. More specifically, the 
 language in which you express concepts was defined in terms of another language 
@@ -20,7 +7,7 @@ at some point. We have already made clear this concept in our definition of our
 symbolic language. We now turn to the interpretation of one language within 
 another.
 
-\subsection{Lambda Calculus}
+\section{Lambda Calculus}
 The language which we will interpret is one with which we are already familiar, 
 Lambda Calculus. The Lambda Calculus has very simple syntax and will thus not 
 be too hard to interpret. Recall the syntax, which is composed of the following 
@@ -102,7 +89,7 @@ An example of a form which could be evaluated is the following.
 & '(lam \; x \; lam \; y \; ((x) \; y) \; 1)
 \end{align*}
 
-\subsection{Flat-Input Lambda Calculus}
+\section{Flat-Input Lambda Calculus}
 In the prior implementation of an interpreter, we took advantage of the structure 
 inherent to a nested S-Expression. This approach was sufficient for our initial 
 purposes; however, to separate our interpreter from the details of its use within 
@@ -504,4 +491,3 @@ The parser now works as in the following example.
 
 \subsection{Evaluation}
 Combining the prior evaluator with the new addition of the parser, we have the behavior you would have expected.
-\end{document}
