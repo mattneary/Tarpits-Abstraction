@@ -13,15 +13,14 @@ Currently, it is planned to have a preface (*A Tale of Two Theories*) and six pa
 5. Pulling Our Language up by Its Bootstraps
 6. Communicating Symbolic Forms to a Register Machine
 
-__TODO__: An imperative language
+Compilation
+-----------
+The Makefile generates LaTeX for all chapters, and then renders an index LaTeX file which joins all chapters together. This outputs a pdf to `build/pdf/book.pdf`, with all LaTeX sources stored in `build/latex`.
+Before reading, verify that it is the newest version by running the following from the *project root*.
 
-Reading
--------
-###Rendering
-To get the best reading experience, you will want to run the node server in `src/render/` and connect to `localhost:8080`. Once there the LaTeX and Markdown can both render well.
-
-###Pre-Rendered Versions
-There will be some early renders posted as I progress. Browse the `build/pdfs/` folder for the latest renders.
+```sh
+$ make
+```
 
 Notes
 -----
@@ -45,6 +44,7 @@ Notes
 - __TODO__: Register machines.
 
 ###Interpreting a Language
+- __TODO__: better define imperative constructs
 - Interpret Lambda Calculus
 - Interpret a Query Language
 
