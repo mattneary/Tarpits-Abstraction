@@ -119,9 +119,9 @@ implementation, and then port the code over to our current language of choice.
 
 ###Imperative Constructs
 In our exploration of imperative programming, we will encounter a few new operators, 
-and utilize some new idioms. In later chapters, we will provide implementation of 
-these operators. For now, however, these operators will be viewed as hypothetical 
-constructs, fulfilling the utility with which we associate them.
+and utilize some new idioms. We will provide a purely functional, that is, without
+mutation, implementation of these constructs as well. In later chapters, we will be
+able to automate the utilization of these analogs identified.
 
 ####Mutators
 The main difference between imperative and *purely* functional programming is the 
@@ -143,8 +143,36 @@ The `define` operator serves to allocate a variable and initiate it with a value
 This variable, `x`, can then be accessed throughout the procedure, and even mutated 
 to equal a new value. In the example, it was initiated as 5, but `set!` to 10.
 
-The *scoping* of a variable is specified by the define operator; hence the following 
-is another example of this behavior.
+In order to simulate mutation, we will need a means of manipulating an environment
+accessed and mutated by a myriad of expressions. The pure means of achieving this,
+as we have previously discussed, is to call a function with a mutated duplicate of
+the environment. In this case, that function would be defined to use recursion.
+
+Our recursive function will accept an environment and an expression address, i.e.,
+index, as argument, and return either the result or a recursion with a mutated
+environment and at a different expression address. This contraption is similar to 
+a register machine in many ways; an analog which we will further analyze in later
+sections. What follows is an implementation using these concepts of the prior
+imperative procedure.
+
+```scheme
+(letrec 
+  main 
+  (lambda 
+    (main env start)
+    (get (list (main (set 'x 5 env) (+ 1 start))
+               (main (set 'x (* 2 (assoc 'x env)) env) (+ 1 start))
+               (equal? (assoc 'x env) 5)) start))
+  ...)
+```
+
+In the above, note that we omitted the second `equal?`, because only one of them bore
+an actual effect. We now move on to address more complex issues of this impure 
+approach.
+
+In programming languages, *scope* refers to the region over which a variable is
+accessible. The scoping of a variable is specified by the define operator; hence the 
+following is another example of this behavior.
 
 ```scheme
 (define x 5)
@@ -156,9 +184,34 @@ is another example of this behavior.
 
 Of note is the fact that the `define` occurred separate from any function. This 
 means that the defined variable will now take on the *global* scope, being accessible 
-and mutable from within any function. If the `define` instead occurred within a 
-function definition, as in the following, it would only be accessible from within 
-that function, or other functions defined within it.
+and mutable from within any function. 
+
+In translating the definition and application of the lambda to a purely functional
+procedure, we will provide the action of the lambda as a prelude to the rest of the 
+procedure. The invocation of the lambda will require that we set the index to which
+the flow of control should return after completion of the lambda. This takes the form
+of a variable `ret` defined on the environment. All other methods in the following are
+similar to those in prior procedures.
+
+```scheme
+(letrec 
+  main 
+  (lambda 
+    (main env start)
+    (get (list (main (set 'x (assoc 'y env) env) (assoc 'ret env))
+               (main (set 'x 5 env) (+ 1 start))
+               (main (set 'ret 3 (set 'y 12 env)) 0)
+               (equal? (assoc 'x env) 5)) start))
+  ...)
+```
+
+In the above, our starting index would instead be 1, in order to begin at the first
+line of the imperative program and avoid the definition of the lambda used later on
+in the procedure.
+
+If the `define` of the prior example had instead occurred within a function definition, 
+as in the following, it would only be accessible from within that function, or other 
+functions defined within it.
 
 ```scheme
 (define scope (lambda (x)
@@ -173,6 +226,33 @@ In the above we demonstrate definition with a single-function scope. Thus the
 `define` does not accept an expression which it will govern, the example definition 
 is of no effect. In the following section we display a means of making use of this 
 sort of `define` statement.
+
+To simulate this, we would need to add a sort of inner scope to our function calls, 
+exhibited in the form of jumping to another instruction. We will, for the sake of
+simplicity, create an inner environment, known as a *closure*, as a value on the
+outer, or normal, environment. Then, prior to returning, we will clear the inner 
+environment by setting it to `nil`.
+
+```scheme
+(letrec 
+  main 
+  (lambda 
+    (main env start)
+    (get (list (let ((outer env)
+                     (inner (set 'y (assoc 'x (assoc 'inner outer)) (assoc 'inner outer))
+                     (outer (set 'inner inner outer)))
+                 (main outer (+ 1 start)))
+               (main (set 'inner nil outer) (assoc 'ret outer))
+               (main (set 'inner (set 'x 5 (assoc 'inner env)) env) (+ 1 start))
+               (main (set 'ret 4 (set 'y 12 env)) 0)
+               (assoc 'y env)) start))
+  ...)
+```
+
+Of note is the fact that the `define` from within a closure translated into a `set`
+upon the inner environment. If we were aiming to automate this process, we would
+instead maintain an image of the original environment, and simply revert to that 
+image after execution of the function.
 
 ####Multiple Expression Procedures
 In our earlier, purely-functional programs, a procedure consisting of multiple 
@@ -234,9 +314,9 @@ accumulator `ans` takes on the following values.
 ###An Imperative Solution
 Now we will jump right in to the non-trivial problem at hand, restated below.
 
-Given a string of nested angle-bracket delimited groups, return a
+"Given a string of nested angle-bracket delimited groups, return a
 nested list containing the contents of these groups. For example,
-given the list of characters $'(a \text{<} b c \text{>} d)$ return $'(a (b c) d)$.
+given the list of characters $'(a \text{<} b c \text{>} d)$ return $'(a (b c) d)$."
 
 Since we are taking an imperative approach, think, "What is the easily defined iterative 
 process underlying this problem?" The answer is clearly navigation of the string, and so 

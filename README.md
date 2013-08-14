@@ -6,6 +6,8 @@ Tarpits & Abstraction is a book beginning with a discussion on Turing Machines a
 
 Currently, it is planned to have a preface (*A Tale of Two Theories*) and six parts:
 
+__TODO__: First chapter consisting of code to get started with.
+
 1. Defining Symbolic Expressions
 2. A Library of Symbolic Functions
 3. Simulating Logical Devices
