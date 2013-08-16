@@ -1,6 +1,6 @@
-LATEX = latex
+LATEX = latex -quiet
 TEXODE = texode
-FLAGS = --book
+FLAGS = -b book
 DVIOUT = dvi
 TEXOUT = ./build/latex
 define render

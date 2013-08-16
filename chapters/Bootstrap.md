@@ -1,14 +1,31 @@
 #Pulling Our Language up by Its Bootstraps
-In the previous section, we successfully designed and implemented an interpreter of the Lambda Calculus. This was a very interesting problem to solve, because it allowed us to form a grammar of expression from within our working language; then allowing us to expand upon this grammar dynamically.
+In the previous section, we successfully designed and implemented an
+interpreter of the Lambda Calculus. This was a very interesting problem to
+solve, because it allowed us to form a grammar of expression from within our working language; then allowing us to expand upon this grammar dynamically.
 
-This achievement opens one up to question the limitations of the embedded language. In other words, can we reach the language analog of *The Singularity*. The Singularity is the point at which sufficiently intelligent technology has been developed, as to enable this technology to form ever more advanced successive generations. In the analog of interest to us, we would be concerned with a language sufficiently advanced to form an interpreter of itself, and to then add features.
+This achievement opens one up to question the limitations of the embedded
+language. In other words, can we reach the language analog of *The 
+Singularity*. The Singularity is the point at which sufficiently intelligent 
+technology has been developed, as to enable this technology to form ever more 
+advanced successive generations. In the analog of interest to us, we would be 
+concerned with a language sufficiently advanced to form an interpreter of 
+itself, and to then add features.
 
-This phenomenon, the so-called singularity, is known in computation as a bootstrapped interpreter. In this section, we will aim to bootstrap our symbolic language, and to then unlock the potential of additional features.
+This phenomenon, the so-called singularity, is known in computation as a 
+bootstrapped interpreter. In this section, we will aim to bootstrap our 
+symbolic language, and to then unlock the potential of additional features.
 
 ##The Grammar
-The grammar of our symbolic language is slightly more complex than the Lambda Calculus; however, it is luckily once again homoiconic. However, because we are now defining our grammar within another language, we will need to abstract over the implementation details of token representation. That is to say, although each string is a functional linked-list, we will consider them atomic just as in prior grammar definitions.
+The grammar of our symbolic language is slightly more complex than the Lambda 
+Calculus; however, it is luckily once again homoiconic. However, because we 
+are now defining our grammar within another language, we will need to 
+abstract over the implementation details of token representation. That is to 
+say, although each string is a functional linked-list, we will consider them 
+atomic just as in prior grammar definitions.
 
-We return briefly to our formal definition of a Symbolic Expression from an earlier chapter; this time we will explicate the characters allowed in an `atom`.
+We return briefly to our formal definition of a Symbolic Expression from an 
+earlier chapter; this time we will explicate the characters allowed in an 
+`atom`.
 
 ```scheme
 <expr> &::= <sexpr> | <atom>
@@ -20,13 +37,20 @@ We return briefly to our formal definition of a Symbolic Expression from an earl
 <char> &::= <letter> | <number> | <symbol>
 <letter> &::= A | B | ... | Z
 <number> &::= 0 | 1 | ... | 9
-<symbol> &::= * | + | - | / | # | < | > | _
+<symbol> &::= * | + | - | / | \# | < | > | _
 ```
 
-Now, because we will be operating from within our Symbolic Language, we will be able to abstract away the details of the grammar. That is, S-Expressions will be represented as S-Expressions when provided as input to the interpreter, as will atoms as atoms.
+Now, because we will be operating from within our Symbolic Language, we will 
+be able to abstract away the details of the grammar. That is, S-Expressions 
+will be represented as S-Expressions when provided as input to the 
+interpreter, as will atoms as atoms.
 
 ##Lambda Forms
-Recall from our definition of the Symbolic Language in terms of the Lambda Calculus that there were some functions considered more primitive to the language than others. We will expose these to the language which we interpret. Our first task is to enable the Lambda Calculus in these forms, not unlike in our earliest definition of the language.
+Recall from our definition of the Symbolic Language in terms of the Lambda 
+Calculus that there were some functions considered more primitive to the 
+language than others. We will expose these to the language which we 
+interpret. Our first task is to enable the Lambda Calculus in these forms, 
+not unlike in our earliest definition of the language.
 
 ```scheme
 (letrec eval (eval expr env)
@@ -118,7 +142,7 @@ We will now expand our `eval-prelude` to be more extensible and to include the `
        (set-numerals env))))) ...)
 ```
 
-##Booleans & Predicates
+##Booleans and Predicates
 Our implementation of Booleans will be quite simple. Recall the use of atoms to symbolize numbers in the prior section, with the meaning of the numbers being more derived from the operations we defined than from their representation. The same will hold especially true for Booleans.
 
 Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as you have come to expect. Now, rather than decide on an arbitrary atom to which they will map, we will allow `#f` to equal `nil` and `#t` to equal `1`. Hence we would have a `set-booleans` definition to append to `let*` that looks like the following.
