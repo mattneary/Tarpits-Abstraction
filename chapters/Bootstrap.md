@@ -1,1 +1,141 @@
 #Pulling Our Language up by Its Bootstraps
+In the previous section, we successfully designed and implemented an interpreter of the Lambda Calculus. This was a very interesting problem to solve, because it allowed us to form a grammar of expression from within our working language; then allowing us to expand upon this grammar dynamically.
+
+This achievement opens one up to question the limitations of the embedded language. In other words, can we reach the language analog of *The Singularity*. The Singularity is the point at which sufficiently intelligent technology has been developed, as to enable this technology to form ever more advanced successive generations. In the analog of interest to us, we would be concerned with a language sufficiently advanced to form an interpreter of itself, and to then add features.
+
+This phenomenon, the so-called singularity, is known in computation as a bootstrapped interpreter. In this section, we will aim to bootstrap our symbolic language, and to then unlock the potential of additional features.
+
+##The Grammar
+The grammar of our symbolic language is slightly more complex than the Lambda Calculus; however, it is luckily once again homoiconic. However, because we are now defining our grammar within another language, we will need to abstract over the implementation details of token representation. That is to say, although each string is a functional linked-list, we will consider them atomic just as in prior grammar definitions.
+
+We return briefly to our formal definition of a Symbolic Expression from an earlier chapter; this time we will explicate the characters allowed in an `atom`.
+
+```scheme
+<expr> &::= <sexpr> | <atom>
+<sexpr> &::= (<seq>)
+<seq> &::= <dotted> | <list>
+<dotted> &::= <expr> | <expr> . <expr>
+<list> &::= <expr> | <expr> <exp>
+<atom> &::= <char> | <atom> <char>
+<char> &::= <letter> | <number> | <symbol>
+<letter> &::= A | B | ... | Z
+<number> &::= 0 | 1 | ... | 9
+<symbol> &::= * | + | - | / | # | < | > | _
+```
+
+Now, because we will be operating from within our Symbolic Language, we will be able to abstract away the details of the grammar. That is, S-Expressions will be represented as S-Expressions when provided as input to the interpreter, as will atoms as atoms.
+
+##Lambda Forms
+Recall from our definition of the Symbolic Language in terms of the Lambda Calculus that there were some functions considered more primitive to the language than others. We will expose these to the language which we interpret. Our first task is to enable the Lambda Calculus in these forms, not unlike in our earliest definition of the language.
+
+```scheme
+(letrec eval (eval expr env)
+  (cond (((atom? expr) (assoc expr env))
+         ((and 
+            (atom? (car expr)) 
+            (equal? (car expr) 'lambda)) 
+          (lambda (x) 
+            (eval 
+              (caddr expr) 
+              (set (cadr expr) x env))))
+         (#t (apply-set 
+           (eval (car expr) env) 
+           (map (lambda (x) (eval x env)) (cdr expr)))))) ...)
+```
+
+This is all fine; however, notice that the arguments to the function are evaluated all at once and passed to the an applier-function. In the next section, we will discuss a better approach to evaluation.
+
+##Laziness
+This is not optimal, and does not allow for some nice features enabled by "laziness" in the interpreter. For this reason, we will change the application and variable reference components to reflect a lazy approach to evaluation.
+
+```scheme
+(letrec eval (eval expr env)
+  (cond (((atom? expr) ((assoc expr env) nil))
+         ((and 
+            (atom? (car expr)) 
+            (equal? (car expr) 'lambda)) 
+          (lambda (x) 
+            (eval 
+              (caddr expr) 
+              (set (cadr expr) x env))))
+         (#t (apply-set 
+           (eval (car expr) env) 
+           (map (lambda (x) (eval '(lambda (_) x) env)) (cdr expr)))))) ...)
+```
+
+With very few changes we were able to implement this lazy approach. We simply made all arguments wrapped in a lambda before their evaluation, and all variable references then reduce these wrappings when appropriate. These small changes will make a world of difference in the potential of expressiveness in our language.
+
+The most evident of advantages is in the ability to branch execution, i.e., perform `if` statements, without evaluating both branches. This later translates into the ability to recurse without invoking infinite recursion.
+
+##Numbers
+In order to interpret numbers, we would need our atomic values to be not so atomic. Rather than have atoms go against this nature, we will delay implementation of arbitrary numbers. For now, we will start with single digits.
+
+```scheme
+(let eval-prelude (lambda (expr env)
+  (eval 
+    expr
+    (concat 
+      env 
+      '((0 (0)) (1 (1)) (2 (2)) (3 (3)) (4 (4)) 
+        (5 (5)) (6 (6)) (7 (7)) (8 (8)) (9 (9)))))) ...)
+```
+
+The above is just another `eval` function, this time appending to the environment a prelude of definitions prior to calling the usual `eval` function. The equivalencies presented are merely from atom to singleton lists; no nature of numbers shows through. Why singletons? Numbers are lists of digits more than they are atomic values, after all, this is what allows us to perform arbitrary arithmetic.
+
+It will be our responsibility to implement this nature in a `succ` primitive. As we have already shown, from there all else is possible.
+
+```scheme
+(let succ (lambda (x)
+  (let singles '((0 (1)) (1 (2)) 
+                 (2 (3)) (3 (4)) 
+                 (4 (5)) (5 (6)) 
+                 (6 (7)) (7 (8)) 
+                 (8 (9)) (9 (0 1)))
+    (cond (((null? (cdr x)) (assoc singles (car x)))
+           ((equal? (car x) 9) (cons 0 (succ (cdr x))))
+           (#t (cons (succ (car x)) (cdr x))))))) ...)
+```
+
+The above implementation is pretty simple; it is a very basic definition of the meaning of numbers in our decimal system. It says, "One follows zero; two follows one; etc." Next, it communicates the intricacies of place value. A number with a ones digit of nine will increment to a ones digit zero, with a once higher leading strand of digits. Finally, any other number with multiple digits will result in a once larger ones digit.
+
+We will now expand our `eval-prelude` to be more extensible and to include the `succ` function.
+
+```scheme
+(let* 
+  ((set-arithmetic (lambda (env)
+     (set
+       'succ
+       (lambda (x) ...)
+       env)))
+   (set-numerals (lambda (env) 
+     (concat 
+       env 
+       '((0 (0)) (1 (1)) (2 (2)) (3 (3)) (4 (4)) 
+         (5 (5)) (6 (6)) (7 (7)) (8 (8)) (9 (9))))))
+   (eval-prelude (lambda (expr env)
+     (eval 
+       expr
+       (set-numerals env))))) ...)
+```
+
+##Booleans & Predicates
+Our implementation of Booleans will be quite simple. Recall the use of atoms to symbolize numbers in the prior section, with the meaning of the numbers being more derived from the operations we defined than from their representation. The same will hold especially true for Booleans.
+
+Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as you have come to expect. Now, rather than decide on an arbitrary atom to which they will map, we will allow `#f` to equal `nil` and `#t` to equal `1`. Hence we would have a `set-booleans` definition to append to `let*` that looks like the following.
+
+```scheme
+(set-booleans (lambda (env)
+  (set '#t 1 (set '#f nil env))))
+```
+
+Given these definitions of true and false, we will now define an `if` function which follows very naturally from our native `if` function.
+
+```scheme
+(set-booleans (lambda (env)
+  (set ... 
+    (set 
+      'if 
+      (lambda (p t f)
+        (if (null? x) f t)) 
+      env)) ...))
+```

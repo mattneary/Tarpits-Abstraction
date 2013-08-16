@@ -30,6 +30,7 @@ Notes
 - __TODO:__ Dotted Lists
 - __TODO:__ Discuss McCarthy's Influence
 - __TODO:__ Modulo and Division functions
+- __TODO:__ Change `quote` function to allow for `atom?`
 
 ###A Library of Symbolic Functions
 - __TODO:__ Using conditionals and `cond` function
