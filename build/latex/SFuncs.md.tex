@@ -17,7 +17,7 @@ conditional behavior; if `x` is true, it results in `f`, but if `x` is false, it
 results in `t`.
 
 \begin{align*}
-& (not \; (lambda \; (x) \; (if \; x \; f \; t)))
+& (not \; (\text{lambda} \; (x) \; (if \; x \; \#f \; \#t)))
 \end{align*}
 
 Now we add to our current assortment of numeric predicates the functions `<` and 
@@ -26,8 +26,8 @@ With less-than-equal-to already defined as `leq`, both of these relations are
 trivial to define.
 
 \begin{align*}
-& (< \; &(lambda \; (x \; y) \; (and \; (leq \; x \; y) \; (not \; (eq \; x \; y)))))
-\\& (> \; &(lambda \; (x \; y) \; (not \; (leq \; x \; y))))
+& (< \; &(\text{lambda} \; (x \; y) \; (and \; (\text{le}q \; x \; y) \; (not \; (eq \; x \; y)))))
+\\& (> \; &(\text{lambda} \; (x \; y) \; (not \; (\text{le}q \; x \; y))))
 \end{align*}
 
 An important conveniency to note in the above forms, is their nature given their 
@@ -38,8 +38,8 @@ better view of this function's nature.
 
 \begin{align*}
 & (> \; 2)
-\\& \implies \; &((lambda \; (x \; y) \; (not \; (leq \; x \; y))) \; 2)
-\\& \implies \; &(lambda \; (y) \; (not \; (leq \; 2 \; y))) \; 
+\\& \implies \; &((\text{lambda} \; (x \; y) \; (not \; (\text{le}q \; x \; y))) \; 2)
+\\& \implies \; &(\text{lambda} \; (y) \; (not \; (\text{le}q \; 2 \; y))) \; 
 \end{align*}
 
 What we see is that when a single value is passed, we achieve a convenient 
@@ -56,9 +56,9 @@ step is the `pred` function, and the combinator is multiplication.
 
 Generalized Inductive Calculator
 \begin{align*}
-& (letrec \; 
+& (\text{let}rec \; 
 \\& \quad induct \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (induct \; pred \; num \; step \; combo) \; 
 \\& \qquad (if \; 
 \\& \qquad \quad (pred \; num) \; 
@@ -75,7 +75,7 @@ the definition, and once again of partial function application. This time we
 induce addition up to and at five, stepping by two in each step up from one.
 
 \begin{align*}
-& (letrec \; 
+& (\text{let}rec \; 
 \\& \quad \; induct \; 
 \\& \quad \; \dots
 \\& \qquad (induct \; (< \; 5) \; 1 \; (+ \; 2) \; +))
@@ -94,8 +94,8 @@ primitives. The following two functions simply check for a specific value of the
 modulus division by two applied to a number; this is the essence of parity.
 
 \begin{align*}
-& (odd? \; &(lambda \; (x) \; (eq \; (mod \; x \; 2) \; 1)))
-\\& (even? \; &(lambda \; (x) \; (eq \; (mod \; x \; 2) \; 0)))
+& (odd? \; &(\text{lambda} \; (x) \; (eq \; (mod \; x \; 2) \; 1)))
+\\& (even? \; &(\text{lambda} \; (x) \; (eq \; (mod \; x \; 2) \; 0)))
 \end{align*}
 
 Use cases for these two predicates will arise later, but for now they are good at 
@@ -116,8 +116,8 @@ functional languages.
 We begin with a couple of type (c) HOFs. The first of the following serves to flip 
 the argument ordering of a given function, and the second composes two functions.
 \begin{align*}
-& (flip \; &(lambda \; (func \; a \; b) \; (func \; b \; a)))
-\\& (compose \; &(lambda \; (f \; g) \; (lambda \; (arg) \; (f \; (g \; arg)))))
+& (flip \; &(\text{lambda} \; (func \; a \; b) \; (func \; b \; a)))
+\\& (compose \; &(\text{lambda} \; (f \; g) \; (\text{lambda} \; (arg) \; (f \; (g \; arg)))))
 \end{align*}
 
 The function `flip` is very convenient when aiming to apply only the second 
@@ -140,7 +140,7 @@ function accepting slope and y-intercept as its two arguments.
 
 Linear Function Generator
 \begin{align*}
-& (lambda \; 
+& (\text{lambda} \; 
 \\& \quad \; (m \; b) \; 
 \\& \quad \; (compose \; 
 \\& \qquad \; (+ \; b) \; 
@@ -154,7 +154,7 @@ starting value. Note that this function is recursive and will be provided using
 assumed to follow the same practice.
 
 \begin{align*}
-& (fold \; (lambda \; (fold \; func \; accum \; lst)
+& (fold \; (\text{lambda} \; (fold \; func \; accum \; lst)
 \\& \quad (if \; (null? \; lst)
 \\& \qquad accum
 \\& \qquad (fold \; func \; (func \; accum \; (car \; lst)) \; (cdr \; lst)))))
@@ -183,7 +183,7 @@ right-associative; Hence the function applications are nested just like the `con
 basis of these lists.
 
 \begin{align*}
-& (reduce \; (lambda \; (reduce \; func \; end \; lst)
+& (reduce \; (\text{lambda} \; (reduce \; func \; end \; lst)
 \\& \quad (if \; (null? \; lst)
 \\& \qquad end
 \\& \qquad (func \; (car \; lst) \; (reduce \; func \; end \; (cdr \; lst))))))
@@ -204,7 +204,7 @@ we will provide an inverse operation for constructing a list given a constructio
 criterion. `unfold` serves to invert a folding.
 
 \begin{align*}
-& (unfold \; (lambda \; (unfold \; func \; init \; pred)
+& (unfold \; (\text{lambda} \; (unfold \; func \; init \; pred)
 \\& \quad (if \; (pred \; init)
 \\& \qquad (cons \; init \; nil)
 \\& \qquad (cons \; init \; (unfold \; func \; (func \; init) \; pred)))))
@@ -244,10 +244,10 @@ definitions of these forms are intuitive, each with an infix operator which fits
 the role very intuitively.
 
 \begin{align*}
-& (sum \; (lambda \; (lst) \; &(fold \; + \; 0 \; lst))
-\\& (product \; (lambda \; (lst) \; &(fold \; * \; 1 \; lst))
-\\& (and* \; (lambda \; (lst) \; &(fold \; and \; t \; lst))
-\\& (or* \; (lambda \; (lst) \; &(fold \; or \; f \; lst))
+& (sum \; (\text{lambda} \; (lst) \; &(fold \; + \; 0 \; lst))
+\\& (product \; (\text{lambda} \; (lst) \; &(fold \; * \; 1 \; lst))
+\\& (and* \; (\text{lambda} \; (lst) \; &(fold \; and \; \#t \; lst))
+\\& (or* \; (\text{lambda} \; (lst) \; &(fold \; or \; \#f \; lst))
 \end{align*}
 
 Now we expand our application field in defining some optimization functions, `min` 
@@ -259,7 +259,7 @@ simple folding onto the higher value.
 & (max \; 
 \\& \quad (list)
 \\& \quad (fold \; 
-\\& \qquad (lambda \; 
+\\& \qquad (\text{lambda} \; 
 \\& \qquad (old \; new)
 \\& \qquad (if
 \\& \qquad \qquad (> \; old \; new)
@@ -277,7 +277,7 @@ fold.
 & (min \; 
 \\& \quad (list)
 \\& \quad (fold \; 
-\\& \qquad (lambda \; 
+\\& \qquad (\text{lambda} \; 
 \\& \qquad (old \; new)
 \\& \qquad (if
 \\& \qquad \qquad (> \; old \; new)
@@ -294,8 +294,8 @@ of operation; it folds by means of a swap operation, $(flip cons)$, in this way
 forming a fully reversed list.
 
 \begin{align*}
-& (length \; &(lambda \; (lst) \; (fold \; (lambda \; (x \; y) \; (+ \; x \; 1)) \; 0 \; lst)))
-\\& (reverse \; &(lambda \; (lst) \; (fold \; (flip \; cons) \; nil \; lst)))
+& (\text{le}ngth \; &(\text{lambda} \; (lst) \; (fold \; (\text{lambda} \; (x \; y) \; (+ \; x \; 1)) \; 0 \; lst)))
+\\& (reverse \; &(\text{lambda} \; (lst) \; (fold \; (flip \; cons) \; nil \; lst)))
 \end{align*}
 
 Now we provide a special function for determining associations in a list meant as 
@@ -312,15 +312,15 @@ In determining the association, we `fold` with the aim of reaching a value with 
 key matching that for which we are searching.
 
 \begin{align*}
-& (assoc \; (lambda \; (x \; list)
+& (assoc \; (\text{lambda} \; (x \; list)
 \\& \quad \; (fold \; 
-\\& \qquad (lambda \; 
+\\& \qquad (\text{lambda} \; 
 \\& \qquad (accum \; item) \; 
 \\& \qquad (if \; 
 \\& \qquad \qquad (equal? \; item \; (car \; x))
 \\& \qquad \qquad (cdr \; x)
 \\& \qquad \qquad accum)))
-\\& \qquad f
+\\& \qquad \#f
 \\& \qquad list)))
 \end{align*}
 
@@ -339,11 +339,11 @@ list constructor as follows.
 
 \begin{align*}
 & (list \; 
-\\& \quad (lambda \; (list \; a) \; 
+\\& \quad (\text{lambda} \; (list \; a) \; 
 \\& \quad (if
 \\& \qquad (null? \; a)
 \\& \qquad nil
-\\& \qquad (lambda \; (rest)
+\\& \qquad (\text{lambda} \; (rest)
 \\& \qquad (cons \; a \; (list \; rest)))))
 \end{align*}
 
@@ -367,10 +367,10 @@ for example finding a sum of squares or constructing a list of primes.
 
 \begin{align*}
 & (map \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (func \; lst)
 \\& \qquad (reduce
-\\& \qquad (lambda \; 
+\\& \qquad (\text{lambda} \; 
 \\& \qquad \qquad (x \; y) \; 
 \\& \qquad \qquad (cons \; (func \; x) \; y)) \; 
 \\& \qquad nil
@@ -385,10 +385,10 @@ definition it casts away values not matching a predicate.
 
 \begin{align*}
 & (filter \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (pred \; lst)
 \\& \qquad (reduce
-\\& \qquad (lambda \; 
+\\& \qquad (\text{lambda} \; 
 \\& \qquad \qquad (x \; y)
 \\& \qquad \qquad (if
 \\& \qquad \qquad (pred \; x)
@@ -414,8 +414,8 @@ as nice complements to the two which were defined above, as they allow for
 expansion to supersets, and the earlier two allow only for constructing a subset.
 
 \begin{align*}
-& (push \; &(lambda \; (a \; b) \; (reverse \; (cons \; b \; (reverse \; a)))))
-\\& (concat \; &(lambda \; (a \; b) \; (fold \; push \; a \; b)))
+& (push \; &(\text{lambda} \; (a \; b) \; (reverse \; (cons \; b \; (reverse \; a)))))
+\\& (concat \; &(\text{lambda} \; (a \; b) \; (fold \; push \; a \; b)))
 \end{align*}
 
 These list manipulations will prove very useful, and given our prior functions, 

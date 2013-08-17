@@ -106,7 +106,26 @@ In order to interpret numbers, we would need our atomic values to be not so atom
 
 The above is just another `eval` function, this time appending to the environment a prelude of definitions prior to calling the usual `eval` function. The equivalencies presented are merely from atom to singleton lists; no nature of numbers shows through. Why singletons? Numbers are lists of digits more than they are atomic values, after all, this is what allows us to perform arbitrary arithmetic.
 
-It will be our responsibility to implement this nature in a `succ` primitive. As we have already shown, from there all else is possible.
+There is one aspect of the environment that we failed to address in our setup 
+of a prelude. Given the lazy nature of our interpreter in which all variable
+access is reduction of a lambda, we will need to lambda wrap each set value.
+
+```scheme
+(let lazy-set (lambda (env hash)
+  (concat
+    env
+    (map (lambda (pair) 
+      (list 
+        (car pair) 
+        (lambda (z) (cadr pair)))) 
+        hash))))
+```
+
+The above implements this lazy nature.
+
+It will be our responsibility to implement arithmetic nature of these numbers 
+by means of a `succ` function. As we have already shown, from this definition 
+all else is possible.
 
 ```scheme
 (let succ (lambda (x)
@@ -132,7 +151,7 @@ We will now expand our `eval-prelude` to be more extensible and to include the `
        (lambda (x) ...)
        env)))
    (set-numerals (lambda (env) 
-     (concat 
+     (lazy-set 
        env 
        '((0 (0)) (1 (1)) (2 (2)) (3 (3)) (4 (4)) 
          (5 (5)) (6 (6)) (7 (7)) (8 (8)) (9 (9))))))
@@ -149,17 +168,56 @@ Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as yo
 
 ```scheme
 (set-booleans (lambda (env)
-  (set '#t 1 (set '#f nil env))))
+  (lazy-set env (list (list '#t 1) (list '#f nil)))))
 ```
 
 Given these definitions of true and false, we will now define an `if` function which follows very naturally from our native `if` function.
 
 ```scheme
-(set-booleans (lambda (env)
-  (set ... 
-    (set 
-      'if 
-      (lambda (p t f)
-        (if (null? x) f t)) 
-      env)) ...))
+(set-booleans (lambda (env) 
+  (lazy-set 
+    env
+    (list 
+      ...
+      (list
+        'if 
+        (lambda (p t f)
+          (if (null? x) f t))))))))
 ```
+
+##List Primitives
+The functions primitive to the manipulation of S-Expressions have yet to be discussed. The following is a list of these primitives.
+
+- `car`
+- `cdr`
+- `cons`
+- `eq?`
+- `null?`
+
+These will be exposed to the interpreted language by means of the prelude.
+
+```scheme
+(set-primitives (lambda (env)
+  (lazy-set
+    env
+    (list
+      (list 'car car)
+      (list 'cdr cdr)
+      (list 'cons cons)
+      (list 'eq? equal?)
+      (list 'null? null?)))))
+```
+
+##Recursion
+Finally, as was alluded to earlier, we will provide a Y combinator for the sake of recursion. Thanks to the lazy evaluation of our interpreter, this will be an easily achieved task.
+
+Although combinators are possible without lazy evaluation, a function-based `if` statement is not; this is the key to our dependence on laziness. In the following, we set a Y-Combinator on the prelude.
+
+```scheme
+(set-Y (lambda (env)
+  (lazy-set
+    env
+    (list (list 'Y (lambda (f) 
+      ((lambda (x) (f (x x))) 
+       (lambda (x) (f (x x))))))))))
+```      

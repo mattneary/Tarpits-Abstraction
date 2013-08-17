@@ -40,7 +40,7 @@ We define our evaluator pretty easily. Note that we will begin by defining an
 then applies each of these arguments to a lambda one by one.
 
 \begin{align*}
-& (define \; (\text{apply-set} \; fn \; args)
+& (\text{define} \; (\text{apply-set} \; fn \; args)
 \\& \quad (if
 \\& \qquad (null? \; args)
 \\& \qquad fn
@@ -65,20 +65,20 @@ argument and the evaluated arguments. This architecture is an explicit choice
 *not* to opt for a lazy method of evaluation.
 
 \begin{align*}
-& (evallam \; (lambda \; (evallam \; expr \; env)
+& (evallam \; (\text{lambda} \; (evallam \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (assoc \; expr \; env))
 \\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'lam) \; 
-\\& \qquad \qquad \quad \; (lambda \; (x) \; 
+\\& \qquad \qquad \quad \; (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \qquad \; (evallam \; 
 \\& \qquad \qquad \qquad \quad \; (cddr \; expr) \; 
 \\& \qquad \qquad \qquad \quad \; (set \; (cadr \; expr) \; x \; env))))
 \\& \qquad \qquad \; ((null? \; (cdr \; expr)) \; 
 \\& \qquad \qquad \quad (evallam \; (car \; expr) \; env))
-\\& \qquad \qquad \; (t \; 
+\\& \qquad \qquad \; (\#t \; 
 \\& \qquad \qquad \quad \; (\text{apply-set} \; 
 \\& \qquad \qquad \qquad \; (evallam \; (car \; expr) \; env) \; 
 \\& \qquad \qquad \qquad \; (map \; 
-\\& \qquad \qquad \qquad \quad \; (lambda \; (expr) \; (evallam \; expr \; env)) \; 
+\\& \qquad \qquad \qquad \quad \; (\text{lambda} \; (expr) \; (evallam \; expr \; env)) \; 
 \\& \qquad \qquad \qquad \quad \; (cdr \; expr))))))))
 \end{align*}
 
@@ -133,12 +133,12 @@ mutated; however, when taking the imperative approach, values will often be set 
 a new value after their definition. The following is an example of this behavior.
 
 \begin{align*}
-& (define \; x \; 5)
+& (\text{define} \; x \; 5)
 \\& (set! \; x \; (* \; 2 \; x))
 \\& (equal? \; x \; 5)
-\\& ;; \; => \; f
+\\& ;; \; => \; \#f
 \\& (equal? \; x \; 10)
-\\& ;; \; => \; t
+\\& ;; \; => \; \#t
 \\& => \; x \; = \; 10
 \end{align*}
 
@@ -159,9 +159,9 @@ sections. What follows is an implementation using these concepts of the prior
 imperative procedure.
 
 \begin{align*}
-& (letrec \; 
+& (\text{let}rec \; 
 \\& \quad main \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
 \\& \qquad (get \; (list \; (main \; (set \; 'x \; 5 \; env) \; (+ \; 1 \; start))
 \\& \qquad \qquad \qquad \quad \; (main \; (set \; 'x \; (* \; 2 \; (assoc \; 'x \; env)) \; env) \; (+ \; 1 \; start))
@@ -178,11 +178,11 @@ accessible. The scoping of a variable is specified by the define operator; hence
 following is another example of this behavior.
 
 \begin{align*}
-& (define \; x \; 5)
-\\& ((lambda \; (y)
+& (\text{define} \; x \; 5)
+\\& ((\text{lambda} \; (y)
 \\& \quad (set! \; x \; y)) \; 12)
 \\& (equal? \; x \; 12) \; 
-\\& ;; \; t
+\\& ;; \; \#t
 \end{align*}
 
 Of note is the fact that the `define` occurred separate from any function. This 
@@ -197,9 +197,9 @@ of a variable `ret` defined on the environment. All other methods in the followi
 similar to those in prior procedures.
 
 \begin{align*}
-& (letrec \; 
+& (\text{let}rec \; 
 \\& \quad main \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
 \\& \qquad (get \; (list \; (main \; (set \; 'x \; (assoc \; 'y \; env) \; env) \; (assoc \; 'ret \; env))
 \\& \qquad \qquad \qquad \quad \; (main \; (set \; 'x \; 5 \; env) \; (+ \; 1 \; start))
@@ -217,8 +217,8 @@ as in the following, it would only be accessible from within that function, or o
 functions defined within it.
 
 \begin{align*}
-& (define \; scope \; (lambda \; (x)
-\\& \quad (define \; y \; x)))
+& (\text{define} \; scope \; (\text{lambda} \; (x)
+\\& \quad (\text{define} \; y \; x)))
 \\& (scope \; 5)
 \\& y
 \\& ;; \; The \; written \; variable, \; `y`, \; will \; be \; inaccessible.
@@ -237,11 +237,11 @@ outer, or normal, environment. Then, prior to returning, we will clear the inner
 environment by setting it to `nil`.
 
 \begin{align*}
-& (letrec \; 
+& (\text{let}rec \; 
 \\& \quad main \; 
-\\& \quad (lambda \; 
+\\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
-\\& \qquad (get \; (list \; (let \; ((outer \; env)
+\\& \qquad (get \; (list \; (\text{let} \; ((outer \; env)
 \\& \qquad \qquad \qquad \qquad \qquad \; (inner \; (set \; 'y \; (assoc \; 'x \; (assoc \; 'inner \; outer)) \; (assoc \; 'inner \; outer))
 \\& \qquad \qquad \qquad \qquad \qquad \; (outer \; (set \; 'inner \; inner \; outer)))
 \\& \qquad \qquad \qquad \qquad \; (main \; outer \; (+ \; 1 \; start)))
@@ -266,8 +266,8 @@ a final effect. The following is an example of this in practice; the syntax is
 simply a chain of expressions where an individual would have previously existed.
 
 \begin{align*}
-& (define \; incr \; (lambda \; (x)
-\\& \quad (define \; y \; (+ \; x \; 1))
+& (\text{define} \; incr \; (\text{lambda} \; (x)
+\\& \quad (\text{define} \; y \; (+ \; x \; 1))
 \\& \quad y))
 \end{align*}
 
@@ -282,7 +282,7 @@ in utilization of this approach, we define a function for constructing a range o
 which to iterate.
 
 \begin{align*}
-& (define \; range \; (lambda \; (x)
+& (\text{define} \; range \; (\text{lambda} \; (x)
 \\& \quad (if \; (equal? \; x \; 0)
 \\& \qquad nil
 \\& \qquad (cons \; (- \; x \; 1) \; (range \; (- \; x \; 1))))))
@@ -293,9 +293,9 @@ definitions. Note that the ranges are of the form 0, 1, ..., n-1. Here's an exam
 of this function being used to calculate a factorial.
 
 \begin{align*}
-& (define \; fact \; (lambda \; (x)
-\\& \quad (define \; ans \; 1)
-\\& \quad (map \; (range \; x) \; (lambda \; (n)
+& (\text{define} \; fact \; (\text{lambda} \; (x)
+\\& \quad (\text{define} \; ans \; 1)
+\\& \quad (map \; (range \; x) \; (\text{lambda} \; (n)
 \\& \qquad (set! \; ans \; (* \; and \; (+ \; 1 \; n)))))
 \\& \quad ans))
 \end{align*}
@@ -327,9 +327,9 @@ we begin with a `range`-based loop that will cycle through each character of the
 in order.
 
 \begin{align*}
-& (define \; parse \; (lambda \; (expr) \; 
-\\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
-\\& \qquad (define \; read \; (get \; expr \; i))
+& (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
+\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad // \; \dots
 \\& \quad )))
 \end{align*}
@@ -350,13 +350,13 @@ parenthetical; and `found` which will be true if and only if a parenthetical has
 parsed.
 
 \begin{align*}
-& (define \; parse \; (lambda \; (expr) \; 
-\\& \quad (define \; before)
-\\& \quad (define \; accum \; nil)
-\\& \quad (define \; paren)
-\\& \quad (define \; found \; f)
-\\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
-\\& \qquad (define \; read \; (get \; expr \; i))
+& (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
+\\& \quad (\text{define} \; before)
+\\& \quad (\text{define} \; accum \; nil)
+\\& \quad (\text{define} \; paren)
+\\& \quad (\text{define} \; found \; \#f)
+\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad // \; \dots
 \\& \quad )))
 \end{align*}
@@ -377,14 +377,14 @@ top-level parenthetical. Its parsing will be handled when we are ready to recurs
 these additions of case-handling, we insert `if ... else` statements as in the following.
 
 \begin{align*}
-& (define \; parse \; (lambda \; (expr) \; 
-\\& \quad (define \; before)
-\\& \quad (define \; accum \; nil)
-\\& \quad (define \; paren)
-\\& \quad (define \; found \; f)
-\\& \quad (define \; nested \; 0)
-\\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
-\\& \qquad (define \; read \; (get \; expr \; i))
+& (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
+\\& \quad (\text{define} \; before)
+\\& \quad (\text{define} \; accum \; nil)
+\\& \quad (\text{define} \; paren)
+\\& \quad (\text{define} \; found \; \#f)
+\\& \quad (\text{define} \; nested \; 0)
+\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad (if \; (and \; (equal? \; '< \; read) \; (not \; found))
 \\& \qquad \quad (\dots"1. \; an \; opening \; parenthesis"\dots)
 \\& \qquad \quad (if \; (and \; (equal? \; '> \; read) \; (not \; found))
@@ -397,9 +397,9 @@ occurring before and after it to form the designated response. Hence we provide 
 following `return` statement.
 
 \begin{align*}
-& (define \; parse \; (lambda \; (expr) \; 
+& (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad \dots"variables"\dots
-\\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
+\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\dots"parse"\dots))
 \\& \quad (if \; paren
 \\& \qquad (concat \; (push \; before \; paren) \; (parse \; accum))
@@ -429,14 +429,14 @@ implement these portions in the following code.
 \end{itemize}
 
 \begin{align*}
-& (define \; parse \; (lambda \; (expr) \; 
-\\& \quad (define \; before)
-\\& \quad (define \; accum \; nil)
-\\& \quad (define \; paren)
-\\& \quad (define \; found \; f)
-\\& \quad (define \; nested \; 0)
-\\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
-\\& \qquad (define \; read \; (get \; expr \; i))
+& (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
+\\& \quad (\text{define} \; before)
+\\& \quad (\text{define} \; accum \; nil)
+\\& \quad (\text{define} \; paren)
+\\& \quad (\text{define} \; found \; \#f)
+\\& \quad (\text{define} \; nested \; 0)
+\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad (if \; (and \; (equal? \; '< \; read) \; (not \; found))
 \\& \qquad \quad ((set! \; nested \; (+ \; 1 \; nested))
 \\& \qquad \quad \; (if \; (equal? \; nested \; 1)
@@ -446,7 +446,7 @@ implement these portions in the following code.
 \\& \qquad \quad (if \; (and \; (equal? \; '> \; read) \; (not \; found))
 \\& \qquad \qquad ((set! \; nested \; (- \; 1 \; nested))
 \\& \qquad \qquad \; (if \; (equal? \; nested \; 0)
-\\& \qquad \qquad \quad \; ((set! \; found \; t)
+\\& \qquad \qquad \quad \; ((set! \; found \; \#t)
 \\& \qquad \qquad \qquad (set! \; paren \; (parse \; accum))
 \\& \qquad \qquad \qquad (set! \; accum \; nil))
 \\& \qquad \qquad \quad \; (set \; accum \; (push \; accum \; read)))
@@ -479,12 +479,12 @@ navigating the list is maintained, and idiomatic as you have seen in prior progr
 written in our Symbolic Language.
 
 \begin{align*}
-& (define \; funparse \; (lambda \; (expr \; nested \; before \; paren \; accum \; found) \; 
+& (\text{define} \; funparse \; (\text{lambda} \; (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
 \\& \qquad (if \; (not \; (null? \; paren))
 \\& \qquad \quad (concat \; (push \; before \; paren) \; (funparse\_ \; accum))
 \\& \qquad \quad expr)
-\\& \qquad ((let \; read \; (get \; expr \; 0)
+\\& \qquad ((\text{let} \; read \; (get \; expr \; 0)
 \\& \qquad \quad \; (if \; (and \; (equal? \; read \; '<) \; (not \; found)))
 \\& \qquad \qquad \; ((set! \; nested \; (+ \; 1 \; nested))
 \\& \qquad \qquad \quad (if \; (equal? \; 1 \; nested)
@@ -495,13 +495,13 @@ written in our Symbolic Language.
 \\& \qquad \qquad \quad \; ((set! \; nested \; (- \; 1 \; nested))
 \\& \qquad \qquad \qquad (if \; (equal? \; 0 \; nested)
 \\& \qquad \qquad \qquad \quad ((set! \; paren \; (funparse\_ \; accum))
-\\& \qquad \qquad \qquad \quad \; (set! \; found \; t)
+\\& \qquad \qquad \qquad \quad \; (set! \; found \; \#t)
 \\& \qquad \qquad \quad \; (set! \; accum \; nil))
 \\& \qquad \qquad \qquad \quad (set \; accum \; (push \; accum \; read))))
 \\& \qquad \quad \; (set \; accum \; (push \; accum \; read)))
 \\& \qquad \; (funparse \; (cdr \; expr) \; nested \; before \; paren \; accum \; found)))))
-\\& (define \; funparse\_ \; (lambda \; (expr)
-\\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; f))) \; 
+\\& (\text{define} \; funparse\_ \; (\text{lambda} \; (expr)
+\\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))) \; 
 \end{align*}
 
 The final portion of our program includes a definition of `funparse\_`. This was merely 
@@ -513,7 +513,7 @@ means of achieving this is by allowing all values to be function arguments or ex
 operating on arguments.
 
 \begin{align*}
-& (define \; funparse \; (lambda \; (expr \; nested \; before \; paren \; accum \; found) \; 
+& (\text{define} \; funparse \; (\text{lambda} \; (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
 \\& \qquad (if \; (not \; (null? \; paren))
 \\& \qquad \quad (concat \; (push \; before \; paren) \; (funparse\_ \; accum))
@@ -524,11 +524,11 @@ operating on arguments.
 \\& \qquad \qquad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \quad (if \; (and \; (equal? \; '> \; (get \; expr \; 0)) \; (not \; found))
 \\& \qquad \qquad (if \; (equal? \; nested \; 1)
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; t)
+\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; \#t)
 \\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \qquad (funparse \; (cdr \; expr) \; nested \; before \; paren \; (push \; accum \; (car \; expr)) \; found))))))
-\\& (define \; funparse\_ \; (lambda \; (expr)
-\\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; f))) \; 
+\\& (\text{define} \; funparse\_ \; (\text{lambda} \; (expr)
+\\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))) \; 
 \end{align*}
 
 You should begin to see how our rewrite of this algorithm reads much more as an inductive 
@@ -541,10 +541,10 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 `funparse\_` then being another definition within the `letrec` procedure.
 
 \begin{align*}
-& (letrec \; funparse \; (lambda \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
-\\& \quad (let \; 
+& (\text{let}rec \; funparse \; (\text{lambda} \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
+\\& \quad (\text{let} \; 
 \\& \qquad funparse\_ \; 
-\\& \qquad (lambda \; (expr) \; (funparse \; expr \; 0 \; '() \; '() \; '() \; f))
+\\& \qquad (\text{lambda} \; (expr) \; (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))
 \\& \qquad (if \; (null? \; expr)
 \\& \qquad \quad (if \; (null? \; paren) \; 
 \\& \qquad \qquad expr
@@ -555,7 +555,7 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 \\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \qquad (if \; (and \; (equal? \; '> \; (car \; expr)) \; (not \; found))
 \\& \qquad \qquad \quad (if \; (equal? \; nested \; 1)
-\\& \qquad \qquad \qquad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; t)
+\\& \qquad \qquad \qquad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; \#t)
 \\& \qquad \qquad \qquad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; nested \; before \; paren \; (push \; accum \; (car \; expr)) \; found)))))) \; \dots)
 \end{align*}
@@ -564,7 +564,7 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 The parser now works as in the following example.
 
 \begin{align*}
-& (letrec \; parse \; (lambda \; (\dots) \; \dots)
+& (\text{let}rec \; parse \; (\text{lambda} \; (\dots) \; \dots)
 \\& \quad (parse \; '(< \; a \; > \; < \; b \; < \; c \; > \; > \; < \; d \; >)))
 \\& \implies \; ((a) \; (b \; (c)) \; (d))
 \end{align*}

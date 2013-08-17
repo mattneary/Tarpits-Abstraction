@@ -54,18 +54,18 @@ interpret. Our first task is to enable the Lambda Calculus in these forms,
 not unlike in our earliest definition of the language.
 
 \begin{align*}
-& (letrec \; eval \; (eval \; expr \; env)
+& (\text{let}rec \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (assoc \; expr \; env))
 \\& \qquad \qquad \; ((and \; 
 \\& \qquad \qquad \qquad (atom? \; (car \; expr)) \; 
-\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; 'lambda)) \; 
-\\& \qquad \qquad \quad (lambda \; (x) \; 
+\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; '\text{lambda})) \; 
+\\& \qquad \qquad \quad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \qquad (eval \; 
 \\& \qquad \qquad \qquad \quad (caddr \; expr) \; 
 \\& \qquad \qquad \qquad \quad (set \; (cadr \; expr) \; x \; env))))
-\\& \qquad \qquad \; (t \; (\text{apply-set} \; 
+\\& \qquad \qquad \; (\#t \; (\text{apply-set} \; 
 \\& \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
-\\& \qquad \qquad \quad \; (map \; (lambda \; (x) \; (eval \; x \; env)) \; (cdr \; expr)))))) \; \dots)
+\\& \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; x \; env)) \; (cdr \; expr)))))) \; \dots)
 \end{align*}
 
 This is all fine; however, notice that the arguments to the function are evaluated all at once and passed to the an applier-function. In the next section, we will discuss a better approach to evaluation.
@@ -74,18 +74,18 @@ This is all fine; however, notice that the arguments to the function are evaluat
 This is not optimal, and does not allow for some nice features enabled by "laziness" in the interpreter. For this reason, we will change the application and variable reference components to reflect a lazy approach to evaluation.
 
 \begin{align*}
-& (letrec \; eval \; (eval \; expr \; env)
+& (\text{let}rec \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
 \\& \qquad \qquad \; ((and \; 
 \\& \qquad \qquad \qquad (atom? \; (car \; expr)) \; 
-\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; 'lambda)) \; 
-\\& \qquad \qquad \quad (lambda \; (x) \; 
+\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; '\text{lambda})) \; 
+\\& \qquad \qquad \quad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \qquad (eval \; 
 \\& \qquad \qquad \qquad \quad (caddr \; expr) \; 
 \\& \qquad \qquad \qquad \quad (set \; (cadr \; expr) \; x \; env))))
-\\& \qquad \qquad \; (t \; (\text{apply-set} \; 
+\\& \qquad \qquad \; (\#t \; (\text{apply-set} \; 
 \\& \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
-\\& \qquad \qquad \quad \; (map \; (lambda \; (x) \; (eval \; '(lambda \; (\_) \; x) \; env)) \; (cdr \; expr)))))) \; \dots)
+\\& \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; '(\text{lambda} \; (\_) \; x) \; env)) \; (cdr \; expr)))))) \; \dots)
 \end{align*}
 
 With very few changes we were able to implement this lazy approach. We simply made all arguments wrapped in a lambda before their evaluation, and all variable references then reduce these wrappings when appropriate. These small changes will make a world of difference in the potential of expressiveness in our language.
@@ -96,7 +96,7 @@ The most evident of advantages is in the ability to branch execution, i.e., perf
 In order to interpret numbers, we would need our atomic values to be not so atomic. Rather than have atoms go against this nature, we will delay implementation of arbitrary numbers. For now, we will start with single digits.
 
 \begin{align*}
-& (let \; \text{eval-prelude} \; (lambda \; (expr \; env)
+& (\text{let} \; \text{eval-prelude} \; (\text{lambda} \; (expr \; env)
 \\& \quad (eval \; 
 \\& \qquad expr
 \\& \qquad (concat \; 
@@ -107,18 +107,37 @@ In order to interpret numbers, we would need our atomic values to be not so atom
 
 The above is just another `eval` function, this time appending to the environment a prelude of definitions prior to calling the usual `eval` function. The equivalencies presented are merely from atom to singleton lists; no nature of numbers shows through. Why singletons? Numbers are lists of digits more than they are atomic values, after all, this is what allows us to perform arbitrary arithmetic.
 
-It will be our responsibility to implement this nature in a `succ` primitive. As we have already shown, from there all else is possible.
+There is one aspect of the environment that we failed to address in our setup 
+of a prelude. Given the lazy nature of our interpreter in which all variable
+access is reduction of a lambda, we will need to lambda wrap each set value.
 
 \begin{align*}
-& (let \; succ \; (lambda \; (x)
-\\& \quad (let \; singles \; '((0 \; (1)) \; (1 \; (2)) \; 
+& (\text{let} \; \text{lazy-set} \; (\text{lambda} \; (env \; hash)
+\\& \quad (concat
+\\& \qquad env
+\\& \qquad (map \; (\text{lambda} \; (pair) \; 
+\\& \qquad \quad (list \; 
+\\& \qquad \qquad (car \; pair) \; 
+\\& \qquad \qquad (\text{lambda} \; (z) \; (cadr \; pair)))) \; 
+\\& \qquad \qquad hash))))
+\end{align*}
+
+The above implements this lazy nature.
+
+It will be our responsibility to implement arithmetic nature of these numbers 
+by means of a `succ` function. As we have already shown, from this definition 
+all else is possible.
+
+\begin{align*}
+& (\text{let} \; succ \; (\text{lambda} \; (x)
+\\& \quad (\text{let} \; singles \; '((0 \; (1)) \; (1 \; (2)) \; 
 \\& \qquad \qquad \qquad \qquad \; (2 \; (3)) \; (3 \; (4)) \; 
 \\& \qquad \qquad \qquad \qquad \; (4 \; (5)) \; (5 \; (6)) \; 
 \\& \qquad \qquad \qquad \qquad \; (6 \; (7)) \; (7 \; (8)) \; 
 \\& \qquad \qquad \qquad \qquad \; (8 \; (9)) \; (9 \; (0 \; 1)))
 \\& \qquad (cond \; (((null? \; (cdr \; x)) \; (assoc \; singles \; (car \; x)))
 \\& \qquad \qquad \quad \; ((equal? \; (car \; x) \; 9) \; (cons \; 0 \; (succ \; (cdr \; x))))
-\\& \qquad \qquad \quad \; (t \; (cons \; (succ \; (car \; x)) \; (cdr \; x))))))) \; \dots)
+\\& \qquad \qquad \quad \; (\#t \; (cons \; (succ \; (car \; x)) \; (cdr \; x))))))) \; \dots)
 \end{align*}
 
 The above implementation is pretty simple; it is a very basic definition of the meaning of numbers in our decimal system. It says, "One follows zero; two follows one; etc." Next, it communicates the intricacies of place value. A number with a ones digit of nine will increment to a ones digit zero, with a once higher leading strand of digits. Finally, any other number with multiple digits will result in a once larger ones digit.
@@ -126,18 +145,18 @@ The above implementation is pretty simple; it is a very basic definition of the 
 We will now expand our `eval-prelude` to be more extensible and to include the `succ` function.
 
 \begin{align*}
-& (let* \; 
-\\& \quad ((\text{set-arithmetic} \; (lambda \; (env)
+& (\text{let}* \; 
+\\& \quad ((\text{set-arithmetic} \; (\text{lambda} \; (env)
 \\& \qquad \; (set
 \\& \qquad \quad \; 'succ
-\\& \qquad \quad \; (lambda \; (x) \; \dots)
+\\& \qquad \quad \; (\text{lambda} \; (x) \; \dots)
 \\& \qquad \quad \; env)))
-\\& \quad \; (\text{set-numerals} \; (lambda \; (env) \; 
-\\& \qquad \; (concat \; 
+\\& \quad \; (\text{set-numerals} \; (\text{lambda} \; (env) \; 
+\\& \qquad \; (\text{lazy-set} \; 
 \\& \qquad \quad \; env \; 
 \\& \qquad \quad \; '((0 \; (0)) \; (1 \; (1)) \; (2 \; (2)) \; (3 \; (3)) \; (4 \; (4)) \; 
 \\& \qquad \qquad \; (5 \; (5)) \; (6 \; (6)) \; (7 \; (7)) \; (8 \; (8)) \; (9 \; (9))))))
-\\& \quad \; (\text{eval-prelude} \; (lambda \; (expr \; env)
+\\& \quad \; (\text{eval-prelude} \; (\text{lambda} \; (expr \; env)
 \\& \qquad \; (eval \; 
 \\& \qquad \quad \; expr
 \\& \qquad \quad \; (\text{set-numerals} \; env))))) \; \dots)
@@ -149,18 +168,59 @@ Our implementation of Booleans will be quite simple. Recall the use of atoms to 
 Our Booleans will be defined on the prelude by the names of `t` and `f`, as you have come to expect. Now, rather than decide on an arbitrary atom to which they will map, we will allow `f` to equal `nil` and `t` to equal `1`. Hence we would have a `set-booleans` definition to append to `let*` that looks like the following.
 
 \begin{align*}
-& (\text{set-booleans} \; (lambda \; (env)
-\\& \quad (set \; 't \; 1 \; (set \; 'f \; nil \; env))))
+& (\text{set-booleans} \; (\text{lambda} \; (env)
+\\& \quad (\text{lazy-set} \; env \; (list \; (list \; '\#t \; 1) \; (list \; '\#f \; nil)))))
 \end{align*}
 
 Given these definitions of true and false, we will now define an `if` function which follows very naturally from our native `if` function.
 
 \begin{align*}
-& (\text{set-booleans} \; (lambda \; (env)
-\\& \quad (set \; \dots \; 
-\\& \qquad (set \; 
-\\& \qquad \quad 'if \; 
-\\& \qquad \quad (lambda \; (p \; t \; f)
-\\& \qquad \qquad (if \; (null? \; x) \; f \; t)) \; 
-\\& \qquad \quad env)) \; \dots))
+& (\text{set-booleans} \; (\text{lambda} \; (env) \; 
+\\& \quad (\text{lazy-set} \; 
+\\& \qquad env
+\\& \qquad (list \; 
+\\& \qquad \quad \dots
+\\& \qquad \quad (list
+\\& \qquad \qquad 'if \; 
+\\& \qquad \qquad (\text{lambda} \; (p \; t \; f)
+\\& \qquad \qquad \quad (if \; (null? \; x) \; f \; t))))))))
+\end{align*}
+
+\section{List Primitives}
+The functions primitive to the manipulation of S-Expressions have yet to be discussed. The following is a list of these primitives.
+
+\begin{itemize}
+  \item `car`
+  \item `cdr`
+  \item `cons`
+  \item `eq?`
+  \item `null?`
+\end{itemize}
+
+These will be exposed to the interpreted language by means of the prelude.
+
+\begin{align*}
+& (\text{set-primitives} \; (\text{lambda} \; (env)
+\\& \quad (\text{lazy-set}
+\\& \qquad env
+\\& \qquad (list
+\\& \qquad \quad (list \; 'car \; car)
+\\& \qquad \quad (list \; 'cdr \; cdr)
+\\& \qquad \quad (list \; 'cons \; cons)
+\\& \qquad \quad (list \; 'eq? \; equal?)
+\\& \qquad \quad (list \; 'null? \; null?)))))
+\end{align*}
+
+\section{Recursion}
+Finally, as was alluded to earlier, we will provide a Y combinator for the sake of recursion. Thanks to the lazy evaluation of our interpreter, this will be an easily achieved task.
+
+Although combinators are possible without lazy evaluation, a function-based `if` statement is not; this is the key to our dependence on laziness. In the following, we set a Y-Combinator on the prelude.
+
+\begin{align*}
+& (\text{set-Y} \; (\text{lambda} \; (env)
+\\& \quad (\text{lazy-set}
+\\& \qquad env
+\\& \qquad (list \; (list \; 'Y \; (\text{lambda} \; (f) \; 
+\\& \qquad \quad ((\text{lambda} \; (x) \; (f \; (x \; x))) \; 
+\\& \qquad \quad \; (\text{lambda} \; (x) \; (f \; (x \; x))))))))))
 \end{align*}

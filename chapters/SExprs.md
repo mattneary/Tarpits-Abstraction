@@ -46,8 +46,8 @@ forms matching the patterns which we discuss will be converted to the provided
 form, labeled as the consequent.
 
 ```scheme
-(lambda (var) expr) &\implies #{lambda var} expr
-(lambda (var rest...) expr) &\implies #{lambda var} (lambda rest expr)
+(lambda (var) expr) &\implies #{\lambda var} expr
+(lambda (var rest...) expr) &\implies #{\lambda var} (lambda rest expr)
 ```
 
 Essentially, we are saying that any expression of the form `(lambda args expr)`
@@ -147,7 +147,7 @@ Calculus.
 ##Foundations in Lambda Calculus
 To accompany our syntactic constructs, we will need to define some forms in the
 Lambda Calculus, especially data-types and their manipulations. Our definitions
-will be illustrated as equalities, like $id = lambda xx$; however, syntactic
+will be illustrated as equalities, like $id = \lambda xx$; however, syntactic
 patterns will be expressed as implications. Recall that in Lambda Calculus there
 are only functions, no literals or primitive data-types. To combat this apparent
 shortcoming of the language, we will need to give data-types of interest a
@@ -163,8 +163,8 @@ inductively, via the successor.
 
 Numbers
 ```scheme
-0 &= lambda f lambda x x
-succ &= lambda n lambda f lambda x (f)((n)f)x
+0 &= \lambda f \lambda x x
+succ &= \lambda n \lambda f \lambda x (f)((n)f)x
 ```
 
 Our definition of numbers is just like the examples from the previous section.
@@ -181,10 +181,10 @@ iterative application of a more primitive function to a base value.
 
 Arithmetic
 ```scheme
-+ &= lambda n lambda m ((n)succ)m
-* &= lambda n lambda m ((n)(sum)m)0
-pred &= lambda n lambda f lambda z ((((n) lambda g lambda h (h)(g)f)lambda u z)lambda u u)
-- &= lambda n lambda m ((m)pred)n
++ &= \lambda n \lambda m ((n)succ)m
+* &= \lambda n \lambda m ((n)(sum)m)0
+pred &= \lambda n \lambda f \lambda z ((((n) \lambda g \lambda h (h)(g)f)\lambda u z)\lambda u u)
+- &= \lambda n \lambda m ((m)pred)n
 ```
 
 Addition merely takes advantage of the iterative nature of our numbers to apply
@@ -197,7 +197,7 @@ Since two equals `(succ)(succ)0` we can work out its Lambda form, or simply take
 as a given that is the following.
 
 ```scheme
-2 = lambda f lambda x (f)(f)x
+2 = \lambda f \lambda x (f)(f)x
 ```
 
 Now we can evaluate `pred` for this value. `pred` has been defined already, but
@@ -206,22 +206,22 @@ very easily translated back to Lambda Calculus and should serve to cut through a
 least a portion of the complexity of the definition.
 
 ```scheme
-pred = lambda n lambda f lambda z ((lambda g lambda h (h)(g)f)^{n} lambda u z) lambda u u
+pred = \lambda n \lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^{n} \lambda u z) \lambda u u
 ```
 
 With the above rendering of the definition in mind, we aim to reduce an
 application of `pred` to `2` to a result.
 
 ```scheme
-(lambda n lambda f lambda z ((lambda g lambda h (h)(g)f)^{n} lambda u z) lambda u u) 2
-(lambda f lambda z ((lambda g lambda h (h)(g)f)^2 lambda u z) lambda u u)
+(\lambda n \lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^{n} \lambda u z) \lambda u u) 2
+(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^2 \lambda u z) \lambda u u)
 ```
 Now that we have reduced the expression to the form of our prior rendering of
 `pred`, we will expand it into a true Lambda Calculus form and continue our
 reduction.
 
 ```scheme
-(lambda f lambda z (((lambda g lambda h (h)(g)f) (lambda g lambda h (h)(g)f)) lambda u z) lambda u u)
+(\lambda f \lambda z (((\lambda g \lambda h (h)(g)f) (\lambda g \lambda h (h)(g)f)) \lambda u z) \lambda u u)
 ```
 
 In the following conversions, as in all, our reductions will need to take place in 
@@ -230,18 +230,18 @@ Recall that our goal here is to reduce a complex form to simplistic result, and 
 have already made significant progress.
 
 ```scheme
-(lambda f lambda z ((lambda g lambda h (h)(g)f) (lambda h (h)(lambda u z)f)) lambda u u)
-(lambda f lambda z ((lambda g lambda h (h)(g)f) (lambda h (h)z)) lambda u u)
-(lambda f lambda z (lambda h (h)(lambda h (h)z)f) lambda u u)
-(lambda f lambda z (lambda h (h)(f)z) lambda u u)
+(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) (\lambda h (h)(\lambda u z)f)) \lambda u u)
+(\lambda f \lambda z ((\lambda g \lambda h (h)(g)f) (\lambda h (h)z)) \lambda u u)
+(\lambda f \lambda z (\lambda h (h)(\lambda h (h)z)f) \lambda u u)
+(\lambda f \lambda z (\lambda h (h)(f)z) \lambda u u)
 ```
 The above were all mere substitutions, as should be expected. If any were unclear, 
 try working those steps out in a notebook. We are now finally ready to reduce the
 application of the identity ($lambda u u$) and achieve our final result.
 
 ```scheme
-lambda f lambda z (lambda u u)(f)z
-lambda f lambda z (f)z
+\lambda f \lambda z (\lambda u u)(f)z
+\lambda f \lambda z (f)z
 ```
 
 Our result was a single application of `f` to `z`, i.e., one. Hence you have seen 
@@ -266,9 +266,9 @@ important forms.
 
 Booleans
 ```scheme
-#t &= lambda a lambda b (a)id
-#f &= lambda a lambda b (b)id
-if &= lambda p lambda t lambda f ((p)lambda _ t)lambda _ f
+#t &= \lambda a \lambda b (a)id
+#f &= \lambda a \lambda b (b)id
+if &= \lambda p \lambda t \lambda f ((p)\lambda _ t)\lambda _ f
 ```
 
 The key to our booleans is that they accept two functions as parameters, functions 
@@ -285,8 +285,8 @@ Keep in mind that both of these functions operate only on booleans.
 
 Boolean Algebra
 ```scheme
-and &= lambda a lambda b (((if)a)b)#f
-or &= lambda a lambda b (((if)a)#t)b
+and &= \lambda a \lambda b (((if)a)b)#f
+or &= \lambda a \lambda b (((if)a)#t)b
 ```
 
 With boolean manipulation and conditionals in hand, we need some useful predicates 
@@ -296,9 +296,9 @@ functions.
 
 Numerical Predicates
 ```scheme
-zero? &= lambda n ((n)λx#f)#t
-leq &= lambda a lambda b (zero?)((-)m)n
-eq &= lambda a lambda b (and (leq a b) (leq b a))
+zero? &= \lambda n ((n)λx#f)#t
+leq &= \lambda a \lambda b (zero?)((-)m)n
+eq &= \lambda a \lambda b (and (leq a b) (leq b a))
 ```
 
 The above predicates serve to identify traits of a given number or given numbers. 
@@ -316,8 +316,8 @@ or `n` function.
 
 Pairs
 ```scheme
-cons &= lambda a lambda b lambda c lambda n ((c)a)b
-nil &= lambda c lambda n (n)id
+cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
+nil &= \lambda c \lambda n (n)id
 ```
 
 `cons` constructs a pair when given two values, and accepts a function which will 
@@ -334,10 +334,10 @@ just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
 
 Pair Operations
 ```scheme
-car &= lambda l (((l)lambda a lambda b a)id)
-cdr &= lambda l (((l)lambda a lambda b b)id)
-pair? &= lambda l (((l)lambda \_ lambda \_ #t)lambda \_ #f)
-null? &= lambda l (((l)lambda \_ lambda \_ #f)lambda \_ #t)
+car &= \lambda l (((l)\lambda a \lambda b a)id)
+cdr &= \lambda l (((l)\lambda a \lambda b b)id)
+pair? &= \lambda l (((l)\lambda \_ \lambda \_ #t)\lambda \_ #f)
+null? &= \lambda l (((l)\lambda \_ \lambda \_ #f)\lambda \_ #t)
 ```
 
 `car` provides that pair with a pair handling function that returns the first 
