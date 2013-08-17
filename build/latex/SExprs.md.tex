@@ -299,7 +299,7 @@ Numerical Predicates
 \begin{align*}
 & zero? \; &= \; \lambda \; n \; ((n)λx\#f)\#t
 \\& leq \; &= \; \lambda \; a \; \lambda \; b \; (zero?)((-)m)n
-\\& eq \; &= \; \lambda \; a \; \lambda \; b \; (and \; (\text{le}q \; a \; b) \; (\text{le}q \; b \; a))
+\\& eq \; &= \; \lambda \; a \; \lambda \; b \; (and \; (leq \; a \; b) \; (leq \; b \; a))
 \end{align*}
 
 The above predicates serve to identify traits of a given number or given numbers. 
@@ -508,9 +508,9 @@ prepare it for recursion in the passed expression.
 
 \begin{align*}
 & (\text{let} \; var \; val \; expr) \; &\implies \; ((\text{lambda} \; (var) \; expr) \; val)
-\\& (\text{let}* \; ((var \; val)) \; expr) \; &\implies \; (\text{let} \; var \; val \; expr)
-\\& (\text{let}* \; ((var \; val) \; rest\dots) \; expr) \; &\implies \; ((\text{lambda} \; (var) \; (\text{let}* \; (rest\dots) \; expr)) \; val)
-\\& (\text{let}rec \; var \; fn \; expr) \; &\implies \; (\text{let} \; var \; (Y \; (\text{lambda} \; f \; fn)) \; expr)
+\\& (let* \; ((var \; val)) \; expr) \; &\implies \; (\text{let} \; var \; val \; expr)
+\\& (let* \; ((var \; val) \; rest\dots) \; expr) \; &\implies \; ((\text{lambda} \; (var) \; (let* \; (rest\dots) \; expr)) \; val)
+\\& (\text{letrec} \; var \; fn \; expr) \; &\implies \; (\text{let} \; var \; (Y \; (\text{lambda} \; f \; fn)) \; expr)
 \end{align*}
 
 Once again we provide an inductive definition, and here we finally utilize the Y 

@@ -159,7 +159,7 @@ sections. What follows is an implementation using these concepts of the prior
 imperative procedure.
 
 \begin{align*}
-& (\text{let}rec \; 
+& (\text{letrec} \; 
 \\& \quad main \; 
 \\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
@@ -197,7 +197,7 @@ of a variable `ret` defined on the environment. All other methods in the followi
 similar to those in prior procedures.
 
 \begin{align*}
-& (\text{let}rec \; 
+& (\text{letrec} \; 
 \\& \quad main \; 
 \\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
@@ -237,7 +237,7 @@ outer, or normal, environment. Then, prior to returning, we will clear the inner
 environment by setting it to `nil`.
 
 \begin{align*}
-& (\text{let}rec \; 
+& (\text{letrec} \; 
 \\& \quad main \; 
 \\& \quad (\text{lambda} \; 
 \\& \qquad (main \; env \; start)
@@ -328,7 +328,7 @@ in order.
 
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
-\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad // \; \dots
 \\& \quad )))
@@ -355,7 +355,7 @@ parsed.
 \\& \quad (\text{define} \; accum \; nil)
 \\& \quad (\text{define} \; paren)
 \\& \quad (\text{define} \; found \; \#f)
-\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad // \; \dots
 \\& \quad )))
@@ -383,7 +383,7 @@ these additions of case-handling, we insert `if ... else` statements as in the f
 \\& \quad (\text{define} \; paren)
 \\& \quad (\text{define} \; found \; \#f)
 \\& \quad (\text{define} \; nested \; 0)
-\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad (if \; (and \; (equal? \; '< \; read) \; (not \; found))
 \\& \qquad \quad (\dots"1. \; an \; opening \; parenthesis"\dots)
@@ -399,7 +399,7 @@ following `return` statement.
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad \dots"variables"\dots
-\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\dots"parse"\dots))
 \\& \quad (if \; paren
 \\& \qquad (concat \; (push \; before \; paren) \; (parse \; accum))
@@ -435,7 +435,7 @@ implement these portions in the following code.
 \\& \quad (\text{define} \; paren)
 \\& \quad (\text{define} \; found \; \#f)
 \\& \quad (\text{define} \; nested \; 0)
-\\& \quad (map \; (range \; (\text{le}ngth \; expr)) \; (\text{lambda} \; (i)
+\\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
 \\& \qquad (\text{define} \; read \; (get \; expr \; i))
 \\& \qquad (if \; (and \; (equal? \; '< \; read) \; (not \; found))
 \\& \qquad \quad ((set! \; nested \; (+ \; 1 \; nested))
@@ -541,7 +541,7 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 `funparse\_` then being another definition within the `letrec` procedure.
 
 \begin{align*}
-& (\text{let}rec \; funparse \; (\text{lambda} \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
+& (\text{letrec} \; funparse \; (\text{lambda} \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (\text{let} \; 
 \\& \qquad funparse\_ \; 
 \\& \qquad (\text{lambda} \; (expr) \; (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))
@@ -564,7 +564,7 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 The parser now works as in the following example.
 
 \begin{align*}
-& (\text{let}rec \; parse \; (\text{lambda} \; (\dots) \; \dots)
+& (\text{letrec} \; parse \; (\text{lambda} \; (\dots) \; \dots)
 \\& \quad (parse \; '(< \; a \; > \; < \; b \; < \; c \; > \; > \; < \; d \; >)))
 \\& \implies \; ((a) \; (b \; (c)) \; (d))
 \end{align*}

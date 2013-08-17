@@ -38,7 +38,7 @@ earlier chapter; this time we will explicate the characters allowed in an
 \\& <char> \; &::= \; <letter> \; | \; <number> \; | \; <symbol>
 \\& <letter> \; &::= \; A \; | \; B \; | \; \dots \; | \; Z
 \\& <number> \; &::= \; 0 \; | \; 1 \; | \; \dots \; | \; 9
-\\& <symbol> \; &::= \; * \; | \; + \; | \; - \; | \; / \; | \; \# \; | \; < \; | \; > \; | \; \_
+\\& <symbol> \; &::= \; * \; | \; + \; | \; - \; | \; / \; | \; \# \; | \; < \; | \; > \; | \; \_ \; | \; ?
 \end{align*}
 
 Now, because we will be operating from within our Symbolic Language, we will 
@@ -54,11 +54,11 @@ interpret. Our first task is to enable the Lambda Calculus in these forms,
 not unlike in our earliest definition of the language.
 
 \begin{align*}
-& (\text{let}rec \; eval \; (eval \; expr \; env)
+& (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (assoc \; expr \; env))
 \\& \qquad \qquad \; ((and \; 
 \\& \qquad \qquad \qquad (atom? \; (car \; expr)) \; 
-\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; '\text{lambda})) \; 
+\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; 'lambda)) \; 
 \\& \qquad \qquad \quad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \qquad (eval \; 
 \\& \qquad \qquad \qquad \quad (caddr \; expr) \; 
@@ -74,11 +74,11 @@ This is all fine; however, notice that the arguments to the function are evaluat
 This is not optimal, and does not allow for some nice features enabled by "laziness" in the interpreter. For this reason, we will change the application and variable reference components to reflect a lazy approach to evaluation.
 
 \begin{align*}
-& (\text{let}rec \; eval \; (eval \; expr \; env)
+& (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
 \\& \qquad \qquad \; ((and \; 
 \\& \qquad \qquad \qquad (atom? \; (car \; expr)) \; 
-\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; '\text{lambda})) \; 
+\\& \qquad \qquad \qquad (equal? \; (car \; expr) \; 'lambda)) \; 
 \\& \qquad \qquad \quad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \qquad (eval \; 
 \\& \qquad \qquad \qquad \quad (caddr \; expr) \; 
@@ -145,7 +145,7 @@ The above implementation is pretty simple; it is a very basic definition of the 
 We will now expand our `eval-prelude` to be more extensible and to include the `succ` function.
 
 \begin{align*}
-& (\text{let}* \; 
+& (let* \; 
 \\& \quad ((\text{set-arithmetic} \; (\text{lambda} \; (env)
 \\& \qquad \; (set
 \\& \qquad \quad \; 'succ
@@ -159,7 +159,7 @@ We will now expand our `eval-prelude` to be more extensible and to include the `
 \\& \quad \; (\text{eval-prelude} \; (\text{lambda} \; (expr \; env)
 \\& \qquad \; (eval \; 
 \\& \qquad \quad \; expr
-\\& \qquad \quad \; (\text{set-numerals} \; env))))) \; \dots)
+\\& \qquad \quad \; (\text{set-arithmetic} \; (\text{set-numerals} \; env)))))) \; \dots)
 \end{align*}
 
 \section{Booleans and Predicates}
@@ -172,7 +172,8 @@ Our Booleans will be defined on the prelude by the names of `t` and `f`, as you 
 \\& \quad (\text{lazy-set} \; env \; (list \; (list \; '\#t \; 1) \; (list \; '\#f \; nil)))))
 \end{align*}
 
-Given these definitions of true and false, we will now define an `if` function which follows very naturally from our native `if` function.
+Given these definitions of true and false, we will now define an `if` 
+function which follows very naturally from our native `if` function.
 
 \begin{align*}
 & (\text{set-booleans} \; (\text{lambda} \; (env) \; 
@@ -187,7 +188,8 @@ Given these definitions of true and false, we will now define an `if` function w
 \end{align*}
 
 \section{List Primitives}
-The functions primitive to the manipulation of S-Expressions have yet to be discussed. The following is a list of these primitives.
+The functions primitive to the manipulation of S-Expressions have yet to be 
+discussed. The following is a list of these primitives.
 
 \begin{itemize}
   \item `car`
@@ -195,6 +197,7 @@ The functions primitive to the manipulation of S-Expressions have yet to be disc
   \item `cons`
   \item `eq?`
   \item `null?`
+  \item `atom?`
 \end{itemize}
 
 These will be exposed to the interpreted language by means of the prelude.
@@ -208,13 +211,18 @@ These will be exposed to the interpreted language by means of the prelude.
 \\& \qquad \quad (list \; 'cdr \; cdr)
 \\& \qquad \quad (list \; 'cons \; cons)
 \\& \qquad \quad (list \; 'eq? \; equal?)
-\\& \qquad \quad (list \; 'null? \; null?)))))
+\\& \qquad \quad (list \; 'null? \; null?)
+\\& \qquad \quad (list \; 'atom? \; atom?)))))
 \end{align*}
 
 \section{Recursion}
-Finally, as was alluded to earlier, we will provide a Y combinator for the sake of recursion. Thanks to the lazy evaluation of our interpreter, this will be an easily achieved task.
+Now, as was alluded to earlier, we will provide a Y combinator for the 
+sake of recursion. Thanks to the lazy evaluation of our interpreter, this 
+will be an easily achieved task.
 
-Although combinators are possible without lazy evaluation, a function-based `if` statement is not; this is the key to our dependence on laziness. In the following, we set a Y-Combinator on the prelude.
+Although combinators are possible without lazy evaluation, a function-based 
+`if` statement is not; this is the key to our dependence on laziness. In the 
+following, we set a Y-Combinator on the prelude.
 
 \begin{align*}
 & (\text{set-Y} \; (\text{lambda} \; (env)
@@ -224,3 +232,137 @@ Although combinators are possible without lazy evaluation, a function-based `if`
 \\& \qquad \quad ((\text{lambda} \; (x) \; (f \; (x \; x))) \; 
 \\& \qquad \quad \; (\text{lambda} \; (x) \; (f \; (x \; x))))))))))
 \end{align*}
+
+\section{Syntactic Sugars}
+In our definition of the language, we were sure to provide convenient 
+shorthands and general niceties. Hence, we will now do the same within our 
+interpreter.
+
+Most of the syntactic constructs which we have yet to address are forms of 
+`let`. For this reason, we begin with an exposure of `let` to the 
+interpreter. `let` is merely syntactic sugar for reduction of a lambda; hence 
+we provide the following implementation of let-forms.
+
+\begin{align*}
+& (\text{letrec} \; eval \; (eval \; expr \; env)
+\\& \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
+\\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'lambda) \; 
+\\& \qquad \qquad \quad (\text{lambda} \; (x) \; 
+\\& \qquad \qquad \qquad (eval \; 
+\\& \qquad \qquad \qquad \quad (caddr \; expr) \; 
+\\& \qquad \qquad \qquad \quad (set \; (cadr \; expr) \; x \; env))))
+\\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'let)
+\\& \qquad \qquad \quad (eval \; 
+\\& \qquad \qquad \qquad (list \; 
+\\& \qquad \qquad \qquad \quad (list \; 
+\\& \qquad \qquad \qquad \qquad '\text{lambda} \; 
+\\& \qquad \qquad \qquad \qquad (cadr \; expr) \; 
+\\& \qquad \qquad \qquad \qquad (cadddr \; expr)) \; 
+\\& \qquad \qquad \qquad \quad (caddr \; expr)) \; env))
+\\& \qquad \qquad \; (\#t \; (\text{apply-set} \; 
+\\& \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
+\\& \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; '(\text{lambda} \; (\_) \; x) \; env)) \; (cdr \; expr)))))) \; \dots)
+\end{align*}
+
+Note that this definition performs a rewrite of the S-Expression, and then
+evaluates that new form. This is often referred to as a *macro*. Macros can
+be exposed to the programmer of a language to allow for this same 
+extensibility of the language from *within* the language.
+
+Returning to our syntactic constructs, we similarly define `let*` forms. 
+However, in this case, we will extract a function called `let-set` to avoid 
+messiness in our main interpreter definition.
+
+`let-set` is recursively defined, but its implementation is very similar to
+that of `let`. If there are definitions to be applied, `let-set` creates a
+wrapping lambda and reduces it with the first definition. Then, it recurses
+until there are no more definitions to apply. At that time, it returns the
+expression.
+
+\begin{align*}
+& (\text{letrec} \; \text{let-set} \; 
+\\& \quad (\text{lambda} \; (\text{let-set} \; defs \; expr)
+\\& \qquad (if
+\\& \qquad \quad (null? \; defs)
+\\& \qquad \quad expr
+\\& \qquad \quad (list \; 
+\\& \qquad \qquad (list \; 
+\\& \qquad \qquad \quad '\text{lambda} \; 
+\\& \qquad \qquad \quad (caar \; defs) \; 
+\\& \qquad \qquad \quad (\text{let-set} \; (cdr \; defs) \; expr)) \; 
+\\& \qquad \qquad (cadar \; defs))))
+\\& \quad (\text{letrec} \; eval \; (eval \; expr \; env)
+\\& \qquad (cond \; (\dots
+\\& \qquad \qquad \quad \; ((equal? \; (car \; expr) \; 'let*) \; 
+\\& \qquad \qquad \qquad (eval \; (\text{let-set} \; (cadr \; expr) \; (caddr \; expr)) \; env))
+\\& \qquad \qquad \quad \; (\#t \; \dots))) \; \dots))
+\end{align*}
+
+Now, our last let-form is `letrec`. This syntax will be defined using the Y-
+combinator, as alluded to earlier.
+
+\begin{align*}
+& (\text{letrec} \; eval \; (eval \; expr \; env)
+\\& \quad (cond \; (\dots
+\\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'letrec)
+\\& \qquad \qquad \quad (eval
+\\& \qquad \qquad \qquad (list \; 
+\\& \qquad \qquad \qquad \quad '\text{let} \; 
+\\& \qquad \qquad \qquad \quad (cadr \; expr) \; 
+\\& \qquad \qquad \qquad \quad (list \; 'Y \; (caddr \; expr)) \; 
+\\& \qquad \qquad \qquad \quad (cadddr \; expr))
+\\& \qquad \qquad \qquad env))
+\\& \qquad \qquad \; (\#t \; \dots))) \; \dots)
+\end{align*}
+
+Once again we utilized a macro in our definition of a form; this time simply
+applying the Y-Combinator prior to execution of `let`.
+
+\section{The Evaluator}
+\begin{align*}
+& (\text{letrec} \; \text{let-set} \; 
+\\& \quad (\text{lambda} \; (\text{let-set} \; defs \; expr)
+\\& \qquad (\dots))
+\\& \quad (\text{letrec} \; \text{apply-set} \; (\text{lambda} \; (\text{apply-set} \; fn \; args)
+\\& \qquad (\text{letrec} \; eval \; (eval \; expr \; env)
+\\& \qquad \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
+\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'lambda) \; 
+\\& \qquad \qquad \qquad \quad (\dots))
+\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'let)
+\\& \qquad \qquad \qquad \quad (\dots))
+\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'let*) \; 
+\\& \qquad \qquad \qquad \quad (eval \; (\text{let-set} \; (cadr \; expr) \; (caddr \; expr)) \; env))
+\\& \qquad \qquad \quad \; ((equal? \; (car \; expr) \; 'letrec)
+\\& \qquad \qquad \qquad \quad (\dots))
+\\& \qquad \qquad \qquad \; (\#t \; (\text{apply-set} \; 
+\\& \qquad \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
+\\& \qquad \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; '(\text{lambda} \; (\_) \; x) \; env)) \; (cdr \; expr))))))
+\\& \qquad \quad (let* \; ((\text{lazy-set} \; (\text{lambda} \; (env \; hash)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{set-arithmetic} \; (\text{lambda} \; (env)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{set-numerals} \; (\text{lambda} \; (env)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{set-booleans} \; (\text{lambda} \; (env)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{set-primitives} \; (\text{lambda} \; (env)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{set-Y} \; (\text{lambda} \; (env)
+\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; (\text{eval-prelude} \; (\text{lambda} \; (expr \; env)
+\\& \qquad \qquad \qquad \quad \; (eval
+\\& \qquad \qquad \qquad \quad \; expr
+\\& \qquad \qquad \qquad \quad \; (\text{set-arithmetic}
+\\& \qquad \qquad \qquad \qquad \; (\text{set-numerals}
+\\& \qquad \qquad \qquad \qquad \quad \; (\text{set-booleans}
+\\& \qquad \qquad \qquad \qquad \qquad \; (\text{set-primitives}
+\\& \qquad \qquad \qquad \qquad \qquad \quad (\text{set-Y} \; env)))))))))
+\\& \qquad \qquad \qquad (\dots))))))
+\end{align*}
+
+\section{Conclusion}
+We have successfully defined an interpreter of the syntax of our language.
+Even more interesting is the fact that we implemented this interpreter from
+within the same language. By taking this route, we were able to reuse, or
+*snarf*, some of the constructs of the language very easily in our
+interpretation of it.
