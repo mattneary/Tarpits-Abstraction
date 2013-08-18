@@ -38,7 +38,7 @@ earlier chapter; this time we will explicate the characters allowed in an
 \\& <char> \; &::= \; <letter> \; | \; <number> \; | \; <symbol>
 \\& <letter> \; &::= \; A \; | \; B \; | \; \dots \; | \; Z
 \\& <number> \; &::= \; 0 \; | \; 1 \; | \; \dots \; | \; 9
-\\& <symbol> \; &::= \; * \; | \; + \; | \; - \; | \; / \; | \; \# \; | \; < \; | \; > \; | \; \_ \; | \; ?
+\\& <symbol> \; &::= \; * \; | \; + \; | \; - \; | \; / \; | \; \# \; | \; < \; | \; > \; | \; \_ \; | \; ? \; | \; !
 \end{align*}
 
 Now, because we will be operating from within our Symbolic Language, we will 
@@ -362,8 +362,10 @@ applying the Y-Combinator prior to execution of `let`.
 & (\text{letrec} \; \text{let-set} \; 
 \\& \quad (\text{lambda} \; (\text{let-set} \; defs \; expr)
 \\& \qquad (\dots))
-\\& \quad (\text{letrec} \; \text{apply-set} \; (\text{lambda} \; (\text{apply-set} \; fn \; args)
-\\& \qquad (\text{letrec} \; eval \; (eval \; expr \; env)
+\\& \quad (\text{letrec} \; \text{apply-set} \; 
+\\& \qquad (\text{lambda} \; (\text{apply-set} \; fn \; args)
+\\& \qquad \quad (\dots))
+\\& \qquad (\text{letrec} \; eval \; (\text{lambda} \; (eval \; expr \; env)
 \\& \qquad \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
 \\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'lambda) \; 
 \\& \qquad \qquad \qquad \quad (\dots))
@@ -395,7 +397,7 @@ applying the Y-Combinator prior to execution of `let`.
 \\& \qquad \qquad \qquad \qquad \; (\text{set-numerals}
 \\& \qquad \qquad \qquad \qquad \quad \; (\text{set-booleans}
 \\& \qquad \qquad \qquad \qquad \qquad \; (\text{set-primitives}
-\\& \qquad \qquad \qquad \qquad \qquad \quad (\text{set-Y} \; env)))))))))
+\\& \qquad \qquad \qquad \qquad \qquad \quad (\text{set-Y} \; env))))))))))
 \\& \qquad \qquad \qquad (\dots))))))
 \end{align*}
 
@@ -425,8 +427,8 @@ effect is through its invocation at the top level.
 \subsection{A Monadic Evaluator}
 The maintenance of state throughout our evaluator will require some 
 fundamental changes in the architecture of our evaluator. Essentially, we 
-will be forming a *monad* from our prior evaluator and the environment 
-mutators.
+will be applying a *monad* to our prior evaluator and the environment 
+mutators to form a new evaluator.
 
 "A Monad is just a Monoid in the category of Endofunctors."
 
@@ -479,7 +481,7 @@ evaluator from our prior evaluator, we will begin on its implementation.
 \subsection{A New Eval}
 In our evaluator allowing for multiple-expression procedures, we will form a 
 monad that is the monoidal combination of our previous evaluator and an 
-environment mutator, in which forms such as `set` will cause a new
+environment mutator, in which forms such as `set!` will cause a new
 environment to be returned and all else will return the same environment.
 
 The following is a rewrite of the `eval` function to behave as this composite
@@ -504,7 +506,7 @@ order to bear the same effect as before.
 \\& \qquad \qquad \quad (\dots))
 \\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'let*) \; 
 \\& \qquad \qquad \quad (\dots))
-\\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'set)
+\\& \qquad \qquad \; ((equal? \; (car \; expr) \; 'set!)
 \\& \qquad \qquad \quad (list \; 
 \\& \qquad \qquad \qquad \#t \; 
 \\& \qquad \qquad \qquad (set \; 
@@ -512,11 +514,11 @@ order to bear the same effect as before.
 \\& \qquad \qquad \qquad \quad (eval \; (caddr \; expr) \; env) \; 
 \\& \qquad \qquad \qquad \quad env)))
 \\& \qquad \qquad \; (\#t \; (list
-\\& \qquad \qquad \qquad \quad \; (\text{apply-set} \; 
+\\& \qquad \qquad \qquad \quad \; (car \; (\text{apply-set} \; 
 \\& \qquad \qquad \qquad \qquad \; (car \; (eval \; (car \; expr) \; env))
 \\& \qquad \qquad \qquad \qquad \; (map \; 
 \\& \qquad \qquad \qquad \qquad \quad \; (\text{lambda} \; (x) \; 
-\\& \qquad \qquad \qquad \qquad \qquad \; (car \; (eval \; (list \; '\text{lambda} \; '(\_) \; x) \; env)) \; (cdr \; expr))))
+\\& \qquad \qquad \qquad \qquad \qquad \; (car \; (eval \; (list \; '\text{lambda} \; '(\_) \; x) \; env)) \; (cdr \; expr)))))
 \\& \qquad \qquad \qquad \quad \; env)))) \; \dots)
 \end{align*}
 
@@ -529,13 +531,193 @@ mutating environment.
 & (\text{letrec} \; \text{eval-seq} \; (\text{lambda} \; (\text{eval-seq} \; exprs \; m)
 \\& \quad (if
 \\& \qquad \; (null? \; exprs)
-\\& \qquad \; (car \; m)
+\\& \qquad \; m
 \\& \qquad \; (\text{eval-seq} \; (cdr \; exprs) \; (eval \; (car \; exprs) \; (cadr \; m))))))
 \end{align*}
 
-So, for example, we would achieve the behavior exhibited by the following
+Hence we would achieve the behavior exhibited by the following
 example.
 
 \begin{align*}
-& (\text{eval-seq} \; '((set \; c \; 1) \; (c))) \; \implies \; 1
+& (car \; (\text{eval-seq} \; '((set! \; c \; 1) \; (c)))) \; \implies \; 1
 \end{align*}
+
+\subsection{Scope}
+So far we have for the most part left the environment alone, excepting for
+invocations of `set!`. However, we will now take a look at scope and how it
+will be implemented through the various syntactic forms.
+
+The first prerequisite will be the existence of various scopes in which a
+variable may be defined. For these to be present, we will need sub-procedures
+with their own environments; that is, we will need lambdas with bodies of
+multiple expressions.
+
+Implementation of this feature is far from difficult. We may as well embrace
+our early stages of an expanded language and provide as a prelude the 
+`eval-seq` function. The following combines our set function with the
+Y-Combinator to form an alternative to `let-rec`. Note that we have modified
+the function definition to return the full value-environment pair, rather 
+than just the value.
+
+\begin{align*}
+& (set! \; \text{eval-seq} \; (Y \; (\text{lambda} \; (\text{eval-seq} \; exprs \; m)
+\\& \quad (if
+\\& \qquad \; (null? \; exprs)
+\\& \qquad \; m
+\\& \qquad \; (\text{eval-seq} \; (cdr \; exprs) \; (eval \; (car \; exprs) \; (cadr \; m)))))))
+\end{align*}
+
+Now we can utilize `eval-seq` from within the `eval` function; we will call
+it from within the evaluation of a lambda.
+
+\begin{align*}
+& (set! \; \text{eval-lambda} \; (\text{lambda} \; (eval \; expr \; env)
+\\& \quad (list
+\\& \qquad (\text{lambda} \; (x) \; 
+\\& \qquad \quad (\text{eval-seq} \; 
+\\& \qquad \qquad (cddr \; expr) \; 
+\\& \qquad \qquad (list
+\\& \qquad \qquad \quad \#t
+\\& \qquad \qquad \quad (set \; (cadr \; expr) \; x \; env)))
+\\& \qquad env))
+\end{align*}
+
+Note our above use of `cddr` rather than `caddr`. This is the portion of the
+implementation accounting for a sequence of expressions following the
+parameter list of a lambda definition. Additionally, notice that the initial
+environment had to account for the full form expected by `eval-seq`, i.e.,
+a value-environment pair.
+
+What are the ramifications of this straightforward foundation for scope? Our
+use of `eval-seq` sufficed for maintenance of values in the sequence of 
+lambda body-expressions; however, it served to form a sort of fork from the
+primary environment, one which never reconnects with its origin. We are now
+faced with the problem of implementing this scope-traversal despite the
+current forking.
+
+In order to achieve this, we have already decided that a scope-traversing
+function will be required. How would one be implemented? Well, if you attempt
+to find the point at which two environments share a border, it is clearly at
+the forming of a lambda. Hence, we could define a function, say 
+`bubble-set!`, on the lambda's environment which will set a value on the
+parent environment if the variable has yet to be declared on the child.
+
+There is one issue with this idea, however: the environment value is not
+mutable. Hence, we cannot simply change a value on it. Rather, we will need
+to perform a manipulation at the return-time of the environment. To achieve
+this, we will need to modify the default clause of the evaluator: 
+application. The following would take on the environment value of the forked
+environment.
+
+\begin{align*}
+& (\#t \; (\text{apply-set} \; 
+\\& \qquad \quad (car \; (eval \; (car \; expr) \; env))
+\\& \qquad \quad (map \; 
+\\& \qquad \qquad (\text{lambda} \; (x) \; 
+\\& \qquad \qquad \quad (car \; (eval \; (list \; '\text{lambda} \; '(\_) \; x) \; env)) \; (cdr \; expr))))))
+\end{align*}
+
+This is not suitable, because you would then have all ideas of scope be lost
+to a system of most recently set values. Instead, we will need to harness the
+forked environment for manipulations on the primary environment, and then
+discard it. The following definition of `perform-bubbles` handles the 
+updating of the primary environment.
+
+\begin{align*}
+& (set! \; \text{perform-bubbles} \; (\text{lambda} \; (m \; env)
+\\& \quad (\text{let} \; bubbles \; (assoc \; 'bubbles \; (cadr \; m))
+\\& \qquad (list
+\\& \qquad \quad (car \; m)
+\\& \qquad \quad (cadr \; 
+\\& \qquad \qquad (\text{eval-seq}
+\\& \qquad \qquad \quad (map \; (\text{lambda} \; (b) \; (cons \; 'set! \; b)) \; bubbles)
+\\& \qquad \qquad \quad m))))))
+\\& \dots
+\\& (\#t \; (\text{perform-bubbles} \; (\text{apply-set} \; 
+\\& \qquad \quad (car \; (eval \; (car \; expr) \; env))
+\\& \qquad \quad (map \; 
+\\& \qquad \qquad (\text{lambda} \; (x) \; 
+\\& \qquad \qquad \quad (car \; (eval \; (list \; '\text{lambda} \; '(\_) \; x) \; env)) \; (cdr \; expr))))) \; env))
+\end{align*}
+
+Of special note is the fact that rather than perform the value updates on the
+environment manually, we allowed the evaluator to perform them. This choice
+will prove helpful later when we devise a more formal scoping system governed
+by rules based on variable declaration.
+
+We are now left only with the issue of simulating updates to the primary
+environment from within the forked environment. This can be achieved by some
+tweaks to variable access and setting.
+
+\begin{align*}
+& ((atom? \; expr) \; 
+\\& \quad (if
+\\& \qquad (present? \; expr \; env)
+\\& \qquad (list \; ((assoc \; expr \; env) \; nil) \; env)
+\\& \qquad (list \; ((assoc \; expr \; (assoc \; 'bubble \; env)) \; nil) \; env)))
+\\& \dots \; 
+\\& ((equal? \; (car \; expr) \; 'set!)
+\\& \; (list \; 
+\\& \quad \; \#t \; 
+\\& \quad \; (if
+\\& \qquad \; (present? \; expr \; env)
+\\& \qquad \; (set \; 
+\\& \qquad \quad \; (cadr \; expr) \; 
+\\& \qquad \quad \; (eval \; (caddr \; expr) \; env) \; 
+\\& \qquad \quad \; env)
+\\& \qquad \; (set
+\\& \qquad \quad \; 'bubble
+\\& \qquad \quad \; (set
+\\& \qquad \qquad \; (cadr \; expr)
+\\& \qquad \qquad \; (eval \; (caddr \; expr) \; env)
+\\& \qquad \qquad \; (assoc \; 'bubble \; env))
+\\& \qquad \quad \; env)))) \; 
+\end{align*}
+
+The two definitions above serve to attempt either a get or set on the forked
+environment, and, if the variable is undeclared, perform that action on the
+`bubble` portion of the environment. Of course, when appropriate, these 
+bubbles will be reflected in the primary environment.
+
+Despite the elegance of the above definitions, our current foundation will
+not allow them to be effective. Currently, we are creating the forked
+environment from the primary environment. This means that changes to the
+primary environment will not be seen as needing to bubble, but rather, as 
+changes to local variables. To resolve this issue, we will need to change our
+initial value for forked environments.
+
+\begin{align*}
+& (set! \; \text{eval-lambda} \; (\text{lambda} \; (eval \; expr \; env)
+\\& \quad (list
+\\& \qquad (\text{lambda} \; (x) \; 
+\\& \qquad \quad (\text{eval-seq} \; 
+\\& \qquad \qquad (cddr \; expr) \; 
+\\& \qquad \qquad (list
+\\& \qquad \qquad \quad \#t
+\\& \qquad \qquad \quad (set \; (cadr \; expr) \; x \; '((bubble \; env)))))
+\\& \qquad env))
+\end{align*}
+
+The above is quite simple. Our only change was to specify the primary
+environment as the bubbling cache.
+
+You may have picked up on the fact that since all set operations bubble if
+the variable is undeclared, `set!` will not suffice if we wish to maintain
+various scopes. For this purpose, we will introduce a `define` function.
+`define` will pin down a variable to a specific scope, if you will. Its
+implementation is merely a reuse of our original, naive set function.
+
+\begin{align*}
+& ((equal? \; (car \; expr) \; 'define)
+\\& \; (list \; 
+\\& \quad \; \#t \; 
+\\& \quad \; (set \; 
+\\& \qquad \; (cadr \; expr) \; 
+\\& \qquad \; (eval \; (caddr \; expr) \; env) \; 
+\\& \qquad \; env)))
+\end{align*}
+
+Together, `define` and `set!` provide us with the ability to specify scope
+for variables which will be maintained across any sort of sub-procedure. Our
+implementation of a bubbling `set!` was very slick, and `define` was merely
+a reuse of our old `set!` function.

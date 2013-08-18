@@ -37,7 +37,7 @@ earlier chapter; this time we will explicate the characters allowed in an
 <char> &::= <letter> | <number> | <symbol>
 <letter> &::= A | B | ... | Z
 <number> &::= 0 | 1 | ... | 9
-<symbol> &::= * | + | - | / | \# | < | > | _ | ?
+<symbol> &::= * | + | - | / | \# | < | > | _ | ? | !
 ```
 
 Now, because we will be operating from within our Symbolic Language, we will 
@@ -359,8 +359,10 @@ applying the Y-Combinator prior to execution of `let`.
 (letrec let-set 
   (lambda (let-set defs expr)
     (...))
-  (letrec apply-set (lambda (apply-set fn args)
-    (letrec eval (eval expr env)
+  (letrec apply-set 
+    (lambda (apply-set fn args)
+      (...))
+    (letrec eval (lambda (eval expr env)
       (cond (((atom? expr) ((assoc expr env) nil))
              ((equal? (car expr) 'lambda) 
               (...))
@@ -392,7 +394,7 @@ applying the Y-Combinator prior to execution of `let`.
                  (set-numerals
                    (set-booleans
                      (set-primitives
-                      (set-Y env)))))))))
+                      (set-Y env))))))))))
             (...))))))
 ```
 
@@ -476,7 +478,7 @@ evaluator from our prior evaluator, we will begin on its implementation.
 ###A New Eval
 In our evaluator allowing for multiple-expression procedures, we will form a 
 monad that is the monoidal combination of our previous evaluator and an 
-environment mutator, in which forms such as `set` will cause a new
+environment mutator, in which forms such as `set!` will cause a new
 environment to be returned and all else will return the same environment.
 
 The following is a rewrite of the `eval` function to behave as this composite
@@ -501,7 +503,7 @@ order to bear the same effect as before.
           (...))
          ((equal? (car expr) 'let*) 
           (...))
-         ((equal? (car expr) 'set)
+         ((equal? (car expr) 'set!)
           (list 
             #t 
             (set 
@@ -509,11 +511,11 @@ order to bear the same effect as before.
               (eval (caddr expr) env) 
               env)))
          (#t (list
-               (apply-set 
+               (car (apply-set 
                  (car (eval (car expr) env))
                  (map 
                    (lambda (x) 
-                     (car (eval (list 'lambda '(_) x) env)) (cdr expr))))
+                     (car (eval (list 'lambda '(_) x) env)) (cdr expr)))))
                env)))) ...)
 ```
 
@@ -526,16 +528,193 @@ mutating environment.
 (letrec eval-seq (lambda (eval-seq exprs m)
   (if
      (null? exprs)
-     (car m)
+     m
      (eval-seq (cdr exprs) (eval (car exprs) (cadr m))))))
 ```
 
-So, for example, we would achieve the behavior exhibited by the following
+Hence we would achieve the behavior exhibited by the following
 example.
 
 ```scheme
-(eval-seq '((set c 1) (c))) \implies 1
+(car (eval-seq '((set! c 1) (c)))) \implies 1
 ```
 
 ###Scope
-__TODO__: Implement scope.
+So far we have for the most part left the environment alone, excepting for
+invocations of `set!`. However, we will now take a look at scope and how it
+will be implemented through the various syntactic forms.
+
+The first prerequisite will be the existence of various scopes in which a
+variable may be defined. For these to be present, we will need sub-procedures
+with their own environments; that is, we will need lambdas with bodies of
+multiple expressions.
+
+Implementation of this feature is far from difficult. We may as well embrace
+our early stages of an expanded language and provide as a prelude the 
+`eval-seq` function. The following combines our set function with the
+Y-Combinator to form an alternative to `let-rec`. Note that we have modified
+the function definition to return the full value-environment pair, rather 
+than just the value.
+
+```scheme
+(set! eval-seq (Y (lambda (eval-seq exprs m)
+  (if
+     (null? exprs)
+     m
+     (eval-seq (cdr exprs) (eval (car exprs) (cadr m)))))))
+```
+
+Now we can utilize `eval-seq` from within the `eval` function; we will call
+it from within the evaluation of a lambda.
+
+```scheme
+(set! eval-lambda (lambda (eval expr env)
+  (list
+    (lambda (x) 
+      (eval-seq 
+        (cddr expr) 
+        (list
+          #t
+          (set (cadr expr) x env)))
+    env))
+```
+
+Note our above use of `cddr` rather than `caddr`. This is the portion of the
+implementation accounting for a sequence of expressions following the
+parameter list of a lambda definition. Additionally, notice that the initial
+environment had to account for the full form expected by `eval-seq`, i.e.,
+a value-environment pair.
+
+What are the ramifications of this straightforward foundation for scope? Our
+use of `eval-seq` sufficed for maintenance of values in the sequence of 
+lambda body-expressions; however, it served to form a sort of fork from the
+primary environment, one which never reconnects with its origin. We are now
+faced with the problem of implementing this scope-traversal despite the
+current forking.
+
+In order to achieve this, we have already decided that a scope-traversing
+function will be required. How would one be implemented? Well, if you attempt
+to find the point at which two environments share a border, it is clearly at
+the forming of a lambda. Hence, we could define a function, say 
+`bubble-set!`, on the lambda's environment which will set a value on the
+parent environment if the variable has yet to be declared on the child.
+
+There is one issue with this idea, however: the environment value is not
+mutable. Hence, we cannot simply change a value on it. Rather, we will need
+to perform a manipulation at the return-time of the environment. To achieve
+this, we will need to modify the default clause of the evaluator: 
+application. The following would take on the environment value of the forked
+environment.
+
+```scheme
+(#t (apply-set 
+      (car (eval (car expr) env))
+      (map 
+        (lambda (x) 
+          (car (eval (list 'lambda '(_) x) env)) (cdr expr))))))
+```
+
+This is not suitable, because you would then have all ideas of scope be lost
+to a system of most recently set values. Instead, we will need to harness the
+forked environment for manipulations on the primary environment, and then
+discard it. The following definition of `perform-bubbles` handles the 
+updating of the primary environment.
+
+```scheme
+(set! perform-bubbles (lambda (m env)
+  (let bubbles (assoc 'bubbles (cadr m))
+    (list
+      (car m)
+      (cadr 
+        (eval-seq
+          (map (lambda (b) (cons 'set! b)) bubbles)
+          m))))))
+...
+(#t (perform-bubbles (apply-set 
+      (car (eval (car expr) env))
+      (map 
+        (lambda (x) 
+          (car (eval (list 'lambda '(_) x) env)) (cdr expr))))) env))
+```
+
+Of special note is the fact that rather than perform the value updates on the
+environment manually, we allowed the evaluator to perform them. This choice
+will prove helpful later when we devise a more formal scoping system governed
+by rules based on variable declaration.
+
+We are now left only with the issue of simulating updates to the primary
+environment from within the forked environment. This can be achieved by some
+tweaks to variable access and setting.
+
+```scheme
+((atom? expr) 
+  (if
+    (present? expr env)
+    (list ((assoc expr env) nil) env)
+    (list ((assoc expr (assoc 'bubble env)) nil) env)))
+...    
+((equal? (car expr) 'set!)
+ (list 
+   #t 
+   (if
+     (present? expr env)
+     (set 
+       (cadr expr) 
+       (eval (caddr expr) env) 
+       env)
+     (set
+       'bubble
+       (set
+         (cadr expr)
+         (eval (caddr expr) env)
+         (assoc 'bubble env))
+       env))))    
+```
+
+The two definitions above serve to attempt either a get or set on the forked
+environment, and, if the variable is undeclared, perform that action on the
+`bubble` portion of the environment. Of course, when appropriate, these 
+bubbles will be reflected in the primary environment.
+
+Despite the elegance of the above definitions, our current foundation will
+not allow them to be effective. Currently, we are creating the forked
+environment from the primary environment. This means that changes to the
+primary environment will not be seen as needing to bubble, but rather, as 
+changes to local variables. To resolve this issue, we will need to change our
+initial value for forked environments.
+
+```scheme
+(set! eval-lambda (lambda (eval expr env)
+  (list
+    (lambda (x) 
+      (eval-seq 
+        (cddr expr) 
+        (list
+          #t
+          (set (cadr expr) x '((bubble env)))))
+    env))
+```
+
+The above is quite simple. Our only change was to specify the primary
+environment as the bubbling cache.
+
+You may have picked up on the fact that since all set operations bubble if
+the variable is undeclared, `set!` will not suffice if we wish to maintain
+various scopes. For this purpose, we will introduce a `define` function.
+`define` will pin down a variable to a specific scope, if you will. Its
+implementation is merely a reuse of our original, naive set function.
+
+```scheme
+((equal? (car expr) 'define)
+ (list 
+   #t 
+   (set 
+     (cadr expr) 
+     (eval (caddr expr) env) 
+     env)))
+```     
+
+Together, `define` and `set!` provide us with the ability to specify scope
+for variables which will be maintained across any sort of sub-procedure. Our
+implementation of a bubbling `set!` was very slick, and `define` was merely
+a reuse of our old `set!` function.

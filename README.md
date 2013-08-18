@@ -1,6 +1,6 @@
 Tarpits & Abstraction
 =====================
-View early versions of the beginning chapters as pdfs in the `build/pdfs/` folder.
+View early versions of the beginning chapters as pdfs in the `build/pdf/` folder.
 
 Tarpits & Abstraction is a book beginning with a discussion on Turing Machines and Lambda Calculus, and then exploring layers of abstraction, cross-interpreting, and compiling until the reader can understand computation at any layer of abstraction.
 
@@ -47,13 +47,8 @@ Notes
 - __TODO__: Register machines.
 
 ###Interpreting a Language
-- __TODO__: better define imperative constructs
-- Interpret Lambda Calculus
 - Interpret a Query Language
 
 ###Pulling Our Language up by Its Bootstraps
-- Laziness
-- Adding features
-
-###Pulling Our Language up by Its Bootstraps
-- A chance to add features like `define`.
+- __TODO__: multiple argument lambda definition
+- __TODO__: examples of `define` and `set!`
