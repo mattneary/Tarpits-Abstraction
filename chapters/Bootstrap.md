@@ -1,4 +1,4 @@
-#Pulling Our Language up by Its Bootstraps
+#A Self-Hosted Language
 In the previous section, we successfully designed and implemented an
 interpreter of the Lambda Calculus. This was a very interesting problem to
 solve, because it allowed us to form a grammar of expression from within our working language; then allowing us to expand upon this grammar dynamically.
@@ -457,8 +457,8 @@ type of our environment. Hence, the types are something like those that
 follow.
 
 ```
-result &:= atom | sexpr
-lambda &:= (result \implies result) | (result \implies lambda)
+result &:= atom | sexpr | lambda
+lambda &:= (result \implies result)
 environment &:= ((atom lambda))
 ```
 

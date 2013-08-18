@@ -1,4 +1,4 @@
-#Interpreting a Language
+#Mechanical Interpretation of a Language
 The most important revelation in learning the art of programming is that the 
 language in which you work is completely arbitrary. More specifically, the 
 language in which you express concepts was defined in terms of another language 

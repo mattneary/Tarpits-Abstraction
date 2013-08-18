@@ -7,10 +7,13 @@ define render
 	$(TEXODE) $(FLAGS) chapters/$(1).md $(TEXOUT)	
 endef	
 
-all: bootstrap interpret register sexprs sfuncs twotheories simulate compile clean
+all: syntax bootstrap interpret register sexprs sfuncs twotheories simulate compile clean
 
 bootstrap: chapters/Bootstrap.md
 	$(call render,Bootstrap)
+	
+syntax: chapters/Syntax.md
+	$(call render,Syntax)	
 	
 interpret: chapters/Interpret.md
 	$(call render,Interpret)

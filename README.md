@@ -4,16 +4,15 @@ View early versions of the beginning chapters as pdfs in the `build/pdf/` folder
 
 Tarpits & Abstraction is a book beginning with a discussion on Turing Machines and Lambda Calculus, and then exploring layers of abstraction, cross-interpreting, and compiling until the reader can understand computation at any layer of abstraction.
 
-Currently, it is planned to have a preface (*A Tale of Two Theories*) and six parts:
+Currently, it is planned to have a preface (*A Tale of Two Theories*) and seven parts:
 
-__TODO__: First chapter consisting of code to get started with.
-
-1. Defining Symbolic Expressions
-2. A Library of Symbolic Functions
-3. Simulating Logical Devices
-4. Interpreting a Language
-5. Pulling Our Language up by Its Bootstraps
-6. Communicating Symbolic Forms to a Register Machine
+1. Syntax and Semantics
+2. Defining Symbolic Expressions
+3. Designing Primitive Procedures
+4. Simulating Logical Devices
+5. Mechanical Interpretation of a Language
+6. A Self-Hosted Language
+7. Communicating a Language to Machine
 
 Compilation
 -----------

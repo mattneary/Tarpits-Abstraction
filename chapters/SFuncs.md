@@ -1,4 +1,4 @@
-#A Library of Symbolic Functions
+#Designing Primitive Procedures
 ##Introduction
 We have formed a language constituent of Symbolic Expressions. Additionally, we 
 have an array of useful and primitive Lambda Calculus functions at our disposal. 
