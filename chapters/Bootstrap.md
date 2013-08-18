@@ -45,7 +45,8 @@ be able to abstract away the details of the grammar. That is, S-Expressions
 will be represented as S-Expressions when provided as input to the 
 interpreter, as will atoms as atoms.
 
-##Lambda Forms
+##Self-Interpretaion
+###Lambda Forms
 Recall from our definition of the Symbolic Language in terms of the Lambda 
 Calculus that there were some functions considered more primitive to the 
 language than others. We will expose these to the language which we 
@@ -67,10 +68,15 @@ not unlike in our earliest definition of the language.
            (map (lambda (x) (eval x env)) (cdr expr)))))) ...)
 ```
 
-This is all fine; however, notice that the arguments to the function are evaluated all at once and passed to the an applier-function. In the next section, we will discuss a better approach to evaluation.
+This is all fine; however, notice that the arguments to the function are 
+evaluated all at once and passed to the an applier-function. In the next 
+section, we will discuss a better approach to evaluation.
 
-##Laziness
-This is not optimal, and does not allow for some nice features enabled by "laziness" in the interpreter. For this reason, we will change the application and variable reference components to reflect a lazy approach to evaluation.
+###Laziness
+This is not optimal, and does not allow for some nice features enabled by 
+"laziness" in the interpreter. For this reason, we will change the 
+application and variable reference components to reflect a lazy approach to 
+evaluation.
 
 ```scheme
 (letrec eval (eval expr env)
@@ -84,15 +90,27 @@ This is not optimal, and does not allow for some nice features enabled by "lazin
               (set (cadr expr) x env))))
          (#t (apply-set 
            (eval (car expr) env) 
-           (map (lambda (x) (eval '(lambda (_) x) env)) (cdr expr)))))) ...)
+           (map 
+             (lambda (x) 
+               (eval (list 'lambda '(_) x) env)) 
+             (cdr expr)))))) ...)
 ```
 
-With very few changes we were able to implement this lazy approach. We simply made all arguments wrapped in a lambda before their evaluation, and all variable references then reduce these wrappings when appropriate. These small changes will make a world of difference in the potential of expressiveness in our language.
+With very few changes we were able to implement this lazy approach. We simply 
+made all arguments wrapped in a lambda before their evaluation, and all 
+variable references then reduce these wrappings when appropriate. These small 
+changes will make a world of difference in the potential of expressiveness in 
+our language.
 
-The most evident of advantages is in the ability to branch execution, i.e., perform `if` statements, without evaluating both branches. This later translates into the ability to recurse without invoking infinite recursion.
+The most evident of advantages is in the ability to branch execution, i.e., 
+perform `if` statements, without evaluating both branches. This later 
+translates into the ability to recurse without invoking infinite recursion.
 
-##Numbers
-In order to interpret numbers, we would need our atomic values to be not so atomic. Rather than have atoms go against this nature, we will delay implementation of arbitrary numbers. For now, we will start with single digits.
+###Numbers
+In order to interpret numbers, we would need our atomic values to be not so 
+atomic. Rather than have atoms go against this nature, we will delay 
+implementation of arbitrary numbers. For now, we will start with single 
+digits.
 
 ```scheme
 (let eval-prelude (lambda (expr env)
@@ -104,7 +122,12 @@ In order to interpret numbers, we would need our atomic values to be not so atom
         (5 (5)) (6 (6)) (7 (7)) (8 (8)) (9 (9)))))) ...)
 ```
 
-The above is just another `eval` function, this time appending to the environment a prelude of definitions prior to calling the usual `eval` function. The equivalencies presented are merely from atom to singleton lists; no nature of numbers shows through. Why singletons? Numbers are lists of digits more than they are atomic values, after all, this is what allows us to perform arbitrary arithmetic.
+The above is just another `eval` function, this time appending to the 
+environment a prelude of definitions prior to calling the usual `eval` 
+function. The equivalencies presented are merely from atom to singleton 
+lists; no nature of numbers shows through. Why singletons? Numbers are lists 
+of digits more than they are atomic values, after all, this is what allows us 
+to perform arbitrary arithmetic.
 
 There is one aspect of the environment that we failed to address in our setup 
 of a prelude. Given the lazy nature of our interpreter in which all variable
@@ -139,9 +162,15 @@ all else is possible.
            (#t (cons (succ (car x)) (cdr x))))))) ...)
 ```
 
-The above implementation is pretty simple; it is a very basic definition of the meaning of numbers in our decimal system. It says, "One follows zero; two follows one; etc." Next, it communicates the intricacies of place value. A number with a ones digit of nine will increment to a ones digit zero, with a once higher leading strand of digits. Finally, any other number with multiple digits will result in a once larger ones digit.
+The above implementation is pretty simple; it is a very basic definition of 
+the meaning of numbers in our decimal system. It says, "One follows zero; two 
+follows one; etc." Next, it communicates the intricacies of place value. A 
+number with a ones digit of nine will increment to a ones digit zero, with a 
+once higher leading strand of digits. Finally, any other number with multiple 
+digits will result in a once larger ones digit.
 
-We will now expand our `eval-prelude` to be more extensible and to include the `succ` function.
+We will now expand our `eval-prelude` to be more extensible and to include 
+the `succ` function.
 
 ```scheme
 (let* 
@@ -161,10 +190,17 @@ We will now expand our `eval-prelude` to be more extensible and to include the `
        (set-arithmetic (set-numerals env)))))) ...)
 ```
 
-##Booleans and Predicates
-Our implementation of Booleans will be quite simple. Recall the use of atoms to symbolize numbers in the prior section, with the meaning of the numbers being more derived from the operations we defined than from their representation. The same will hold especially true for Booleans.
+###Booleans and Predicates
+Our implementation of Booleans will be quite simple. Recall the use of atoms 
+to symbolize numbers in the prior section, with the meaning of the numbers 
+being more derived from the operations we defined than from their 
+representation. The same will hold especially true for Booleans.
 
-Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as you have come to expect. Now, rather than decide on an arbitrary atom to which they will map, we will allow `#f` to equal `nil` and `#t` to equal `1`. Hence we would have a `set-booleans` definition to append to `let*` that looks like the following.
+Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as 
+you have come to expect. Now, rather than decide on an arbitrary atom to 
+which they will map, we will allow `#f` to equal `nil` and `#t` to equal `1`. 
+Hence we would have a `set-booleans` definition to append to `let*` that 
+looks like the following.
 
 ```scheme
 (set-booleans (lambda (env)
@@ -186,7 +222,7 @@ function which follows very naturally from our native `if` function.
           (if (null? x) f t))))))))
 ```
 
-##List Primitives
+###List Primitives
 The functions primitive to the manipulation of S-Expressions have yet to be 
 discussed. The following is a list of these primitives.
 
@@ -212,7 +248,7 @@ These will be exposed to the interpreted language by means of the prelude.
       (list 'atom? atom?)))))
 ```
 
-##Recursion
+###Recursion
 Now, as was alluded to earlier, we will provide a Y combinator for the 
 sake of recursion. Thanks to the lazy evaluation of our interpreter, this 
 will be an easily achieved task.
@@ -230,7 +266,7 @@ following, we set a Y-Combinator on the prelude.
        (lambda (x) (f (x x))))))))))
 ```      
 
-##Syntactic Sugars
+###Syntactic Sugars
 In our definition of the language, we were sure to provide convenient 
 shorthands and general niceties. Hence, we will now do the same within our 
 interpreter.
@@ -258,7 +294,10 @@ we provide the following implementation of let-forms.
               (caddr expr)) env))
          (#t (apply-set 
            (eval (car expr) env) 
-           (map (lambda (x) (eval '(lambda (_) x) env)) (cdr expr)))))) ...)
+           (map 
+             (lambda (x) 
+               (eval (list 'lambda '(_) x) env)) 
+             (cdr expr)))))) ...)
 ```
 
 Note that this definition performs a rewrite of the S-Expression, and then
@@ -315,7 +354,7 @@ combinator, as alluded to earlier.
 Once again we utilized a macro in our definition of a form; this time simply
 applying the Y-Combinator prior to execution of `let`.
 
-##The Evaluator
+###The Evaluator
 ```scheme
 (letrec let-set 
   (lambda (let-set defs expr)
@@ -357,9 +396,146 @@ applying the Y-Combinator prior to execution of `let`.
             (...))))))
 ```
 
-##Conclusion
+###Conclusion
 We have successfully defined an interpreter of the syntax of our language.
 Even more interesting is the fact that we implemented this interpreter from
 within the same language. By taking this route, we were able to reuse, or
 *snarf*, some of the constructs of the language very easily in our
 interpretation of it.
+
+##Language Expansion
+Having successfully allowed our language to interpret itself, we are now able
+to take it even farther. That is, we can begin to add features to our
+language from within the language itself.
+
+You have probably begun to notice the complexity of some of our procedures.
+The nesting of definitions, amongst other things, leads to an expression very
+hard for a human reader to parse. Additionally, you might recall from an
+earlier section the utilization of mutation in a procedure, attributed to an
+imperative approach, as an alternative to this heavy nesting.
+
+In this section, we will implement the beginnings of an array of mutators
+allowing for the imperative model. We will begin with a single, `set` 
+function without scope. This means that the only way this form will take
+effect is through its invocation at the top level.
+
+###A Monadic Evaluator
+The maintenance of state throughout our evaluator will require some 
+fundamental changes in the architecture of our evaluator. Essentially, we 
+will be applying a *monad* to our prior evaluator and the environment 
+mutators to form a new evaluator.
+
+"A Monad is just a Monoid in the category of Endofunctors."
+
+The above introduction may not have served to clarify the idea of a monad. So
+let's reduce that definition to something a bit more approachable.
+
+"A Monad concatenates Endofunctors."
+
+A Monoid is any associative function from two elements of a class to another
+for which there exists an identity element. Hence, we can for the most part
+reduce its description as a Monoid to a description as a concatenator. 
+Lastly, we are left with the term *Endofunctor* which we would like to 
+clarify.
+
+"A Monad combines type-classes."
+
+The idea of the Functor is not a simple one. However, the basic description
+is that a Functor is a mapping from category to category, and in the case of
+an Endofunctor, a mapping of a category onto itself. Now why did I call it a
+type-class? Because most categories you are familiar with are type classes.
+A type class is a type parametrized over another type. For example, you may
+have a type set which is parametrized by the type of its elements. Then a
+Monad would serve to combine a Set and perhaps an Array.
+
+The Monad which we will utilize without fully acknowledging it is a Monad
+to maintain both a result and state. Hence, our Monad will be parametrized
+by two types. These types will be the `result` type of our evaluator, and the
+type of our environment. Hence, the types are something like those that
+follow.
+
+```
+result &:= atom | sexpr
+lambda &:= (result \implies result) | (result \implies lambda)
+environment &:= ((atom lambda))
+```
+
+Then the type of our Monad-formed new evaluator would be the following. Note
+how this is a combination of an endomorphism on `environment` and an 
+endomorphism on `result`. Hence the hypothetical Monad which formed this new
+evaluator would be a combination of the two type-classes which we then
+reduced with the `environment` and `result` types.
+
+```
+eval := result \implies environment \implies (result environment)
+```
+
+Now that we have identified the means by which we formed a state-sensitive
+evaluator from our prior evaluator, we will begin on its implementation.
+
+###A New Eval
+In our evaluator allowing for multiple-expression procedures, we will form a 
+monad that is the monoidal combination of our previous evaluator and an 
+environment mutator, in which forms such as `set` will cause a new
+environment to be returned and all else will return the same environment.
+
+The following is a rewrite of the `eval` function to behave as this composite
+form. Note that macro forms behave the same as before, but that all other
+forms return a list of expression result and environment. Of course, these
+forms are also forced to interface with the new return values of `eval` in
+order to bear the same effect as before.
+
+```scheme
+(letrec eval (eval expr env)
+  (cond (((atom? expr) (list ((assoc expr env) nil) env))
+         ((equal? (car expr) 'lambda) 
+          (list
+            (lambda (x) 
+              (eval 
+                (caddr expr) 
+                (set (cadr expr) x env)))
+            env)
+         ((equal? (car expr) 'let)
+          (...))
+         ((equal? (car expr) 'letrec)
+          (...))
+         ((equal? (car expr) 'let*) 
+          (...))
+         ((equal? (car expr) 'set)
+          (list 
+            #t 
+            (set 
+              (cadr expr) 
+              (eval (caddr expr) env) 
+              env)))
+         (#t (list
+               (apply-set 
+                 (car (eval (car expr) env))
+                 (map 
+                   (lambda (x) 
+                     (car (eval (list 'lambda '(_) x) env)) (cdr expr))))
+               env)))) ...)
+```
+
+With this new eval function, we have a way of maintaining state after 
+mutation to the environment. Now we can define a function which will accept
+a list of expressions and perform them one after the other on a gradually
+mutating environment.
+
+```scheme
+(letrec eval-seq (lambda (eval-seq exprs m)
+  (if
+     (null? exprs)
+     (car m)
+     (eval-seq (cdr exprs) (eval (car exprs) (cadr m))))))
+```
+
+So, for example, we would achieve the behavior exhibited by the following
+example.
+
+```scheme
+(eval-seq '((set c 1) (c))) \implies 1
+```
+
+###Scope
+__TODO__: Implement scope.
