@@ -161,8 +161,7 @@ imperative procedure.
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
-\\& \quad (\text{lambda} \; 
-\\& \qquad (main \; env \; start)
+\\& \quad (\text{lambda} \; (main \; env \; start)
 \\& \qquad (get \; (list \; (main \; (set \; 'x \; 5 \; env) \; (+ \; 1 \; start))
 \\& \qquad \qquad \qquad \quad \; (main \; (set \; 'x \; (* \; 2 \; (assoc \; 'x \; env)) \; env) \; (+ \; 1 \; start))
 \\& \qquad \qquad \qquad \quad \; (equal? \; (assoc \; 'x \; env) \; 5)) \; start))
@@ -199,8 +198,7 @@ similar to those in prior procedures.
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
-\\& \quad (\text{lambda} \; 
-\\& \qquad (main \; env \; start)
+\\& \quad (\text{lambda} \; (main \; env \; start)
 \\& \qquad (get \; (list \; (main \; (set \; 'x \; (assoc \; 'y \; env) \; env) \; (assoc \; 'ret \; env))
 \\& \qquad \qquad \qquad \quad \; (main \; (set \; 'x \; 5 \; env) \; (+ \; 1 \; start))
 \\& \qquad \qquad \qquad \quad \; (main \; (set \; 'ret \; 3 \; (set \; 'y \; 12 \; env)) \; 0)
@@ -236,19 +234,30 @@ simplicity, create an inner environment, known as a *closure*, as a value on the
 outer, or normal, environment. Then, prior to returning, we will clear the inner 
 environment by setting it to `nil`.
 
+\clearpage
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
-\\& \quad (\text{lambda} \; 
-\\& \qquad (main \; env \; start)
-\\& \qquad (get \; (list \; (\text{let} \; ((outer \; env)
-\\& \qquad \qquad \qquad \qquad \qquad \; (inner \; (set \; 'y \; (assoc \; 'x \; (assoc \; 'inner \; outer)) \; (assoc \; 'inner \; outer))
-\\& \qquad \qquad \qquad \qquad \qquad \; (outer \; (set \; 'inner \; inner \; outer)))
-\\& \qquad \qquad \qquad \qquad \; (main \; outer \; (+ \; 1 \; start)))
-\\& \qquad \qquad \qquad \quad \; (main \; (set \; 'inner \; nil \; outer) \; (assoc \; 'ret \; outer))
-\\& \qquad \qquad \qquad \quad \; (main \; (set \; 'inner \; (set \; 'x \; 5 \; (assoc \; 'inner \; env)) \; env) \; (+ \; 1 \; start))
-\\& \qquad \qquad \qquad \quad \; (main \; (set \; 'ret \; 4 \; (set \; 'y \; 12 \; env)) \; 0)
-\\& \qquad \qquad \qquad \quad \; (assoc \; 'y \; env)) \; start))
+\\& \quad (\text{lambda} \; (main \; env \; start)
+\\& \qquad (get \; 
+\\& \qquad \quad (list \; 
+\\& \qquad \qquad (let* \; ((outer \; env)
+\\& \qquad \qquad \qquad \quad \; (inner \; 
+\\& \qquad \qquad \qquad \qquad \; (set \; 'y \; (assoc \; 'x \; (assoc \; 'inner \; outer)) \; (assoc \; 'inner \; outer))
+\\& \qquad \qquad \qquad \quad \; (outer \; (set \; 'inner \; inner \; outer)))
+\\& \qquad \qquad \qquad \quad \; (main \; outer \; (+ \; 1 \; start)))
+\\& \qquad \qquad \qquad \quad (main \; (set \; 'inner \; nil \; outer) \; (assoc \; 'ret \; outer))
+\\& \qquad \qquad \qquad \quad (main \; 
+\\& \qquad \qquad \qquad \qquad (set \; 
+\\& \qquad \qquad \qquad \qquad \quad 'inner \; 
+\\& \qquad \qquad \qquad \qquad \quad (set \; 'x \; 5 \; (assoc \; 'inner \; env)) \; 
+\\& \qquad \qquad \qquad \qquad \quad env) \; 
+\\& \qquad \qquad \qquad \qquad (+ \; 1 \; start))
+\\& \qquad \qquad \qquad \quad (main \; 
+\\& \qquad \qquad \qquad (set \; 'ret \; 4 \; (set \; 'y \; 12 \; env)) \; 
+\\& \qquad \qquad \qquad \qquad 0)
+\\& \qquad \qquad \quad (assoc \; 'y \; env)) \; 
+\\& \qquad start))
 \\& \quad \dots)
 \end{align*}
 
@@ -428,6 +437,7 @@ implement these portions in the following code.
   \item When a parenthetical is open, `before` receives the accumulator value.
 \end{itemize}
 
+\clearpage
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad (\text{define} \; before)
@@ -464,7 +474,7 @@ programming:
 \begin{itemize}
   \item Values shall not be mutated.
   \item Control-flow shall not be explicit.
-  \item Recursion is dope.
+  \item Recursion is a fundamental idea.
 \end{itemize}
 
 Let's begin by abiding to the second rule, inspired by the third. The first thing 
@@ -478,6 +488,7 @@ i.e., those which have yet to be read. This is both logical in that our progress
 navigating the list is maintained, and idiomatic as you have seen in prior programs 
 written in our Symbolic Language.
 
+\clearpage
 \begin{align*}
 & (\text{define} \; funparse \; (\text{lambda} \; (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
@@ -520,13 +531,28 @@ operating on arguments.
 \\& \qquad \quad expr)
 \\& \qquad (if \; (and \; (equal? \; '< \; (get \; expr \; 0)) \; (not \; found))
 \\& \qquad \quad (if \; (equal? \; nested \; 0)
-\\& \qquad \qquad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; accum \; paren \; nil \; found)
-\\& \qquad \qquad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
+\\& \qquad \qquad (funparse \; 
+\\& \qquad \quad (cdr \; expr) \; (+ \; nested \; 1) \; 
+\\& \qquad \quad accum \; paren \; 
+\\& \qquad \quad nil \; found)
+\\& \qquad \qquad (funparse \; 
+\\& \qquad \quad (cdr \; expr) \; (+ \; nested \; 1) \; 
+\\& \qquad \quad before \; paren \; 
+\\& \qquad \quad (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \quad (if \; (and \; (equal? \; '> \; (get \; expr \; 0)) \; (not \; found))
 \\& \qquad \qquad (if \; (equal? \; nested \; 1)
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; \#t)
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
-\\& \qquad \qquad (funparse \; (cdr \; expr) \; nested \; before \; paren \; (push \; accum \; (car \; expr)) \; found))))))
+\\& \qquad \qquad \quad (funparse \; 
+\\& \qquad \qquad (cdr \; expr) \; (- \; nested \; 1) \; 
+\\& \qquad \qquad before \; (funparse\_ \; accum) \; 
+\\& \qquad \qquad nil \; \#t)
+\\& \qquad \qquad \quad (funparse \; 
+\\& \qquad \qquad (cdr \; expr) \; (- \; nested \; 1) \; 
+\\& \qquad \qquad before \; paren \; 
+\\& \qquad \qquad (push \; accum \; (car \; expr)) \; found))
+\\& \qquad \qquad (funparse \; 
+\\& \qquad \quad (cdr \; expr) \; nested \; 
+\\& \qquad \quad before \; paren \; 
+\\& \qquad \quad (push \; accum \; (car \; expr)) \; found))))))
 \\& (\text{define} \; funparse\_ \; (\text{lambda} \; (expr)
 \\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))) \; 
 \end{align*}
@@ -540,6 +566,7 @@ There are a few vestiges of our initial, imperative implementation which we will
 Of note is the prior `define` keyword that was appropriately substituted by `letrec`, with 
 `funparse\_` then being another definition within the `letrec` procedure.
 
+\clearpage
 \begin{align*}
 & (\text{letrec} \; funparse \; (\text{lambda} \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (\text{let} \; 
@@ -551,13 +578,28 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 \\& \qquad \qquad (concat \; (push \; before \; paren) \; (funparse\_ \; accum)))
 \\& \qquad \quad (if \; (and \; (equal? \; '< \; (car \; expr)) \; (not \; found))
 \\& \qquad \qquad (if \; (equal? \; nested \; 0)
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; accum \; paren \; nil \; found)
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; (+ \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
+\\& \qquad \qquad \quad (funparse \; 
+\\& \qquad \qquad (cdr \; expr) \; (+ \; nested \; 1) \; 
+\\& \qquad \qquad accum \; paren \; 
+\\& \qquad \qquad nil \; found)
+\\& \qquad \qquad \quad (funparse \; 
+\\& \qquad \qquad (cdr \; expr) \; (+ \; nested \; 1) \; 
+\\& \qquad \qquad before \; paren \; 
+\\& \qquad \qquad (push \; accum \; (car \; expr)) \; found))
 \\& \qquad \qquad (if \; (and \; (equal? \; '> \; (car \; expr)) \; (not \; found))
 \\& \qquad \qquad \quad (if \; (equal? \; nested \; 1)
-\\& \qquad \qquad \qquad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; (funparse\_ \; accum) \; nil \; \#t)
-\\& \qquad \qquad \qquad (funparse \; (cdr \; expr) \; (- \; nested \; 1) \; before \; paren \; (push \; accum \; (car \; expr)) \; found))
-\\& \qquad \qquad \quad (funparse \; (cdr \; expr) \; nested \; before \; paren \; (push \; accum \; (car \; expr)) \; found)))))) \; \dots)
+\\& \qquad \qquad \qquad (funparse \; 
+\\& \qquad \qquad \quad (cdr \; expr) \; (- \; nested \; 1) \; 
+\\& \qquad \qquad \quad before \; (funparse\_ \; accum) \; 
+\\& \qquad \qquad \quad nil \; \#t)
+\\& \qquad \qquad \qquad (funparse \; 
+\\& \qquad \qquad \quad (cdr \; expr) \; (- \; nested \; 1) \; 
+\\& \qquad \qquad \quad before \; paren \; 
+\\& \qquad \qquad \quad (push \; accum \; (car \; expr)) \; found))
+\\& \qquad \qquad \quad (funparse \; 
+\\& \qquad \qquad (cdr \; expr) \; nested \; 
+\\& \qquad \qquad before \; paren \; 
+\\& \qquad \qquad (push \; accum \; (car \; expr)) \; found)))))) \; \dots)
 \end{align*}
 
 \subsection{The Parser}

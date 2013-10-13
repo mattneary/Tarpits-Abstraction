@@ -158,8 +158,7 @@ imperative procedure.
 ```scheme
 (letrec 
   main 
-  (lambda 
-    (main env start)
+  (lambda (main env start)
     (get (list (main (set 'x 5 env) (+ 1 start))
                (main (set 'x (* 2 (assoc 'x env)) env) (+ 1 start))
                (equal? (assoc 'x env) 5)) start))
@@ -196,8 +195,7 @@ similar to those in prior procedures.
 ```scheme
 (letrec 
   main 
-  (lambda 
-    (main env start)
+  (lambda (main env start)
     (get (list (main (set 'x (assoc 'y env) env) (assoc 'ret env))
                (main (set 'x 5 env) (+ 1 start))
                (main (set 'ret 3 (set 'y 12 env)) 0)
@@ -233,19 +231,30 @@ simplicity, create an inner environment, known as a *closure*, as a value on the
 outer, or normal, environment. Then, prior to returning, we will clear the inner 
 environment by setting it to `nil`.
 
+\clearpage
 ```scheme
 (letrec 
   main 
-  (lambda 
-    (main env start)
-    (get (list (let ((outer env)
-                     (inner (set 'y (assoc 'x (assoc 'inner outer)) (assoc 'inner outer))
-                     (outer (set 'inner inner outer)))
-                 (main outer (+ 1 start)))
-               (main (set 'inner nil outer) (assoc 'ret outer))
-               (main (set 'inner (set 'x 5 (assoc 'inner env)) env) (+ 1 start))
-               (main (set 'ret 4 (set 'y 12 env)) 0)
-               (assoc 'y env)) start))
+  (lambda (main env start)
+    (get 
+      (list 
+        (let* ((outer env)
+               (inner 
+                 (set 'y (assoc 'x (assoc 'inner outer)) (assoc 'inner outer))
+               (outer (set 'inner inner outer)))
+               (main outer (+ 1 start)))
+              (main (set 'inner nil outer) (assoc 'ret outer))
+              (main 
+                (set 
+                  'inner 
+                  (set 'x 5 (assoc 'inner env)) 
+                  env) 
+                (+ 1 start))
+              (main 
+	        (set 'ret 4 (set 'y 12 env)) 
+                0)
+          (assoc 'y env)) 
+	start))
   ...)
 ```
 
@@ -417,6 +426,7 @@ implement these portions in the following code.
 - When the parenthetical is closed, it is recursively `parsed` and set to the `paren` variable.
 - When a parenthetical is open, `before` receives the accumulator value.
 
+\clearpage
 ```scheme
 (define parse (lambda (expr) 
   (define before)
@@ -452,7 +462,7 @@ programming:
 
 - Values shall not be mutated.
 - Control-flow shall not be explicit.
-- Recursion is dope.
+- Recursion is a fundamental idea.
 
 Let's begin by abiding to the second rule, inspired by the third. The first thing 
 you will notice is that all variables were made function arguments. This is because 
@@ -465,6 +475,7 @@ i.e., those which have yet to be read. This is both logical in that our progress
 navigating the list is maintained, and idiomatic as you have seen in prior programs 
 written in our Symbolic Language.
 
+\clearpage
 ```scheme
 (define funparse (lambda (expr nested before paren accum found) 
   (if (null? expr)
@@ -507,13 +518,28 @@ operating on arguments.
       expr)
     (if (and (equal? '< (get expr 0)) (not found))
       (if (equal? nested 0)
-        (funparse (cdr expr) (+ nested 1) accum paren nil found)
-        (funparse (cdr expr) (+ nested 1) before paren (push accum (car expr)) found))
+        (funparse 
+	  (cdr expr) (+ nested 1) 
+	  accum paren 
+	  nil found)
+        (funparse 
+	  (cdr expr) (+ nested 1) 
+	  before paren 
+	  (push accum (car expr)) found))
       (if (and (equal? '> (get expr 0)) (not found))
         (if (equal? nested 1)
-          (funparse (cdr expr) (- nested 1) before (funparse_ accum) nil #t)
-          (funparse (cdr expr) (- nested 1) before paren (push accum (car expr)) found))
-        (funparse (cdr expr) nested before paren (push accum (car expr)) found))))))
+          (funparse 
+	    (cdr expr) (- nested 1) 
+	    before (funparse_ accum) 
+	    nil #t)
+          (funparse 
+	    (cdr expr) (- nested 1) 
+	    before paren 
+	    (push accum (car expr)) found))
+        (funparse 
+	  (cdr expr) nested 
+	  before paren 
+	  (push accum (car expr)) found))))))
 (define funparse_ (lambda (expr)
   (funparse expr 0 '() '() '() #f)))             
 ```
@@ -527,6 +553,7 @@ There are a few vestiges of our initial, imperative implementation which we will
 Of note is the prior `define` keyword that was appropriately substituted by `letrec`, with 
 `funparse_` then being another definition within the `letrec` procedure.
 
+\clearpage
 ```scheme
 (letrec funparse (lambda (funparse expr nested before paren accum found) 
   (let 
@@ -538,13 +565,28 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
         (concat (push before paren) (funparse_ accum)))
       (if (and (equal? '< (car expr)) (not found))
         (if (equal? nested 0)
-          (funparse (cdr expr) (+ nested 1) accum paren nil found)
-          (funparse (cdr expr) (+ nested 1) before paren (push accum (car expr)) found))
+          (funparse 
+	    (cdr expr) (+ nested 1) 
+	    accum paren 
+	    nil found)
+          (funparse 
+	    (cdr expr) (+ nested 1) 
+	    before paren 
+	    (push accum (car expr)) found))
         (if (and (equal? '> (car expr)) (not found))
           (if (equal? nested 1)
-            (funparse (cdr expr) (- nested 1) before (funparse_ accum) nil #t)
-            (funparse (cdr expr) (- nested 1) before paren (push accum (car expr)) found))
-          (funparse (cdr expr) nested before paren (push accum (car expr)) found)))))) ...)
+            (funparse 
+	      (cdr expr) (- nested 1) 
+	      before (funparse_ accum) 
+	      nil #t)
+            (funparse 
+	      (cdr expr) (- nested 1) 
+	      before paren 
+	      (push accum (car expr)) found))
+          (funparse 
+	    (cdr expr) nested 
+	    before paren 
+	    (push accum (car expr)) found)))))) ...)
 ```
 
 ###The Parser

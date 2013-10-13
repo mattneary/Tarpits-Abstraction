@@ -198,6 +198,7 @@ This function consists only of basic manipulations of the rule to parse out the
 modifications needing to be applied. With all of the dependencies defined, we 
 achieve the following comprehensive definition of a Turing Machine simulator.
 
+\clearpage
 ```scheme
 (let* 
   ((index 0)
@@ -224,6 +225,7 @@ achieve the following comprehensive definition of a Turing Machine simulator.
 
 A half-adder as a Turing Ruleset would look like the following.
 
+\clearpage
 ```scheme
 (let 
   rules
@@ -406,13 +408,12 @@ following.
 
 ```scheme
 (make-gate
-  (lambda
-    (value get set)
+  (lambda (value get set)
     (list
-    (list 'value value nil)
-    (list 'get get nil)
-    (list 'set set nil)
-    nil)))
+      (list 'value value nil)
+      (list 'get get nil)
+      (list 'set set nil)
+      nil)))
 ```
 
 Given this structure, we redefine our gate getter and setter to simplify 

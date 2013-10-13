@@ -359,6 +359,7 @@ combinator, as alluded to earlier.
 Once again we utilized a macro in our definition of a form; this time simply
 applying the Y-Combinator prior to execution of `let`.
 
+\clearpage
 \subsection{The Evaluator}
 \begin{align*}
 & (\text{letrec} \; \text{let-set} \; 
@@ -368,37 +369,15 @@ applying the Y-Combinator prior to execution of `let`.
 \\& \qquad (\text{lambda} \; (\text{apply-set} \; fn \; args)
 \\& \qquad \quad (\dots))
 \\& \qquad (\text{letrec} \; eval \; (\text{lambda} \; (eval \; expr \; env)
-\\& \qquad \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
-\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'lambda) \; 
-\\& \qquad \qquad \qquad \quad (\dots))
-\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'let)
-\\& \qquad \qquad \qquad \quad (\dots))
-\\& \qquad \qquad \qquad \; ((equal? \; (car \; expr) \; 'let*) \; 
-\\& \qquad \qquad \qquad \quad (eval \; (\text{let-set} \; (cadr \; expr) \; (caddr \; expr)) \; env))
-\\& \qquad \qquad \quad \; ((equal? \; (car \; expr) \; 'letrec)
-\\& \qquad \qquad \qquad \quad (\dots))
-\\& \qquad \qquad \qquad \; (\#t \; (\text{apply-set} \; 
-\\& \qquad \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
-\\& \qquad \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; '(\text{lambda} \; (\_) \; x) \; env)) \; (cdr \; expr))))))
+\\& \qquad \quad \dots
 \\& \qquad \quad (let* \; ((\text{lazy-set} \; (\text{lambda} \; (env \; hash)
 \\& \qquad \qquad \qquad \quad \; (\dots)))
-\\& \qquad \qquad \qquad \; (\text{set-arithmetic} \; (\text{lambda} \; (env)
-\\& \qquad \qquad \qquad \quad \; (\dots)))
-\\& \qquad \qquad \qquad \; (\text{set-numerals} \; (\text{lambda} \; (env)
-\\& \qquad \qquad \qquad \quad \; (\dots)))
-\\& \qquad \qquad \qquad \; (\text{set-booleans} \; (\text{lambda} \; (env)
-\\& \qquad \qquad \qquad \quad \; (\dots)))
-\\& \qquad \qquad \qquad \; (\text{set-primitives} \; (\text{lambda} \; (env)
-\\& \qquad \qquad \qquad \quad \; (\dots)))
-\\& \qquad \qquad \qquad \; (\text{set-Y} \; (\text{lambda} \; (env)
-\\& \qquad \qquad \qquad \quad \; (\dots)))
+\\& \qquad \qquad \qquad \; \dots
 \\& \qquad \qquad \qquad \; (\text{eval-prelude} \; (\text{lambda} \; (expr \; env)
 \\& \qquad \qquad \qquad \quad \; (eval
 \\& \qquad \qquad \qquad \quad \; expr
 \\& \qquad \qquad \qquad \quad \; (\text{set-arithmetic}
-\\& \qquad \qquad \qquad \qquad \; (\text{set-numerals}
-\\& \qquad \qquad \qquad \qquad \quad \; (\text{set-booleans}
-\\& \qquad \qquad \qquad \qquad \qquad \; (\text{set-primitives}
+\\& \qquad \qquad \qquad \qquad \quad \; \dots
 \\& \qquad \qquad \qquad \qquad \qquad \quad (\text{set-Y} \; env))))))))))
 \\& \qquad \qquad \qquad (\dots))))))
 \end{align*}

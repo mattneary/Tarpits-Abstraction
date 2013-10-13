@@ -356,6 +356,7 @@ combinator, as alluded to earlier.
 Once again we utilized a macro in our definition of a form; this time simply
 applying the Y-Combinator prior to execution of `let`.
 
+\clearpage
 ###The Evaluator
 ```scheme
 (letrec let-set 
@@ -365,37 +366,15 @@ applying the Y-Combinator prior to execution of `let`.
     (lambda (apply-set fn args)
       (...))
     (letrec eval (lambda (eval expr env)
-      (cond (((atom? expr) ((assoc expr env) nil))
-             ((equal? (car expr) 'lambda) 
-              (...))
-             ((equal? (car expr) 'let)
-              (...))
-             ((equal? (car expr) 'let*) 
-              (eval (let-set (cadr expr) (caddr expr)) env))
-  	     ((equal? (car expr) 'letrec)
-              (...))
-             (#t (apply-set 
-               (eval (car expr) env) 
-               (map (lambda (x) (eval '(lambda (_) x) env)) (cdr expr))))))
+      ...
       (let* ((lazy-set (lambda (env hash)
                (...)))
-             (set-arithmetic (lambda (env)
-               (...)))
-             (set-numerals (lambda (env)
-               (...)))
-             (set-booleans (lambda (env)
-               (...)))
-             (set-primitives (lambda (env)
-               (...)))
-             (set-Y (lambda (env)
-               (...)))
+             ...
              (eval-prelude (lambda (expr env)
                (eval
                expr
                (set-arithmetic
-                 (set-numerals
-                   (set-booleans
-                     (set-primitives
+                   ...
                       (set-Y env))))))))))
             (...))))))
 ```

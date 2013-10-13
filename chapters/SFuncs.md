@@ -139,11 +139,10 @@ function accepting slope and y-intercept as its two arguments.
 
 Linear Function Generator
 ```scheme
-(lambda 
-   (m b) 
-   (compose 
-     (+ b) 
-     (* m)))
+(lambda (m b) 
+  (compose 
+    (+ b) 
+    (* m)))
 ```	
 
 One of the most important HOFs is defined next. `fold` serves to accumulate a list 
@@ -255,17 +254,12 @@ value, swapping if a new extreme is found. The definition of `max` follows, a
 simple folding onto the higher value.
 
 ```scheme
-(max 
-  (list)
+(max (list)
   (fold 
-    (lambda 
-    (old new)
-    (if
-        (> old new)
-        old
-        new))
-  (car list)
-  (cdr list)))
+    (lambda (old new)
+      (if (> old new) old new))
+    (car list)
+    (cdr list)))
 ```
 
 The application of this function to $'(1 5 3 4)$, for example, would return 5. Our 
@@ -276,14 +270,10 @@ fold.
 (min 
   (list)
   (fold 
-    (lambda 
-    (old new)
-    (if
-        (> old new)
-        old
-        new))
-  (car list)
-  (cdr list)))
+    (lambda (old new)
+      (if (> old new) old new))
+    (car list)
+    (cdr list)))
 ```
 
 Next we define some methods that aid in treatment of lists in their entirety, 
@@ -313,9 +303,8 @@ key matching that for which we are searching.
 ```scheme
 (assoc (lambda (x list)
    (fold 
-    (lambda 
-    (accum item) 
-    (if 
+    (lambda (accum item) 
+      (if 
         (equal? item (car x))
         (cdr x)
         accum)))
@@ -339,11 +328,10 @@ list constructor as follows.
 ```scheme
 (list 
   (lambda (list a) 
-  (if
-    (null? a)
-    nil
-    (lambda (rest)
-    (cons a (list rest)))))
+    (if (null? a)
+      nil
+      (lambda (rest)
+        (cons a (list rest)))))
 ```   
 
 Usage of `list` is very intuitive. To construct a list, pass each element as 
@@ -366,14 +354,12 @@ for example finding a sum of squares or constructing a list of primes.
 
 ```scheme
 (map 
-  (lambda 
-    (func lst)
+  (lambda (func lst)
     (reduce
-    (lambda 
-        (x y) 
+      (lambda (x y) 
         (cons (func x) y)) 
-    nil
-    lst)))
+      nil
+      lst)))
 ```
 
 Our map implementation works as a reduction with `cons`; if this were the extent 
@@ -384,17 +370,12 @@ definition it casts away values not matching a predicate.
 
 ```scheme
 (filter 
-  (lambda 
-    (pred lst)
+  (lambda (pred lst)
     (reduce
-    (lambda 
-        (x y)
-        (if
-        (pred x)
-        (cons x y)
-        y))
-    nil
-    lst)))
+      (lambda (x y)
+        (if (pred x) (cons x y) y))
+      nil
+      lst)))
 ```
 
 Let's look at some examples of `map` and `reduce`; the extent of their usefulness 

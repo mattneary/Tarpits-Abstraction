@@ -140,11 +140,10 @@ function accepting slope and y-intercept as its two arguments.
 
 Linear Function Generator
 \begin{align*}
-& (\text{lambda} \; 
-\\& \quad \; (m \; b) \; 
-\\& \quad \; (compose \; 
-\\& \qquad \; (+ \; b) \; 
-\\& \qquad \; (* \; m)))
+& (\text{lambda} \; (m \; b) \; 
+\\& \quad (compose \; 
+\\& \qquad (+ \; b) \; 
+\\& \qquad (* \; m)))
 \end{align*}
 
 One of the most important HOFs is defined next. `fold` serves to accumulate a list 
@@ -256,17 +255,12 @@ value, swapping if a new extreme is found. The definition of `max` follows, a
 simple folding onto the higher value.
 
 \begin{align*}
-& (max \; 
-\\& \quad (list)
+& (max \; (list)
 \\& \quad (fold \; 
-\\& \qquad (\text{lambda} \; 
-\\& \qquad (old \; new)
-\\& \qquad (if
-\\& \qquad \qquad (> \; old \; new)
-\\& \qquad \qquad old
-\\& \qquad \qquad new))
-\\& \quad (car \; list)
-\\& \quad (cdr \; list)))
+\\& \qquad (\text{lambda} \; (old \; new)
+\\& \qquad \quad (if \; (> \; old \; new) \; old \; new))
+\\& \qquad (car \; list)
+\\& \qquad (cdr \; list)))
 \end{align*}
 
 The application of this function to $'(1 5 3 4)$, for example, would return 5. Our 
@@ -277,14 +271,10 @@ fold.
 & (min \; 
 \\& \quad (list)
 \\& \quad (fold \; 
-\\& \qquad (\text{lambda} \; 
-\\& \qquad (old \; new)
-\\& \qquad (if
-\\& \qquad \qquad (> \; old \; new)
-\\& \qquad \qquad old
-\\& \qquad \qquad new))
-\\& \quad (car \; list)
-\\& \quad (cdr \; list)))
+\\& \qquad (\text{lambda} \; (old \; new)
+\\& \qquad \quad (if \; (> \; old \; new) \; old \; new))
+\\& \qquad (car \; list)
+\\& \qquad (cdr \; list)))
 \end{align*}
 
 Next we define some methods that aid in treatment of lists in their entirety, 
@@ -314,9 +304,8 @@ key matching that for which we are searching.
 \begin{align*}
 & (assoc \; (\text{lambda} \; (x \; list)
 \\& \quad \; (fold \; 
-\\& \qquad (\text{lambda} \; 
-\\& \qquad (accum \; item) \; 
-\\& \qquad (if \; 
+\\& \qquad (\text{lambda} \; (accum \; item) \; 
+\\& \qquad \quad (if \; 
 \\& \qquad \qquad (equal? \; item \; (car \; x))
 \\& \qquad \qquad (cdr \; x)
 \\& \qquad \qquad accum)))
@@ -340,11 +329,10 @@ list constructor as follows.
 \begin{align*}
 & (list \; 
 \\& \quad (\text{lambda} \; (list \; a) \; 
-\\& \quad (if
-\\& \qquad (null? \; a)
-\\& \qquad nil
-\\& \qquad (\text{lambda} \; (rest)
-\\& \qquad (cons \; a \; (list \; rest)))))
+\\& \qquad (if \; (null? \; a)
+\\& \qquad \quad nil
+\\& \qquad \quad (\text{lambda} \; (rest)
+\\& \qquad \qquad (cons \; a \; (list \; rest)))))
 \end{align*}
 
 Usage of `list` is very intuitive. To construct a list, pass each element as 
@@ -367,14 +355,12 @@ for example finding a sum of squares or constructing a list of primes.
 
 \begin{align*}
 & (map \; 
-\\& \quad (\text{lambda} \; 
-\\& \qquad (func \; lst)
+\\& \quad (\text{lambda} \; (func \; lst)
 \\& \qquad (reduce
-\\& \qquad (\text{lambda} \; 
-\\& \qquad \qquad (x \; y) \; 
+\\& \qquad \quad (\text{lambda} \; (x \; y) \; 
 \\& \qquad \qquad (cons \; (func \; x) \; y)) \; 
-\\& \qquad nil
-\\& \qquad lst)))
+\\& \qquad \quad nil
+\\& \qquad \quad lst)))
 \end{align*}
 
 Our map implementation works as a reduction with `cons`; if this were the extent 
@@ -385,17 +371,12 @@ definition it casts away values not matching a predicate.
 
 \begin{align*}
 & (filter \; 
-\\& \quad (\text{lambda} \; 
-\\& \qquad (pred \; lst)
+\\& \quad (\text{lambda} \; (pred \; lst)
 \\& \qquad (reduce
-\\& \qquad (\text{lambda} \; 
-\\& \qquad \qquad (x \; y)
-\\& \qquad \qquad (if
-\\& \qquad \qquad (pred \; x)
-\\& \qquad \qquad (cons \; x \; y)
-\\& \qquad \qquad y))
-\\& \qquad nil
-\\& \qquad lst)))
+\\& \qquad \quad (\text{lambda} \; (x \; y)
+\\& \qquad \qquad (if \; (pred \; x) \; (cons \; x \; y) \; y))
+\\& \qquad \quad nil
+\\& \qquad \quad lst)))
 \end{align*}
 
 Let's look at some examples of `map` and `reduce`; the extent of their usefulness 
