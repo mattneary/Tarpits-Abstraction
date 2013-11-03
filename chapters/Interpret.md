@@ -24,10 +24,10 @@ language is without types.
 ###Lambda Calculus in S-Expressions
 In expression the Lambda Calculus in S-Expressions, we will utilize the `quote` 
 function as well as the structure inherent of parenthetical expressions in these 
-expressions. Hence an example of an expression which could be evaluated is the 
-following.
+expressions. Hence an example of an expression which could be evaluated is the
+one presented in Figure~\ref{fig:sexprLambda}.
 
-```scheme
+```fig:sexprLambda
 '(lam x lam y (x) y)
 ```
 
@@ -36,7 +36,7 @@ We define our evaluator pretty easily. Note that we will begin by defining an
 `apply` function. This function accepts a function and list of arguments, and 
 then applies each of these arguments to a lambda one by one.
 
-```scheme
+```fig:applySetDef
 (define (apply-set fn args)
   (if
     (null? args)
@@ -61,7 +61,7 @@ Function application is the default case, thus we match against the antecedent
 argument and the evaluated arguments. This architecture is an explicit choice 
 *not* to opt for a lazy method of evaluation.
 
-```scheme    
+```fig:evallamDef    
 (evallam (lambda (evallam expr env)
   (cond (((atom? expr) (assoc expr env))
          ((equal? (car expr) 'lam) 
@@ -80,23 +80,23 @@ argument and the evaluated arguments. This architecture is an explicit choice
 ```
 
 ###Evaluation of Forms
-An example of a form which could be evaluated is the following.
+An example of a form which could be evaluated is presented in Figure~\ref{fig:evalFormExample}. 
 
-```scheme
+```fig:evalFormExample
 '(lam x lam y ((x) y) 1)
 ```
 
-##Flat-Input Lambda Calculus
-In the prior implementation of an interpreter, we took advantage of the structure 
-inherent to a nested S-Expression. This approach was sufficient for our initial 
-purposes; however, to separate our interpreter from the details of its use within 
-our Symbolic Language, we will now allow its interpretation to apply to a flat 
-list of atoms.
-In order to represent the expression previously expressed by nested S-Expressions, 
-we will now utilize some symbols which will represent parenthetical expressions. 
-The following example of this new flat structure.
+##Flat-Input Lambda Calculus 
+In the prior implementation of an interpreter, we took advantage of the
+structure inherent to a nested S-Expression. This approach was sufficient for
+our initial purposes; however, to separate our interpreter from the details of
+its use within our Symbolic Language, we will now allow its interpretation to
+apply to a flat list of atoms.  In order to represent the expression previously
+expressed by nested S-Expressions, we will now utilize some symbols which will
+represent parenthetical expressions.  The expression in
+Figure~\ref{fig:flatInputExample} is an example of this new flat structure.
 
-```scheme
+```fig:flatInputExample
 '(lam x lam y < x > y)
 ```
 
@@ -124,12 +124,13 @@ mutation, implementation of these constructs as well. In later chapters, we will
 able to automate the utilization of these analogs identified.
 
 ####Mutators
-The main difference between imperative and *purely* functional programming is the 
-presence of mutability. In functional programs, a value can be defined but not 
-mutated; however, when taking the imperative approach, values will often be set to 
-a new value after their definition. The following is an example of this behavior.
+The main difference between imperative and *purely* functional programming is
+the presence of mutability. In functional programs, a value can be defined but
+not mutated; however, when taking the imperative approach, values will often be
+set to a new value after their definition. The code in
+Figure~\ref{fig:defineSetExample} is an example of this behavior.
 
-```scheme
+```fig:defineSetExample
 (define x 5)
 (set! x (* 2 x))
 \implies x = 10
@@ -151,7 +152,7 @@ a register machine in many ways; an analog which we will further analyze in late
 sections. What follows is an implementation using these concepts of the prior
 imperative procedure.
 
-```scheme
+```fig:recursiveImper
 (letrec 
   main 
   (lambda (main env start)
@@ -161,15 +162,15 @@ imperative procedure.
   ...)
 ```
 
-In the above, note that we omitted the second `equal?`, because only one of them bore
-an actual effect. We now move on to address more complex issues of this impure 
-approach.
+In Figure~\ref{fig:recursiveImper}, note that we omitted the second `equal?`,
+because only one of them bore an actual effect. We now move on to address more
+complex issues of this impure approach.
 
 In programming languages, *scope* refers to the region over which a variable is
 accessible. The scoping of a variable is specified by the define operator; hence the 
-following is another example of this behavior.
+code in Figure~\ref{fig:setScopeExample} is another example of this behavior.
 
-```scheme
+```fig:setScopeExample
 (define x 5)
 ((lambda (y)
   (set! x y)) 12)
@@ -181,14 +182,15 @@ Of note is the fact that the `define` occurred separate from any function. This
 means that the defined variable will now take on the *global* scope, being accessible 
 and mutable from within any function. 
 
-In translating the definition and application of the lambda to a purely functional
-procedure, we will provide the action of the lambda as a prelude to the rest of the 
-procedure. The invocation of the lambda will require that we set the index to which
-the flow of control should return after completion of the lambda. This takes the form
-of a variable `ret` defined on the environment. All other methods in the following are
-similar to those in prior procedures.
+In translating the definition and application of the lambda to a purely
+functional procedure, we will provide the action of the lambda as a prelude to
+the rest of the procedure. The invocation of the lambda will require that we
+set the index to which the flow of control should return after completion of
+the lambda. This takes the form of a variable `ret` defined on the environment.
+All other methods in Figure~\ref{fig:imperFunc} are similar to those in prior
+procedures.
 
-```scheme
+```fig:imperFunc
 (letrec 
   main 
   (lambda (main env start)
@@ -199,15 +201,15 @@ similar to those in prior procedures.
   ...)
 ```
 
-In the above, our starting index would instead be 1, in order to begin at the first
-line of the imperative program and avoid the definition of the lambda used later on
-in the procedure.
+In the Figure~\ref{fig:imperFunc}, our starting index would instead be 1, in
+order to begin at the first line of the imperative program and avoid the
+definition of the lambda used later on in the procedure.
 
-If the `define` of the prior example had instead occurred within a function definition, 
-as in the following, it would only be accessible from within that function, or other 
-functions defined within it.
+If the `define` of the prior example had instead occurred within a function
+definition, as in Figure~\ref{fig:strictScopeExample}, it would only be
+accessible from within that function, or other functions defined within it.
 
-```scheme
+```fig:strictScopeExample
 (define scope (lambda (x)
   (define y x)))
 (scope 5)
@@ -215,11 +217,11 @@ y
 ;; The written variable, y, will be inaccessible.
 ```
 
-In the above we demonstrate definition with a single-function scope. Thus the 
-`define` is fulfilling the same role as `let` did in prior programs. However, since 
-`define` does not accept an expression which it will govern, the example definition 
-is of no effect. In the following section we display a means of making use of this 
-sort of `define` statement.
+In Figure~\ref{fig:strictScopeExample} we demonstrate definition with a
+single-function scope. Thus the `define` is fulfilling the same role as `let`
+did in prior programs. However, since `define` does not accept an expression
+which it will govern, the example definition is of no effect. In the following
+section we display a means of making use of this sort of `define` statement.
 
 To simulate this, we would need to add a sort of inner scope to our function calls, 
 exhibited in the form of jumping to another instruction. We will, for the sake of
@@ -227,8 +229,7 @@ simplicity, create an inner environment, known as a *closure*, as a value on the
 outer, or normal, environment. Then, prior to returning, we will clear the inner 
 environment by setting it to `nil`.
 
-\clearpage
-```scheme
+```fig:closureScope
 (letrec 
   main 
   (lambda (main env start)
@@ -260,14 +261,16 @@ instead maintain an image of the original environment, and simply revert to that
 image after execution of the function.
 
 ####Multiple Expression Procedures
-In our earlier, purely-functional programs, a procedure consisting of multiple 
-expressions would have been no use. Without side-effects, only the final expression 
-could bear any form of result. However, now investigating an imperative approach, 
-a procedure may utilize multiple expressions, each contributing its own mutation to 
-a final effect. The following is an example of this in practice; the syntax is 
-simply a chain of expressions where an individual would have previously existed.
+In our earlier, purely-functional programs, a procedure consisting of multiple
+expressions would have been no use. Without side-effects, only the final
+expression could bear any form of result. However, now investigating an
+imperative approach, a procedure may utilize multiple expressions, each
+contributing its own mutation to a final effect.
+Figure~\ref{fig:multiExprExample} is an example of this in practice; the syntax
+is simply a chain of expressions where an individual would have previously
+existed.
 
-```scheme
+```fig:multiExprExample
 (define incr (lambda (x)
   (define y (+ x 1))
   y))
@@ -283,18 +286,19 @@ programs will often iterate, mutating the environment in each step. For convenie
 in utilization of this approach, we define a function for constructing a range over 
 which to iterate.
 
-```scheme
+```fig:rangeLoopDef
 (define range (lambda (x)
   (if (equal? x 0)
     nil
     (cons (- x 1) (range (- x 1))))))
 ```
 
-The above definition is pretty straight-forward, much like earlier function 
-definitions. Note that the ranges are of the form 0, 1, ..., n-1. Here's an example 
-of this function being used to calculate a factorial.
+The definition in Figure~\ref{fig:rangeLoopDef} is pretty straight-forward,
+much like earlier function definitions. Note that the ranges are of the form 0,
+1, ..., n-1. Here's an example of this function being used to calculate a
+factorial.
 
-```scheme
+```fig:imperFactExample
 (define fact (lambda (x)
   (define ans 1)
   (map (range x) (lambda (n)
@@ -305,9 +309,9 @@ of this function being used to calculate a factorial.
 The starting value of the answer is 1, just like the sort of inductive definitions we 
 provided earlier in the book. The final answer is then achieved by repeated 
 multiplication performed on the previous `ans`. In the case of 5, for example, the 
-accumulator `ans` takes on the following values.
+accumulator `ans` takes on the values presented in Figure~\ref{fig:ansValues}.
 
-```
+```fig:ansValues
 1
 \implies 1*1 \implies 1
 \implies 1*2 \implies 2
@@ -328,7 +332,7 @@ process underlying this problem?" The answer is clearly navigation of the string
 we begin with a `range`-based loop that will cycle through each character of the string 
 in order.
 
-```scheme
+```fig:loopParse
 (define parse (lambda (expr) 
   (map (range (length expr)) (lambda (i)
     (define read (get expr i))
@@ -349,7 +353,7 @@ determined, in this way serving as a cache; `paren` which will hold a separated 
 parenthetical; and `found` which will be true if and only if a parenthetical has been 
 parsed.
 
-```scheme
+```fig:definsPrelude
 (define parse (lambda (expr) 
   (define before)
   (define accum nil)
@@ -370,11 +374,12 @@ We will need to handle three obvious classes of characters in our parsing of the
 - A closing parenthesis.
 - Any other character.
 
-Additionally, the class of a character may be disregarded if we have already parsed a 
-top-level parenthetical. Its parsing will be handled when we are ready to recurse. Given 
-these additions of case-handling, we insert `if ... else` statements as in the following.
+Additionally, the class of a character may be disregarded if we have already
+parsed a top-level parenthetical. Its parsing will be handled when we are ready
+to recurse. Given these additions of case-handling, we insert `if ... else`
+statements as in Figure~\ref{fig:imperParseApproach}.
 
-```scheme
+```fig:imperParseApproach
 (define parse (lambda (expr) 
   (define before)
   (define accum nil)
@@ -392,9 +397,9 @@ these additions of case-handling, we insert `if ... else` statements as in the f
 
 Of course, we will need to combine any separated out parenthetical with the components 
 occurring before and after it to form the designated response. Hence we provide the 
-following `return` statement.
+following `return` statement in Figure~\ref{fig:postscriptReturn}.
 
-```scheme
+```fig:postscriptReturn
 (define parse (lambda (expr) 
   ..."variables"...
   (map (range (length expr)) (lambda (i)
@@ -417,13 +422,12 @@ handled.
 
 The last components missing from our implementation are the building up of an 
 accumulator and the setting of the various components to the accumulator. We will 
-implement these portions in the following code.
+implement these portions in the code of Figure~\ref{fig:fullImperParser}.
 
 - When the parenthetical is closed, it is recursively `parsed` and set to the `paren` variable.
 - When a parenthetical is open, `before` receives the accumulator value.
 
-\clearpage
-```scheme
+```fig:fullImperParser
 (define parse (lambda (expr) 
   (define before)
   (define accum nil)
@@ -471,8 +475,7 @@ i.e., those which have yet to be read. This is both logical in that our progress
 navigating the list is maintained, and idiomatic as you have seen in prior programs 
 written in our Symbolic Language.
 
-\clearpage
-```scheme
+```fig:funParse
 (define funparse (lambda (expr nested before paren accum found) 
   (if (null? expr)
     (if (not (null? paren))
@@ -506,7 +509,7 @@ We now remove mutation to achieve implementation of the final principle we liste
 means of achieving this is by allowing all values to be function arguments or expressions 
 operating on arguments.
 
-```scheme
+```fig:immutableFunparse
 (define funparse (lambda (expr nested before paren accum found) 
   (if (null? expr)
     (if (not (null? paren))
@@ -549,8 +552,7 @@ There are a few vestiges of our initial, imperative implementation which we will
 Of note is the prior `define` keyword that was appropriately substituted by `letrec`, with 
 `funparse_` then being another definition within the `letrec` procedure.
 
-\clearpage
-```scheme
+```fig:letrecFunparse
 (letrec funparse (lambda (funparse expr nested before paren accum found) 
   (let 
     funparse_ 
@@ -586,9 +588,9 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 ```
 
 ###The Parser
-The parser now works as in the following example.
+The parser now works as in Figure~\ref{fig:parserExample}. 
 
-```scheme
+```fig:parserExample
 (letrec parse (lambda (...) ...)
   (parse '(< a > < b < c > > < d >)))
 \implies ((a) (b (c)) (d))
