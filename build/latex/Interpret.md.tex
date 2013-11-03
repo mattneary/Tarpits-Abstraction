@@ -272,7 +272,9 @@ environment by setting it to $nil$.
 \\& \qquad \quad (list \; 
 \\& \qquad \qquad (let* \; ((outer \; env)
 \\& \qquad \qquad \qquad \quad \; (inner \; 
-\\& \qquad \qquad \qquad \qquad \; (set \; 'y \; (assoc \; 'x \; (assoc \; 'inner \; outer)) \; (assoc \; 'inner \; outer))
+\\& \qquad \qquad \qquad \qquad \; (set \; 'y \; 
+\\& \qquad \qquad \qquad \qquad \quad \; (assoc \; 'x \; (assoc \; 'inner \; outer)) \; 
+\\& \qquad \qquad \qquad \qquad \quad \; (assoc \; 'inner \; outer))
 \\& \qquad \qquad \qquad \quad \; (outer \; (set \; 'inner \; inner \; outer)))
 \\& \qquad \qquad \qquad \quad \; (main \; outer \; (+ \; 1 \; start)))
 \\& \qquad \qquad \qquad \quad (main \; (set \; 'inner \; nil \; outer) \; (assoc \; 'ret \; outer))
@@ -551,7 +553,8 @@ written in our Symbolic Language.
 \begin{figure}[htp]
 \caption{}\label{fig:funParse}
 \begin{align*}
-& (define \; funparse \; (lambda \; (expr \; nested \; before \; paren \; accum \; found) \; 
+& (define \; funparse \; (lambda \; 
+\\& \quad (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
 \\& \qquad (if \; (not \; (null? \; paren))
 \\& \qquad \quad (concat \; (push \; before \; paren) \; (funparse\_ \; accum))

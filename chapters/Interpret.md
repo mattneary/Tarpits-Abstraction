@@ -237,7 +237,9 @@ environment by setting it to `nil`.
       (list 
         (let* ((outer env)
                (inner 
-                 (set 'y (assoc 'x (assoc 'inner outer)) (assoc 'inner outer))
+                 (set 'y 
+                   (assoc 'x (assoc 'inner outer)) 
+                   (assoc 'inner outer))
                (outer (set 'inner inner outer)))
                (main outer (+ 1 start)))
               (main (set 'inner nil outer) (assoc 'ret outer))
@@ -476,7 +478,8 @@ navigating the list is maintained, and idiomatic as you have seen in prior progr
 written in our Symbolic Language.
 
 ```fig:funParse
-(define funparse (lambda (expr nested before paren accum found) 
+(define funparse (lambda 
+  (expr nested before paren accum found) 
   (if (null? expr)
     (if (not (null? paren))
       (concat (push before paren) (funparse_ accum))
