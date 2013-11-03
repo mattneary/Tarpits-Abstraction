@@ -21,7 +21,7 @@ this syntax its description as the Untyped Lambda Calculus. Since no
 qualification is given to the expression which will be passed argument, this 
 language is without types.
 
-###Expression of Lambda Calculus in S-Expressions
+###Lambda Calculus in S-Expressions
 In expression the Lambda Calculus in S-Expressions, we will utilize the `quote` 
 function as well as the structure inherent of parenthetical expressions in these 
 expressions. Hence an example of an expression which could be evaluated is the 
@@ -132,11 +132,7 @@ a new value after their definition. The following is an example of this behavior
 ```scheme
 (define x 5)
 (set! x (* 2 x))
-(equal? x 5)
-;; => #f
-(equal? x 10)
-;; => #t
-=> x = 10
+\implies x = 10
 ```
 
 The `define` operator serves to allocate a variable and initiate it with a value. 

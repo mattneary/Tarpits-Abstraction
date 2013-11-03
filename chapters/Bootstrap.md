@@ -31,10 +31,8 @@ earlier chapter; this time we will explicate the characters allowed in an
 
 ```scheme
 <expr> &::= <sexpr> | <atom>
-<sexpr> &::= (<seq>)
-<seq> &::= <dotted> | <list>
-<dotted> &::= <expr> | <expr> . <expr>
-<list> &::= <expr> | <expr> <exp>
+<sexpr> &::= (<list>)
+<list> &::= <expr> | <expr> <expr>
 <atom> &::= <char> | <atom> <char>
 <char> &::= <letter> | <number> | <symbol>
 <letter> &::= A | B | ... | Z
@@ -402,65 +400,87 @@ allowing for the imperative model. We will begin with a single, `set`
 function without scope. This means that the only way this form will take
 effect is through its invocation at the top level.
 
-###A Monadic Evaluator
-The maintenance of state throughout our evaluator will require some 
-fundamental changes in the architecture of our evaluator. Essentially, we 
-will be applying a *monad* to our prior evaluator and the environment 
-mutators to form a new evaluator.
+###Mathematical Background
+An important idea in functional programming is that of the Monad. Its name
+comes from its origins in Mathematics, more specifically Category Theory.
+Monad refers to its ability to generate everything from a single value. We,
+however, will be viewing the Monad in a slightly different light. A Monad
+is a triple, consisting of a Functor, and two transformations, $\nu$ and 
+$\mu$. We will take a moment to unwrap this definition.
 
-"A Monad is just a Monoid in the category of Endofunctors."
+A Functor is a construct at a very high level of abstraction, we will briefly
+define it in terms of familiar concepts. We begin with the idea of a set and
+a relation on that same set. Of course, an example would be the set of Natural
+Numbers. Then a relation on that set could be `<`. This will be our first
+level of abstraction; that is to say, this is our first example of objects and
+arrows between them. An arrow could flow from 0 to 1, and then 1 to 2, et cetera,
+ad infinitum.
 
-The above introduction may not have served to clarify the idea of a monad. So
-let's reduce that definition to something a bit more approachable.
+Given a set and a relation on that set, we will consider the two an object. An
+object could have multiple relations defined upon it as well. Now, we imagine
+having two objects, each with a different set and an analogous relation. For example,
+we might introduce the rational numbers and their ordering. We then call some
+function from the Natural Number object to the Rational Number object a morphism
+so long as it preserves the ordering when mapping values from the naturals to
+the rationals.
 
-"A Monad concatenates Endofunctors."
+Next, we consider a category to be any collection of objects and arrows between
+those objects. More specifically, a category consists of objects, morphisms between
+those objects, and compositions of those morphisms.
 
-A Monoid is any associative function from two elements of a class to another
-for which there exists an identity element. Hence, we can for the most part
-reduce its description as a Monoid to a description as a concatenator. 
-Lastly, we are left with the term *Endofunctor* which we would like to 
-clarify.
+Finally, we consider a Functor to consist of a mapping of objects and morphisms
+from one category to another. Returning to our initial prompt, we consider a monad
+to be a map from one category to another, along with two transformations.
 
-"A Monad combines type-classes."
+###Monads in Computation
+Given the previous explanation of Monads, it is probably still unclear how the
+structure would relate to computation. We will now take a look at the traits of
+the transformations $\nu$ and $\mu$. Let $T$ refer to the Functor of a given Monad.
+The transformation $\nu$ then yields $\nu_x$ such that $\nu_x$ is a function from
+$x$ to $T(x)$. Similarly, the transformation $\mu$ yields $\mu_x$ such that
+$\mu_x$ is a function from $T(T(x))$ to $T(x)$. Thus, we can see that a Monad
+includes a way of adding and taking away mappings by the Functor. If we consider
+a map by the Functor to be a boxing of the value, we have that $\nu_x$ boxes
+members of $x$, and that $\mu_x$ unboxes a box of boxes. In a similar vein, we will
+refer to $\nu$ as unit and $\mu$ as join.
 
-The idea of the Functor is not a simple one. However, the basic description
-is that a Functor is a mapping from category to category, and in the case of
-an Endofunctor, a mapping of a category onto itself. Now why did I call it a
-type-class? Because most categories you are familiar with are type classes.
-A type class is a type parametrized over another type. For example, you may
-have a type set which is parametrized by the type of its elements. Then a
-Monad would serve to combine a Set and perhaps an Array.
-
-The Monad which we will utilize without fully acknowledging it is a Monad
-to maintain both a result and state. Hence, our Monad will be parametrized
-by two types. These types will be the `result` type of our evaluator, and the
-type of our environment. Hence, the types are something like those that
-follow.
+Now, one might be wondering why such a structure is valuable. The reason is that
+Monads generalize the idea of boxing values. Why box values? One might box a value
+in a pair, with an annotation as the other element. For example, one could define
+a couting Monad which boxes by forming a tuple including the value and `1` and unboxes
+a box of a box by adding together the number labels as follows.
 
 ```
-result &:= atom | sexpr | lambda
-lambda &:= (result \implies result)
-environment &:= ((atom lambda))
+T(x) = x \times \mathbb{N}
+T(f: A \to B)(a, n) = (f(a), n)
+\nu_{x}: x \to T(x)
+\nu_{x}(x) = (x, 1)
+\mu_{x}: T(T(x)) \to T(x)
+\mu_{x}((x, a), b) = (x, a+b)
 ```
 
-Then the type of our Monad-formed new evaluator would be the following. Note
-how this is a combination of an endomorphism on `environment` and an 
-endomorphism on `result`. Hence the hypothetical Monad which formed this new
-evaluator would be a combination of the two type-classes which we then
-reduced with the `environment` and `result` types.
+A similar construct, then, could be used to accumulate log information, for example.
+Monads are of interest to us for their potential in maintaining state. For this
+purpose, one could maintain state as the second element of the tuple. However, for
+applications like this one, programmers usually prefer to take a different outlook on
+Monads, namely, to focus on `unit` and `bind` functions rather than `unit` and `join`.
+The bind function can be defined in terms of join quite simply.
 
 ```
-eval := result \implies environment \implies (result environment)
+bind_{x}: T(A) \to (A \to T(B)) \to T(B)
+bind_{x}(a, f) = join(T(f)(a))
 ```
 
-Now that we have identified the means by which we formed a state-sensitive
-evaluator from our prior evaluator, we will begin on its implementation.
+As you can see, `bind` essentially elevates a function from unboxed to boxed to boxed
+to boxed. Its innerworkings are as simple as getting the boxed morphism defined by the
+category which accepts a function from $A$ to $T(B)$ and returns a function from $T(A)$
+to $T(T(B))$. However, since we are seeking a function onto $T(B)$, we then unbox the
+return value with `join`.
 
 ###A New Eval
-In our evaluator allowing for multiple-expression procedures, we will form a 
-monad that is the monoidal combination of our previous evaluator and an 
-environment mutator, in which forms such as `set!` will cause a new
-environment to be returned and all else will return the same environment.
+In our new eval function we will form a function which boxes our previous
+implementation with an environment. However, we will implement the unboxing
+and boxing by hand in a full rewrite, to drive home the innerworkings of it.
 
 The following is a rewrite of the `eval` function to behave as this composite
 form. Note that macro forms behave the same as before, but that all other
@@ -489,7 +509,7 @@ order to bear the same effect as before.
             #t 
             (set 
               (cadr expr) 
-              (eval (caddr expr) env) 
+              (car (eval (caddr expr) env)) 
               env)))
          (#t (list
                (car (apply-set 
@@ -699,3 +719,11 @@ Together, `define` and `set!` provide us with the ability to specify scope
 for variables which will be maintained across any sort of sub-procedure. Our
 implementation of a bubbling `set!` was very slick, and `define` was merely
 a reuse of our old `set!` function.
+
+##Conclusion
+We have defined a means of evaluating our language from within the language
+itself. Once this was done, we were able to expand upon the language's constructs,
+adding imperative constructs amongst other features. This is not merely an
+academic exercise, but the way in which programmiing have evolved from the time
+of the first computers. Henceforth, the grammar of our language will be dynamic
+fully and extensible.

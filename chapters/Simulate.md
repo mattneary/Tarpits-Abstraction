@@ -1,9 +1,9 @@
 #Simulating Logical Devices
 The key innovation in the study of computation was the development of machines for 
-the mechanization of algorithms. We have already seen Turing's proposal for such a 
-device; however, we have not seen any relationship between his and Church's 
-theories. In this chapter we will compose with our symbolic language a simulation 
-of different logical devices.
+the mechanization of algorithms. Of course, you are familiar with the idea of devices
+executing algorithms; however, the relationship of our exploration of the Lambda Calculus
+to such devices may not be immediately evident. In this chapter we will compose with 
+our symbolic language a simulation of different logical devices.
 
 ##Turing Machines
 Having built up our language to a point of high-level abstraction, we will now try 
@@ -254,8 +254,8 @@ and (b) wires. Relational boxes are atomic relations between circuit values,
 accepting input as electrical signals and outputting an electrical signal. Wires 
 serve to connect these boxes to each other, bearing these electrical signals in 
 one of two sates. A wire bearing current is said to have the boolean value true 
-(`#t`), but a wire without current is said to be of the boolean value false 
-(`#f`).
+($#t$), but a wire without current is said to be of the boolean value false 
+($#f$).
 
 Now, given these ideas of relational boxes and wires, we add abstraction to reach 
 a view of relational boxes as logical primitives. For example, there may be a 
