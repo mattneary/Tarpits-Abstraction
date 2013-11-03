@@ -1,71 +1,101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Tarpits &amp; Abstraction by mattneary</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <title>Tarpits &amp; Abstraction by mattneary</title>
   </head>
+
   <body>
+    <div id="container">
+      <div class="inner">
 
-      <header>
-        <h1>Tarpits &amp; Abstraction</h1>
-        <p>A book on abstraction of computation.</p>
-      </header>
+        <header>
+          <h1>Tarpits &amp; Abstraction</h1>
+          <h2>A book on abstraction of computation.</h2>
+        </header>
 
-      <div id="banner">
-        <span id="logo"></span>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/mattneary/Tarpits-Abstraction/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/mattneary/Tarpits-Abstraction/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/mattneary/Tarpits-Abstraction" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
 
-        <a href="https://github.com/mattneary/Tarpits-Abstraction" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/mattneary/Tarpits-Abstraction/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/mattneary/Tarpits-Abstraction/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+        <hr>
 
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
-        <h1>
+        <section id="main_content">
+          <h1>
 <a name="tarpits--abstraction" class="anchor" href="#tarpits--abstraction"><span class="octicon octicon-link"></span></a>Tarpits &amp; Abstraction</h1>
 
-<p><em>Tarpits</em> aims to provide its readers with a thorough understanding of computation at various levels of abstraction. Beginning with first principles, modern language features are derived and used to simulate, interpret, and compile other models of computation. There are seven chapters, most of which have been written.</p>
+<p>Tarpits &amp; Abstraction is a book beginning with a discussion on computation and
+the Lambda Calculus, and then exploring layers of abstraction, and 
+cross-interpreting until the reader can understand computation
+at any layer of abstraction.</p>
+
+<p>The full table of contents can be viewed in the book pdf located at 
+<code>build/pdf/book.pdf</code>, but the chapter breakdown follows.</p>
 
 <ol>
-<li>Syntax and Semantics</li>
-<li>Defining Symbolic Expressions</li>
-<li>Designing Primitive Procedures</li>
-<li>Simulating Logical Devices</li>
-<li>Mechanical Interpretation of a Language</li>
-<li>A Self-Hosted Language</li>
-<li>Communicating a Language to Machine</li>
+<li>Computation - A Grammar and Data Structures</li>
+<li>Primitive Procedures - Building Blocks for Programs</li>
+<li>Simulating Logical Devices - Representation of Objects and Rules in FP</li>
+<li>Interpreting a Language - Evaluating and Parsing</li>
+<li>A Self-Hosted Language - Bootstrapping and Extending Our Language's Grammar</li>
 </ol><h2>
 <a name="compilation" class="anchor" href="#compilation"><span class="octicon octicon-link"></span></a>Compilation</h2>
 
-<p>The Makefile generates LaTeX for all chapters, and then renders an index LaTeX file which joins all chapters together. This outputs a pdf to <code>build/pdf/book.pdf</code>, with all LaTeX sources stored in <code>build/latex</code>. Before reading, verify that it is the newest version by running the following from the <em>project root</em>.</p>
+<p>The Makefile generates LaTeX for all chapters, and then renders an index LaTeX
+file which joins all chapters together. This outputs a pdf to
+<code>build/pdf/book.pdf</code>, with all LaTeX sources stored in <code>build/latex</code>.  Before
+reading, verify that it is the newest version by running the following from the
+<em>project root</em>.</p>
 
-<div class="highlight"><pre><span class="nv">$ </span>make
+<div class="highlight highlight-sh"><pre><span class="nv">$ </span>make
 </pre></div>
-      </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/mattneary">mattneary</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
-      </footer>
+
+<h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h2>
+
+<h3>
+<a name="defining-symbolic-expressions" class="anchor" href="#defining-symbolic-expressions"><span class="octicon octicon-link"></span></a>Defining Symbolic Expressions</h3>
+
+<ul>
+<li>Change <code>quote</code> function to allow for <code>atom?</code>
+</li>
+</ul><h3>
+<a name="a-library-of-symbolic-functions" class="anchor" href="#a-library-of-symbolic-functions"><span class="octicon octicon-link"></span></a>A Library of Symbolic Functions</h3>
+
+<ul>
+<li>Using conditionals and <code>cond</code> function</li>
+<li>Diverse Data Structures</li>
+</ul><h3>
+<a name="simulating-logical-devices" class="anchor" href="#simulating-logical-devices"><span class="octicon octicon-link"></span></a>Simulating Logical Devices</h3>
+
+<ul>
+<li>Register machines.</li>
+</ul><h3>
+<a name="pulling-our-language-up-by-its-bootstraps" class="anchor" href="#pulling-our-language-up-by-its-bootstraps"><span class="octicon octicon-link"></span></a>Pulling Our Language up by Its Bootstraps</h3>
+
+<ul>
+<li>examples of <code>define</code> and <code>set!</code>
+</li>
+</ul>
+        </section>
+
+        <footer>
+          Tarpits &amp; Abstraction is maintained by <a href="https://github.com/mattneary">mattneary</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
   </body>
 </html>
