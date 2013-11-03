@@ -26,12 +26,13 @@ represented as different states. Each state, in turn, maintains a specific array
 of ways in which to manipulate read values, and in which direction to move in each 
 case.
 
-All of this methodology is governed by a single ruleset. Hence to simulate one, we 
-will undoubtedly need a representation of these rules. The following is one way, 
-and the way which we will choose, of representing such a set. We have already seen 
-use of lists as hash-tables, so this should not be a surprising design decision.
+All of this methodology is governed by a single ruleset. Hence to simulate one,
+we will undoubtedly need a representation of these rules. The structure in
+Figure~\ref{fig:rulesetExample} is one way, and the way which we will choose,
+of representing such a set. We have already seen use of lists as hash-tables,
+so this should not be a surprising design decision.
 
-```scheme
+```fig:rulesetExample
 (let 
   rules
   '(((A 0) (1 R H))
@@ -64,7 +65,7 @@ model this behavior by maintaining a modified value upon each change, one that i
 the response of a given function. Let's work out an example of working around 
 immutability in lists.
 
-```scheme
+```fig:setDef
 (set 
   (lambda
     (key val hash) 
@@ -87,11 +88,11 @@ upon which the head is currently resting. Within our simulator, this slot is
 specified by the current index of the simulation. Hence, the writing function we 
 will require is one designed to write to a specific index of a tape.
 
-In the following function definition, we recurse with the tail of the list until 
-we reach the specified index, and we then perform the substitution, ending 
-recursion.
+In the function definition of Figure~\ref{fig:writeRuleDef}, we recurse with
+the tail of the list until we reach the specified index, and we then perform
+the substitution, ending recursion.
 
-```scheme
+```fig:writeRuleDef
 (letrec write-rule
   (lambda (write-rule tape index rule)
   (if
@@ -114,9 +115,10 @@ index on tape, excluding the first item.
 ###The Event Loop
 The simulation is based on the idea of following rule to rule until the algorithm 
 terminates. Hence rules are executed recursively until the halt-state is reached. 
-At this point, a final table is returned. The iteration function is defined below.
+At this point, a final table is returned. The iteration function is defined in
+Figure~\ref{fig:iterateDef}.
 
-```scheme
+```fig:iterateDef
 (letrec iterate (lambda
   (iterate index rules state tape) 
   (if 
@@ -141,12 +143,12 @@ There are multiple dependencies to the above function which we have not yet
 defined. In the following section we will put them all together with the `iterate` 
 function and achieve our final goal of simulation.
 
-###A Simulator
-All of the above principles can be combined to form a Turing Machine simulator. 
-The definition of `iterate` is dependent upon a few helper functions. First of 
-all, there are a couple very basic shorthands which are defined below.
+###A Simulator All of the above principles can be combined to form a Turing
+Machine simulator.  The definition of `iterate` is dependent upon a few helper
+functions. First of all, there are a couple very basic shorthands which are
+defined in Figure~\ref{shorthandDefs}.
 
-```scheme
+```fig:shorthandDefs
 (cadr &(lambda (x) (car (cdr x))))
 (caddr &(lambda (x) (car (cdr (cdr x)))))
 ```
@@ -155,7 +157,7 @@ Now we move on to the functions provided for applying a rule and for applying a
 shift in the head. To shift the index we simply handle the case of right motion, 
 i.e., `'R` direction as an upward shift, as well as any other cases.
 
-```scheme
+```fig:moveDef
 (move (lambda 
   (index motion)
   (if
@@ -174,7 +176,7 @@ strange edge-case behavior.
 
 Example usage of the `move` function would be as follows.
 
-```scheme
+```fig:moveExamples
 (move 5 'R) &\implies 6
 (move 3 'L) &\implies 2
 ```  
@@ -184,7 +186,7 @@ tape. The rule applier receives the earlier defined `iterate` function as an
 argument, and then applies it to the moved index, the ruleset, the rule-provided 
 state, and the new tape.
 
-```scheme
+```fig:iterateRuleDef
 (iterate-rule (lambda
   (iterate rule rules index tape)
   (iterate
@@ -194,12 +196,12 @@ state, and the new tape.
     (write-rule tape index rule))))
 ```      
 
-This function consists only of basic manipulations of the rule to parse out the 
-modifications needing to be applied. With all of the dependencies defined, we 
-achieve the following comprehensive definition of a Turing Machine simulator.
+This function consists only of basic manipulations of the rule to parse out the
+modifications needing to be applied. With all of the dependencies defined, we
+achieve the comprehensive definition of a Turing Machine simulator shown in
+Figure~\ref{fig:fullTuring}.
 
-\clearpage
-```scheme
+```fig:fullTuring
 (let* 
   ((index 0)
    (rules '(((A 0) (1 R H))))
@@ -223,10 +225,9 @@ achieve the following comprehensive definition of a Turing Machine simulator.
 
 ###Computation with Turing Machines
 
-A half-adder as a Turing Ruleset would look like the following.
+A half-adder as a Turing Ruleset would look like the Figure~\ref{fig:turingHalfAdder}.
 
-\clearpage
-```scheme
+```fig:turingHalfAdder
 (let 
   rules
   '(((A 0) (0 R Z))
@@ -259,10 +260,10 @@ one of two sates. A wire bearing current is said to have the boolean value true
 
 Now, given these ideas of relational boxes and wires, we add abstraction to reach 
 a view of relational boxes as logical primitives. For example, there may be a 
-relational box named `gateA` which accepts a single wire and maps to the following 
-specified outputs.
+relational box named `gateA` which accepts a single wire and maps to the
+specified outputs in Figure~\ref{fig:gateExample}.
 
-```scheme
+```fig:gateExample
 (gateA #t) &\implies #f
 (gateA #f) &\implies #t
 ```
@@ -282,7 +283,7 @@ opposite value to another wire.
 To begin our design of circuits, we design a relation constituent of the boolean 
 operators listed above as primitives.
 
-```scheme
+```fig:halfAdderCircuitExample
 (half-adder
   (lambda (a b)
   (let* 
@@ -304,7 +305,7 @@ when both are true. Hence `s` represents the first digit of a binary result, and
 
 Let's look at some examples of the behavior of a half-adder.
 
-```scheme
+```fig:halfAdderTruthTable
 (half-adder #f #f) &\implies '(#f #f)
 (half-adder #f #t) &\implies '(#f #t)
 (half-adder #t #f) &\implies '(#f #t)
@@ -313,10 +314,10 @@ Let's look at some examples of the behavior of a half-adder.
 
 If you are not familiar with the behavior of binary digits when adding, note that 
 the above examples exhibit the basics of this behavior. If we were to represent 
-current instead by either `1` or `0`, we would achieve the following, more clearly 
-binary, behavior.
+current instead by either `1` or `0`, we would achieve the more clearly 
+binary behavior shown in Figure~\ref{fig:halfAdderBinaryTable}.
 
-```scheme
+```fig:halfAdderBinaryTable
 (half-adder 0 0) &\implies '(0 0)
 (half-adder 0 1) &\implies '(0 1)
 (half-adder 1 0) &\implies '(0 1)
@@ -349,7 +350,7 @@ We will use a table like those which we have already seen for our basic data-
 structure. The table will be built up with named components, each being 
 manipulations of the circuit. We begin with a basic realization of this idea.
 
-```scheme
+```fig:getSetGateDefs
 (get-gate
   (lambda
     (name env)
@@ -377,17 +378,17 @@ operate upon the object itself. To simulate this idea in our language, we will
 make all methods a function of the object in which they exist. Hence we can define 
 a generic method applier as follows.
 
-```scheme
+```fig:methodDef
 (method 
   (lambda
     (obj mname)
     ((assoc mname obj) obj)))
 ```
 
-Usage of this convenience function would then look like the following, applying a 
-named function to an object.
+Usage of this convenience function would then look like the
+Figure~\ref{fig:methodExample}, applying a named function to an object.
 
-```scheme
+```fig:methodExample
 (method person 'greet)
 ```
 
@@ -404,9 +405,9 @@ gates. A gate will be a table containing some values and some methods. The only
 value will be named `value`, the boolean value of the gate, and the methods will 
 be named `get` and `set`, performing the manipulations of the value which their 
 names would suggest. Hence, we would have a basic constructor of a gate like the 
-following.
+one in Figure~\ref{fig:makeGateDef}.
 
-```scheme
+```fig:makeGateDef
 (make-gate
   (lambda (value get set)
     (list
@@ -419,7 +420,7 @@ following.
 Given this structure, we redefine our gate getter and setter to simplify 
 interfacing with this structure as follows.
 
-```scheme
+```fig:getSetGateDefs
 (get-gate
   (lambda
     (name env)
@@ -436,12 +437,12 @@ Notice that the main change was in making the `get-gate` function get the boolea
 value of a gate rather than the gate itself. `set-gate` remained a function 
 returning the mutated environment, for the sake of setting up a circuit initially.
 
-###Child Object Definitions
-A *child* of an object is one inheriting the structure of its parent and either 
-restricting or expanding the construction, value or method interfaces. The 
-following is a child of the gate definition for constant-value gates.
+###Child Object Definitions A *child* of an object is one inheriting the
+structure of its parent and either restricting or expanding the construction,
+value or method interfaces. The function in Figure~\ref{fig:constGateDef} is a
+child of the gate definition for constant-value gates.
 
-```scheme
+```fig:constGateDef
 (const-gate
   (lambda
     (value)
@@ -457,7 +458,7 @@ and setter are very simple, based around the value attached to the gate object.
 Building upon this simple architecture, we will define a generic relational gate 
 object.
 
-```scheme
+```fig:fnGateDef
 (fn-gate
   (lambda
     (fn a b)
@@ -481,16 +482,17 @@ example.
 
 We now define, in turn, children of the `fn-gate` constructor easily as follows.
 
-```scheme
+```fig:logicGateDefs
 (or-gate &(fn-gate (lambda (a b) (or a b))))
 (and-gate &(fn-gate (lambda (a b) (or a b))))
 (not-gate &(fn-gate (lambda (a b) (not b)) #f))
 ```
 
-###A Simulator
-Putting together all prior defined functions we have the following.
+###A Simulator 
+Putting together all prior defined functions we have the
+simulator in Figure~\ref{fig:circuitFullSimulator}.
 
-```scheme
+```fig:circuitFullSimulator
 (let*      
   ((pairing
     (lambda (a b) (...)))    
@@ -511,9 +513,9 @@ Putting together all prior defined functions we have the following.
 ```
 
 ###Computation with Circuits
-A half-adder utilizing our simulator would look like the following.
+A half-adder utilizing our simulator would look like Figure~\ref{halfAdderSimulated}.
 
-```scheme
+```fig:halfAdderSimulated
 (let*
   ((env (set-gate 'a (const-gate #t) env))
    (env (set-gate 'b (const-gate #t) env))
