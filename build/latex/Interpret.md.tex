@@ -373,7 +373,7 @@ Now we will jump right in to the non-trivial problem at hand, restated below.
 
 "Given a string of nested angle-bracket delimited groups, return a
 nested list containing the contents of these groups. For example,
-given the list of characters $'(a \text{<} b c \text{>} d)$ return $'(a (b c) d)$."
+given the list of characters $'(a < b c > d)$ return $'(a (b c) d)$."
 
 Since we are taking an imperative approach, think, "What is the easily defined iterative 
 process underlying this problem?" The answer is clearly navigation of the string, and so 
@@ -434,7 +434,7 @@ We will need to handle three obvious classes of characters in our parsing of the
 
 Additionally, the class of a character may be disregarded if we have already
 parsed a top-level parenthetical. Its parsing will be handled when we are ready
-to recurse. Given these additions of case-handling, we insert $if \dots else$
+to recurse. siven these additions of case-handling, we insert $if \dots else$
 statements as in Figure~\ref{fig:imperParseApproach}.
 
 \begin{figure}[htp]

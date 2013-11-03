@@ -143,7 +143,8 @@ There are multiple dependencies to the above function which we have not yet
 defined. In the following section we will put them all together with the `iterate` 
 function and achieve our final goal of simulation.
 
-###A Simulator All of the above principles can be combined to form a Turing
+###A Simulator 
+All of the above principles can be combined to form a Turing
 Machine simulator.  The definition of `iterate` is dependent upon a few helper
 functions. First of all, there are a couple very basic shorthands which are
 defined in Figure~\ref{fig:shorthandDefs}.
@@ -437,7 +438,8 @@ Notice that the main change was in making the `get-gate` function get the boolea
 value of a gate rather than the gate itself. `set-gate` remained a function 
 returning the mutated environment, for the sake of setting up a circuit initially.
 
-###Child Object Definitions A *child* of an object is one inheriting the
+###Child Object Definitions 
+A *child* of an object is one inheriting the
 structure of its parent and either restricting or expanding the construction,
 value or method interfaces. The function in Figure~\ref{fig:constGateDef} is a
 child of the gate definition for constant-value gates.

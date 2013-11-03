@@ -355,6 +355,8 @@ Once again we utilized a macro in our definition of a form; this time simply
 applying the Y-Combinator prior to execution of `let`.
 
 ###The Evaluator
+The full evaluator is displayed in Figure~\ref{fig:fullEval} on page \pageref{fig:fullEval}.
+
 ```fig:fullEval
 (letrec let-set 
   (lambda (let-set defs expr)
