@@ -3,7 +3,7 @@
 \section{The Theory}
 In the middle of the nineteen-thirties, two men were laying the foundations of 
 computation. It was in the year of nineteen-thirty-six that each released his 
-*magnum opus*. Alonzo Church revealed to the world a formal system of computation 
+\emph{magnum opus}. Alonzo Church revealed to the world a formal system of computation 
 expressed by function definition and evaluation, and Alan Turing shared his vision 
 of a hypothetical device, one which could simulate the logic of any algorithm. In 
 retrospect, the two works provided equivalent foundation for this brave new world 
@@ -21,13 +21,16 @@ the language were one of the following three types.
 
 This can be summarized using Backus-Naur Form as follows. An expression is said to 
 be replaceable by one of the values separated by a vertical pipe; each of these 
-can then in turn be reduced by referring again to the definition of `<expr>`.
+can then in turn be reduced by referring again to the definition of $<expr>$.
 
+\begin{figure}[ht]
+\caption{}\label{}
 \begin{align*}
 & <expr> \; &::= \; &\lambda \; <var> \; <expr>
 \\& \qquad \qquad \qquad &| \; &(<expr>)<expr>
 \\& \qquad \qquad \qquad &| \; &<var>
 \end{align*}
+\end{figure}
 
 As far as the semantic meaning of this language, there is only one operation. Any 
 expression of the second form can be reduced by substituting the passed value for 
@@ -47,14 +50,17 @@ shifting a tape, modifying values, and maintaining state, following a set of
 prescribed rules in its performance of these operations. A single rule is of the 
 following form.
 
+\begin{figure}[ht]
+\caption{}\label{}
 \begin{align*}
 & <state> \; ::= \; A \; | \; B \; | \; \dots
 \\& <value> \; ::= \; 0 \; | \; 1
 \\& <direction> \; ::= \; R \; | \; L
 \\& <rule> \; ::= \; <state> \; <value> \; <value> \; <direction> \; <state>
 \end{align*}
+\end{figure}
 
-For a given rule, the first two values, *state* and *value*, serve to identify 
+For a given rule, the first two values, \emph{state} and \emph{value}, serve to identify 
 whether a rule is applicable, and the following values describe the manipulations 
 that should take place. A Turing ruleset would then be a sequence of rule 
 expressions. A certain Turing Machine has a given ruleset to achieve a specific 

@@ -28,8 +28,10 @@ atomic just as in prior grammar definitions.
 
 We return briefly to our formal definition of a Symbolic Expression from an 
 earlier chapter; this time we will explicate the characters allowed in an 
-`atom`.
+$atom$.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & <expr> \; &::= \; <sexpr> \; | \; <atom>
 \\& <sexpr> \; &::= \; (<list>)
@@ -40,6 +42,7 @@ earlier chapter; this time we will explicate the characters allowed in an
 \\& <number> \; &::= \; 0 \; | \; 1 \; | \; \dots \; | \; 9
 \\& <symbol> \; &::= \; * \; | \; + \; | \; - \; | \; / \; | \; \# \; | \; < \; | \; > \; | \; \_ \; | \; ? \; | \; !
 \end{align*}
+\end{figure}
 
 Now, because we will be operating from within our Symbolic Language, we will 
 be able to abstract away the details of the grammar. That is, S-Expressions 
@@ -54,6 +57,8 @@ language than others. We will expose these to the language which we
 interpret. Our first task is to enable the Lambda Calculus in these forms, 
 not unlike in our earliest definition of the language.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (assoc \; expr \; env))
@@ -68,6 +73,7 @@ not unlike in our earliest definition of the language.
 \\& \qquad \qquad \quad \; (eval \; (car \; expr) \; env) \; 
 \\& \qquad \qquad \quad \; (map \; (\text{lambda} \; (x) \; (eval \; x \; env)) \; (cdr \; expr)))))) \; \dots)
 \end{align*}
+\end{figure}
 
 This is all fine; however, notice that the arguments to the function are 
 evaluated all at once and passed to the an applier-function. In the next 
@@ -79,6 +85,8 @@ This is not optimal, and does not allow for some nice features enabled by
 application and variable reference components to reflect a lazy approach to 
 evaluation.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
@@ -96,6 +104,7 @@ evaluation.
 \\& \qquad \qquad \qquad \quad \; (eval \; (list \; '\text{lambda} \; '(_) \; x) \; env)) \; 
 \\& \qquad \qquad \qquad \; (cdr \; expr)))))) \; \dots)
 \end{align*}
+\end{figure}
 
 With very few changes we were able to implement this lazy approach. We simply 
 made all arguments wrapped in a lambda before their evaluation, and all 
@@ -104,7 +113,7 @@ changes will make a world of difference in the potential of expressiveness in
 our language.
 
 The most evident of advantages is in the ability to branch execution, i.e., 
-perform `if` statements, without evaluating both branches. This later 
+perform $if$ statements, without evaluating both branches. This later 
 translates into the ability to recurse without invoking infinite recursion.
 
 \subsection{Numbers}
@@ -113,6 +122,8 @@ atomic. Rather than have atoms go against this nature, we will delay
 implementation of arbitrary numbers. For now, we will start with single 
 digits.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{let} \; \text{eval-prelude} \; (\text{lambda} \; (expr \; env)
 \\& \quad (eval \; 
@@ -122,9 +133,10 @@ digits.
 \\& \qquad \quad '((0 \; (0)) \; (1 \; (1)) \; (2 \; (2)) \; (3 \; (3)) \; (4 \; (4)) \; 
 \\& \qquad \qquad (5 \; (5)) \; (6 \; (6)) \; (7 \; (7)) \; (8 \; (8)) \; (9 \; (9)))))) \; \dots)
 \end{align*}
+\end{figure}
 
-The above is just another `eval` function, this time appending to the 
-environment a prelude of definitions prior to calling the usual `eval` 
+The above is just another $eval$ function, this time appending to the 
+environment a prelude of definitions prior to calling the usual $eval$ 
 function. The equivalencies presented are merely from atom to singleton 
 lists; no nature of numbers shows through. Why singletons? Numbers are lists 
 of digits more than they are atomic values, after all, this is what allows us 
@@ -134,6 +146,8 @@ There is one aspect of the environment that we failed to address in our setup
 of a prelude. Given the lazy nature of our interpreter in which all variable
 access is reduction of a lambda, we will need to lambda wrap each set value.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{let} \; \text{lazy-set} \; (\text{lambda} \; (env \; hash)
 \\& \quad (concat
@@ -144,13 +158,16 @@ access is reduction of a lambda, we will need to lambda wrap each set value.
 \\& \qquad \qquad (\text{lambda} \; (z) \; (cadr \; pair)))) \; 
 \\& \qquad \qquad hash))))
 \end{align*}
+\end{figure}
 
 The above implements this lazy nature.
 
 It will be our responsibility to implement arithmetic nature of these numbers 
-by means of a `succ` function. As we have already shown, from this definition 
+by means of a $succ$ function. As we have already shown, from this definition 
 all else is possible.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{let} \; succ \; (\text{lambda} \; (x)
 \\& \quad (\text{let} \; singles \; '((0 \; (1)) \; (1 \; (2)) \; 
@@ -162,6 +179,7 @@ all else is possible.
 \\& \qquad \qquad \quad \; ((equal? \; (car \; x) \; 9) \; (cons \; 0 \; (succ \; (cdr \; x))))
 \\& \qquad \qquad \quad \; (\#t \; (cons \; (succ \; (car \; x)) \; (cdr \; x))))))) \; \dots)
 \end{align*}
+\end{figure}
 
 The above implementation is pretty simple; it is a very basic definition of 
 the meaning of numbers in our decimal system. It says, "One follows zero; two 
@@ -170,9 +188,11 @@ number with a ones digit of nine will increment to a ones digit zero, with a
 once higher leading strand of digits. Finally, any other number with multiple 
 digits will result in a once larger ones digit.
 
-We will now expand our `eval-prelude` to be more extensible and to include 
-the `succ` function.
+We will now expand our $eval-prelude$ to be more extensible and to include 
+the $succ$ function.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (let* \; 
 \\& \quad ((\text{set-arithmetic} \; (\text{lambda} \; (env)
@@ -190,6 +210,7 @@ the `succ` function.
 \\& \qquad \quad \; expr
 \\& \qquad \quad \; (\text{set-arithmetic} \; (\text{set-numerals} \; env)))))) \; \dots)
 \end{align*}
+\end{figure}
 
 \subsection{Booleans and Predicates}
 Our implementation of Booleans will be quite simple. Recall the use of atoms 
@@ -197,20 +218,25 @@ to symbolize numbers in the prior section, with the meaning of the numbers
 being more derived from the operations we defined than from their 
 representation. The same will hold especially true for Booleans.
 
-Our Booleans will be defined on the prelude by the names of `t` and `f`, as 
+Our Booleans will be defined on the prelude by the names of $t$ and $f$, as 
 you have come to expect. Now, rather than decide on an arbitrary atom to 
-which they will map, we will allow `f` to equal `nil` and `t` to equal `1`. 
-Hence we would have a `set-booleans` definition to append to `let*` that 
+which they will map, we will allow $f$ to equal $nil$ and $t$ to equal $1$. 
+Hence we would have a $set-booleans$ definition to append to $let*$ that 
 looks like the following.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{set-booleans} \; (\text{lambda} \; (env)
 \\& \quad (\text{lazy-set} \; env \; (list \; (list \; '\#t \; 1) \; (list \; '\#f \; nil)))))
 \end{align*}
+\end{figure}
 
-Given these definitions of true and false, we will now define an `if` 
-function which follows very naturally from our native `if` function.
+Given these definitions of true and false, we will now define an $if$ 
+function which follows very naturally from our native $if$ function.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{set-booleans} \; (\text{lambda} \; (env) \; 
 \\& \quad (\text{lazy-set} \; 
@@ -222,22 +248,25 @@ function which follows very naturally from our native `if` function.
 \\& \qquad \qquad (\text{lambda} \; (p \; t \; f)
 \\& \qquad \qquad \quad (if \; (null? \; x) \; f \; t))))))))
 \end{align*}
+\end{figure}
 
 \subsection{List Primitives}
 The functions primitive to the manipulation of S-Expressions have yet to be 
 discussed. The following is a list of these primitives.
 
 \begin{itemize}
-  \item `car`
-  \item `cdr`
-  \item `cons`
-  \item `eq?`
-  \item `null?`
-  \item `atom?`
+  \item $car$
+  \item $cdr$
+  \item $cons$
+  \item $eq?$
+  \item $null?$
+  \item $atom?$
 \end{itemize}
 
 These will be exposed to the interpreted language by means of the prelude.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{set-primitives} \; (\text{lambda} \; (env)
 \\& \quad (\text{lazy-set}
@@ -250,6 +279,7 @@ These will be exposed to the interpreted language by means of the prelude.
 \\& \qquad \quad (list \; 'null? \; null?)
 \\& \qquad \quad (list \; 'atom? \; atom?)))))
 \end{align*}
+\end{figure}
 
 \subsection{Recursion}
 Now, as was alluded to earlier, we will provide a Y combinator for the 
@@ -257,9 +287,11 @@ sake of recursion. Thanks to the lazy evaluation of our interpreter, this
 will be an easily achieved task.
 
 Although combinators are possible without lazy evaluation, a function-based 
-`if` statement is not; this is the key to our dependence on laziness. In the 
+$if$ statement is not; this is the key to our dependence on laziness. In the 
 following, we set a Y-Combinator on the prelude.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{set-Y} \; (\text{lambda} \; (env)
 \\& \quad (\text{lazy-set}
@@ -268,6 +300,7 @@ following, we set a Y-Combinator on the prelude.
 \\& \qquad \quad ((\text{lambda} \; (x) \; (f \; (x \; x))) \; 
 \\& \qquad \quad \; (\text{lambda} \; (x) \; (f \; (x \; x))))))))))
 \end{align*}
+\end{figure}
 
 \subsection{Syntactic Sugars}
 In our definition of the language, we were sure to provide convenient 
@@ -275,10 +308,12 @@ shorthands and general niceties. Hence, we will now do the same within our
 interpreter.
 
 Most of the syntactic constructs which we have yet to address are forms of 
-`let`. For this reason, we begin with an exposure of `let` to the 
-interpreter. `let` is merely syntactic sugar for reduction of a lambda; hence 
+$let$. For this reason, we begin with an exposure of $let$ to the 
+interpreter. $let$ is merely syntactic sugar for reduction of a lambda; hence 
 we provide the following implementation of let-forms.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; ((assoc \; expr \; env) \; nil))
@@ -302,22 +337,25 @@ we provide the following implementation of let-forms.
 \\& \qquad \qquad \qquad \quad \; (eval \; (list \; '\text{lambda} \; '(_) \; x) \; env)) \; 
 \\& \qquad \qquad \qquad \; (cdr \; expr)))))) \; \dots)
 \end{align*}
+\end{figure}
 
 Note that this definition performs a rewrite of the S-Expression, and then
-evaluates that new form. This is often referred to as a *macro*. Macros can
+evaluates that new form. This is often referred to as a \emph{macro}. Macros can
 be exposed to the programmer of a language to allow for this same 
-extensibility of the language from *within* the language.
+extensibility of the language from \emph{within} the language.
 
-Returning to our syntactic constructs, we similarly define `let*` forms. 
-However, in this case, we will extract a function called `let-set` to avoid 
+Returning to our syntactic constructs, we similarly define $let*$ forms. 
+However, in this case, we will extract a function called $let-set$ to avoid 
 messiness in our main interpreter definition.
 
-`let-set` is recursively defined, but its implementation is very similar to
-that of `let`. If there are definitions to be applied, `let-set` creates a
+$let-set$ is recursively defined, but its implementation is very similar to
+that of $let$. If there are definitions to be applied, $let-set$ creates a
 wrapping lambda and reduces it with the first definition. Then, it recurses
 until there are no more definitions to apply. At that time, it returns the
 expression.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; \text{let-set} \; 
 \\& \quad (\text{lambda} \; (\text{let-set} \; defs \; expr)
@@ -336,10 +374,13 @@ expression.
 \\& \qquad \qquad \qquad (eval \; (\text{let-set} \; (cadr \; expr) \; (caddr \; expr)) \; env))
 \\& \qquad \qquad \quad \; (\#t \; \dots))) \; \dots))
 \end{align*}
+\end{figure}
 
-Now, our last let-form is `letrec`. This syntax will be defined using the Y-
+Now, our last let-form is $letrec$. This syntax will be defined using the Y-
 combinator, as alluded to earlier.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (\dots
@@ -353,12 +394,15 @@ combinator, as alluded to earlier.
 \\& \qquad \qquad \qquad env))
 \\& \qquad \qquad \; (\#t \; \dots))) \; \dots)
 \end{align*}
+\end{figure}
 
 Once again we utilized a macro in our definition of a form; this time simply
-applying the Y-Combinator prior to execution of `let`.
+applying the Y-Combinator prior to execution of $let$.
 
 \clearpage
 \subsection{The Evaluator}
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; \text{let-set} \; 
 \\& \quad (\text{lambda} \; (\text{let-set} \; defs \; expr)
@@ -379,12 +423,13 @@ applying the Y-Combinator prior to execution of `let`.
 \\& \qquad \qquad \qquad \qquad \qquad \quad (\text{set-Y} \; env))))))))))
 \\& \qquad \qquad \qquad (\dots))))))
 \end{align*}
+\end{figure}
 
 \subsection{Conclusion}
 We have successfully defined an interpreter of the syntax of our language.
 Even more interesting is the fact that we implemented this interpreter from
 within the same language. By taking this route, we were able to reuse, or
-*snarf*, some of the constructs of the language very easily in our
+\emph{snarf}, some of the constructs of the language very easily in our
 interpretation of it.
 
 \section{Language Expansion}
@@ -399,7 +444,7 @@ earlier section the utilization of mutation in a procedure, attributed to an
 imperative approach, as an alternative to this heavy nesting.
 
 In this section, we will implement the beginnings of an array of mutators
-allowing for the imperative model. We will begin with a single, `set` 
+allowing for the imperative model. We will begin with a single, $set$ 
 function without scope. This means that the only way this form will take
 effect is through its invocation at the top level.
 
@@ -414,7 +459,7 @@ $\mu$. We will take a moment to unwrap this definition.
 A Functor is a construct at a very high level of abstraction, we will briefly
 define it in terms of familiar concepts. We begin with the idea of a set and
 a relation on that same set. Of course, an example would be the set of Natural
-Numbers. Then a relation on that set could be `<`. This will be our first
+Numbers. Then a relation on that set could be $<$. This will be our first
 level of abstraction; that is to say, this is our first example of objects and
 arrows between them. An arrow could flow from 0 to 1, and then 1 to 2, et cetera,
 ad infinitum.
@@ -450,9 +495,11 @@ refer to $\nu$ as unit and $\mu$ as join.
 Now, one might be wondering why such a structure is valuable. The reason is that
 Monads generalize the idea of boxing values. Why box values? One might box a value
 in a pair, with an annotation as the other element. For example, one could define
-a couting Monad which boxes by forming a tuple including the value and `1` and unboxes
+a couting Monad which boxes by forming a tuple including the value and $1$ and unboxes
 a box of a box by adding together the number labels as follows.
 
+\begin{figure}[ht]
+\caption{}\label{}
 \begin{align*}
 & T(x) \; = \; x \; \times \; \mathbb{N}
 \\& T(f: \; A \; \to \; B)(a, \; n) \; = \; (f(a), \; n)
@@ -461,36 +508,42 @@ a box of a box by adding together the number labels as follows.
 \\& \mu_{x}: \; T(T(x)) \; \to \; T(x)
 \\& \mu_{x}((x, \; a), \; b) \; = \; (x, \; a+b)
 \end{align*}
+\end{figure}
 
 A similar construct, then, could be used to accumulate log information, for example.
 Monads are of interest to us for their potential in maintaining state. For this
 purpose, one could maintain state as the second element of the tuple. However, for
 applications like this one, programmers usually prefer to take a different outlook on
-Monads, namely, to focus on `unit` and `bind` functions rather than `unit` and `join`.
+Monads, namely, to focus on $unit$ and $bind$ functions rather than $unit$ and $join$.
 The bind function can be defined in terms of join quite simply.
 
+\begin{figure}[ht]
+\caption{}\label{}
 \begin{align*}
 & bind_{x}: \; T(A) \; \to \; (A \; \to \; T(B)) \; \to \; T(B)
 \\& bind_{x}(a, \; f) \; = \; join(T(f)(a))
 \end{align*}
+\end{figure}
 
-As you can see, `bind` essentially elevates a function from unboxed to boxed to boxed
+As you can see, $bind$ essentially elevates a function from unboxed to boxed to boxed
 to boxed. Its innerworkings are as simple as getting the boxed morphism defined by the
 category which accepts a function from $A$ to $T(B)$ and returns a function from $T(A)$
 to $T(T(B))$. However, since we are seeking a function onto $T(B)$, we then unbox the
-return value with `join`.
+return value with $join$.
 
 \subsection{A New Eval}
 In our new eval function we will form a function which boxes our previous
 implementation with an environment. However, we will implement the unboxing
 and boxing by hand in a full rewrite, to drive home the innerworkings of it.
 
-The following is a rewrite of the `eval` function to behave as this composite
+The following is a rewrite of the $eval$ function to behave as this composite
 form. Note that macro forms behave the same as before, but that all other
 forms return a list of expression result and environment. Of course, these
-forms are also forced to interface with the new return values of `eval` in
+forms are also forced to interface with the new return values of $eval$ in
 order to bear the same effect as before.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; eval \; (eval \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (list \; ((assoc \; expr \; env) \; nil) \; env))
@@ -522,12 +575,15 @@ order to bear the same effect as before.
 \\& \qquad \qquad \qquad \qquad \qquad \; (car \; (eval \; (list \; '\text{lambda} \; '(_) \; x) \; env)) \; (cdr \; expr)))))
 \\& \qquad \qquad \qquad \quad \; env)))) \; \dots)
 \end{align*}
+\end{figure}
 
 With this new eval function, we have a way of maintaining state after 
 mutation to the environment. Now we can define a function which will accept
 a list of expressions and perform them one after the other on a gradually
 mutating environment.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; \text{eval-seq} \; (\text{lambda} \; (\text{eval-seq} \; exprs \; m)
 \\& \quad (if
@@ -535,17 +591,21 @@ mutating environment.
 \\& \qquad \; m
 \\& \qquad \; (\text{eval-seq} \; (cdr \; exprs) \; (eval \; (car \; exprs) \; (cadr \; m))))))
 \end{align*}
+\end{figure}
 
 Hence we would achieve the behavior exhibited by the following
 example.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (car \; (\text{eval-seq} \; '((set! \; c \; 1) \; (c)))) \; \implies \; 1
 \end{align*}
+\end{figure}
 
 \subsection{Scope}
 So far we have for the most part left the environment alone, excepting for
-invocations of `set!`. However, we will now take a look at scope and how it
+invocations of $set!$. However, we will now take a look at scope and how it
 will be implemented through the various syntactic forms.
 
 The first prerequisite will be the existence of various scopes in which a
@@ -555,11 +615,13 @@ multiple expressions.
 
 Implementation of this feature is far from difficult. We may as well embrace
 our early stages of an expanded language and provide as a prelude the 
-`eval-seq` function. The following combines our set function with the
-Y-Combinator to form an alternative to `let-rec`. Note that we have modified
+$eval-seq$ function. The following combines our set function with the
+Y-Combinator to form an alternative to $let-rec$. Note that we have modified
 the function definition to return the full value-environment pair, rather 
 than just the value.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (set! \; \text{eval-seq} \; (Y \; (\text{lambda} \; (\text{eval-seq} \; exprs \; m)
 \\& \quad (if
@@ -567,10 +629,13 @@ than just the value.
 \\& \qquad \; m
 \\& \qquad \; (\text{eval-seq} \; (cdr \; exprs) \; (eval \; (car \; exprs) \; (cadr \; m)))))))
 \end{align*}
+\end{figure}
 
-Now we can utilize `eval-seq` from within the `eval` function; we will call
+Now we can utilize $eval-seq$ from within the $eval$ function; we will call
 it from within the evaluation of a lambda.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (set! \; \text{eval-lambda} \; (\text{lambda} \; (eval \; expr \; env)
 \\& \quad (list
@@ -582,15 +647,16 @@ it from within the evaluation of a lambda.
 \\& \qquad \qquad \quad (set \; (cadr \; expr) \; x \; env)))
 \\& \qquad env))
 \end{align*}
+\end{figure}
 
-Note our above use of `cddr` rather than `caddr`. This is the portion of the
+Note our above use of $cddr$ rather than $caddr$. This is the portion of the
 implementation accounting for a sequence of expressions following the
 parameter list of a lambda definition. Additionally, notice that the initial
-environment had to account for the full form expected by `eval-seq`, i.e.,
+environment had to account for the full form expected by $eval-seq$, i.e.,
 a value-environment pair.
 
 What are the ramifications of this straightforward foundation for scope? Our
-use of `eval-seq` sufficed for maintenance of values in the sequence of 
+use of $eval-seq$ sufficed for maintenance of values in the sequence of 
 lambda body-expressions; however, it served to form a sort of fork from the
 primary environment, one which never reconnects with its origin. We are now
 faced with the problem of implementing this scope-traversal despite the
@@ -600,7 +666,7 @@ In order to achieve this, we have already decided that a scope-traversing
 function will be required. How would one be implemented? Well, if you attempt
 to find the point at which two environments share a border, it is clearly at
 the forming of a lambda. Hence, we could define a function, say 
-`bubble-set!`, on the lambda's environment which will set a value on the
+$bubble-set!$, on the lambda's environment which will set a value on the
 parent environment if the variable has yet to be declared on the child.
 
 There is one issue with this idea, however: the environment value is not
@@ -610,6 +676,8 @@ this, we will need to modify the default clause of the evaluator:
 application. The following would take on the environment value of the forked
 environment.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\#t \; (\text{apply-set} \; 
 \\& \qquad \quad (car \; (eval \; (car \; expr) \; env))
@@ -617,13 +685,16 @@ environment.
 \\& \qquad \qquad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \quad (car \; (eval \; (list \; '\text{lambda} \; '(_) \; x) \; env)) \; (cdr \; expr))))))
 \end{align*}
+\end{figure}
 
 This is not suitable, because you would then have all ideas of scope be lost
 to a system of most recently set values. Instead, we will need to harness the
 forked environment for manipulations on the primary environment, and then
-discard it. The following definition of `perform-bubbles` handles the 
+discard it. The following definition of $perform-bubbles$ handles the 
 updating of the primary environment.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (set! \; \text{perform-bubbles} \; (\text{lambda} \; (m \; env)
 \\& \quad (\text{let} \; bubbles \; (assoc \; 'bubbles \; (cadr \; m))
@@ -640,6 +711,7 @@ updating of the primary environment.
 \\& \qquad \qquad (\text{lambda} \; (x) \; 
 \\& \qquad \qquad \quad (car \; (eval \; (list \; '\text{lambda} \; '(_) \; x) \; env)) \; (cdr \; expr))))) \; env))
 \end{align*}
+\end{figure}
 
 Of special note is the fact that rather than perform the value updates on the
 environment manually, we allowed the evaluator to perform them. This choice
@@ -650,6 +722,8 @@ We are now left only with the issue of simulating updates to the primary
 environment from within the forked environment. This can be achieved by some
 tweaks to variable access and setting.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & ((atom? \; expr) \; 
 \\& \quad (if
@@ -674,10 +748,11 @@ tweaks to variable access and setting.
 \\& \qquad \qquad \; (assoc \; 'bubble \; env))
 \\& \qquad \quad \; env)))) \; 
 \end{align*}
+\end{figure}
 
 The two definitions above serve to attempt either a get or set on the forked
 environment, and, if the variable is undeclared, perform that action on the
-`bubble` portion of the environment. Of course, when appropriate, these 
+$bubble$ portion of the environment. Of course, when appropriate, these 
 bubbles will be reflected in the primary environment.
 
 Despite the elegance of the above definitions, our current foundation will
@@ -687,6 +762,8 @@ primary environment will not be seen as needing to bubble, but rather, as
 changes to local variables. To resolve this issue, we will need to change our
 initial value for forked environments.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (set! \; \text{eval-lambda} \; (\text{lambda} \; (eval \; expr \; env)
 \\& \quad (list
@@ -698,16 +775,19 @@ initial value for forked environments.
 \\& \qquad \qquad \quad (set \; (cadr \; expr) \; x \; '((bubble \; env)))))
 \\& \qquad env))
 \end{align*}
+\end{figure}
 
 The above is quite simple. Our only change was to specify the primary
 environment as the bubbling cache.
 
 You may have picked up on the fact that since all set operations bubble if
-the variable is undeclared, `set!` will not suffice if we wish to maintain
-various scopes. For this purpose, we will introduce a `define` function.
-`define` will pin down a variable to a specific scope, if you will. Its
+the variable is undeclared, $set!$ will not suffice if we wish to maintain
+various scopes. For this purpose, we will introduce a $define$ function.
+$define$ will pin down a variable to a specific scope, if you will. Its
 implementation is merely a reuse of our original, naive set function.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & ((equal? \; (car \; expr) \; 'define)
 \\& \; (list \; 
@@ -717,11 +797,12 @@ implementation is merely a reuse of our original, naive set function.
 \\& \qquad \; (eval \; (caddr \; expr) \; env) \; 
 \\& \qquad \; env)))
 \end{align*}
+\end{figure}
 
-Together, `define` and `set!` provide us with the ability to specify scope
+Together, $define$ and $set!$ provide us with the ability to specify scope
 for variables which will be maintained across any sort of sub-procedure. Our
-implementation of a bubbling `set!` was very slick, and `define` was merely
-a reuse of our old `set!` function.
+implementation of a bubbling $set!$ was very slick, and $define$ was merely
+a reuse of our old $set!$ function.
 
 \section{Conclusion}
 We have defined a means of evaluating our language from within the language

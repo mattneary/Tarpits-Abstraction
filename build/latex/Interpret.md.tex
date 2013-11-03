@@ -25,20 +25,25 @@ qualification is given to the expression which will be passed argument, this
 language is without types.
 
 \subsection{Lambda Calculus in S-Expressions}
-In expression the Lambda Calculus in S-Expressions, we will utilize the `quote` 
+In expression the Lambda Calculus in S-Expressions, we will utilize the $quote$ 
 function as well as the structure inherent of parenthetical expressions in these 
 expressions. Hence an example of an expression which could be evaluated is the 
 following.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & '(lam \; x \; lam \; y \; (x) \; y)
 \end{align*}
+\end{figure}
 
 \subsection{An Evaluator}
 We define our evaluator pretty easily. Note that we will begin by defining an 
-`apply` function. This function accepts a function and list of arguments, and 
+$apply$ function. This function accepts a function and list of arguments, and 
 then applies each of these arguments to a lambda one by one.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; (\text{apply-set} \; fn \; args)
 \\& \quad (if
@@ -46,6 +51,7 @@ then applies each of these arguments to a lambda one by one.
 \\& \qquad fn
 \\& \qquad (\text{apply-set} \; (fn \; (car \; args)) \; (cdr \; args))))
 \end{align*}
+\end{figure}
 
 Just like our definition of the syntax, our evaluator handles variable reference, 
 lambda definition, and function application. 
@@ -60,10 +66,12 @@ appended to the environment with the argument name as its key. The function body
 is then evaluated.
 
 Function application is the default case, thus we match against the antecedent 
-`t`. The applier `apply-set` is then called with the evaluated form of the first 
+$t$. The applier $apply-set$ is then called with the evaluated form of the first 
 argument and the evaluated arguments. This architecture is an explicit choice 
-*not* to opt for a lazy method of evaluation.
+\emph{not} to opt for a lazy method of evaluation.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (evallam \; (\text{lambda} \; (evallam \; expr \; env)
 \\& \quad (cond \; (((atom? \; expr) \; (assoc \; expr \; env))
@@ -81,13 +89,17 @@ argument and the evaluated arguments. This architecture is an explicit choice
 \\& \qquad \qquad \qquad \quad \; (\text{lambda} \; (expr) \; (evallam \; expr \; env)) \; 
 \\& \qquad \qquad \qquad \quad \; (cdr \; expr))))))))
 \end{align*}
+\end{figure}
 
 \subsection{Evaluation of Forms}
 An example of a form which could be evaluated is the following.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & '(lam \; x \; lam \; y \; ((x) \; y) \; 1)
 \end{align*}
+\end{figure}
 
 \section{Flat-Input Lambda Calculus}
 In the prior implementation of an interpreter, we took advantage of the structure 
@@ -99,11 +111,14 @@ In order to represent the expression previously expressed by nested S-Expression
 we will now utilize some symbols which will represent parenthetical expressions. 
 The following example of this new flat structure.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & '(lam \; x \; lam \; y \; < \; x \; > \; y)
 \end{align*}
+\end{figure}
 
-Of course, this use of `<>` symbols would extend to any instance of parentheses 
+Of course, this use of $<>$ symbols would extend to any instance of parentheses 
 in our prior method.
 
 With our new, less inherently structured approach, we will need to provide an 
@@ -127,20 +142,23 @@ mutation, implementation of these constructs as well. In later chapters, we will
 able to automate the utilization of these analogs identified.
 
 \subsection{Mutators}
-The main difference between imperative and *purely* functional programming is the 
+The main difference between imperative and \emph{purely} functional programming is the 
 presence of mutability. In functional programs, a value can be defined but not 
 mutated; however, when taking the imperative approach, values will often be set to 
 a new value after their definition. The following is an example of this behavior.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; x \; 5)
 \\& (set! \; x \; (* \; 2 \; x))
 \\& \implies \; x \; = \; 10
 \end{align*}
+\end{figure}
 
-The `define` operator serves to allocate a variable and initiate it with a value. 
-This variable, `x`, can then be accessed throughout the procedure, and even mutated 
-to equal a new value. In the example, it was initiated as 5, but `set!` to 10.
+The $define$ operator serves to allocate a variable and initiate it with a value. 
+This variable, $x$, can then be accessed throughout the procedure, and even mutated 
+to equal a new value. In the example, it was initiated as 5, but $set!$ to 10.
 
 In order to simulate mutation, we will need a means of manipulating an environment
 accessed and mutated by a myriad of expressions. The pure means of achieving this,
@@ -154,6 +172,8 @@ a register machine in many ways; an analog which we will further analyze in late
 sections. What follows is an implementation using these concepts of the prior
 imperative procedure.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
@@ -163,15 +183,18 @@ imperative procedure.
 \\& \qquad \qquad \qquad \quad \; (equal? \; (assoc \; 'x \; env) \; 5)) \; start))
 \\& \quad \dots)
 \end{align*}
+\end{figure}
 
-In the above, note that we omitted the second `equal?`, because only one of them bore
+In the above, note that we omitted the second $equal?$, because only one of them bore
 an actual effect. We now move on to address more complex issues of this impure 
 approach.
 
-In programming languages, *scope* refers to the region over which a variable is
+In programming languages, \emph{scope} refers to the region over which a variable is
 accessible. The scoping of a variable is specified by the define operator; hence the 
 following is another example of this behavior.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; x \; 5)
 \\& ((\text{lambda} \; (y)
@@ -179,18 +202,21 @@ following is another example of this behavior.
 \\& (equal? \; x \; 12) \; 
 \\& ;; \; \#t
 \end{align*}
+\end{figure}
 
-Of note is the fact that the `define` occurred separate from any function. This 
-means that the defined variable will now take on the *global* scope, being accessible 
+Of note is the fact that the $define$ occurred separate from any function. This 
+means that the defined variable will now take on the \emph{global} scope, being accessible 
 and mutable from within any function. 
 
 In translating the definition and application of the lambda to a purely functional
 procedure, we will provide the action of the lambda as a prelude to the rest of the 
 procedure. The invocation of the lambda will require that we set the index to which
 the flow of control should return after completion of the lambda. This takes the form
-of a variable `ret` defined on the environment. All other methods in the following are
+of a variable $ret$ defined on the environment. All other methods in the following are
 similar to those in prior procedures.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
@@ -201,36 +227,42 @@ similar to those in prior procedures.
 \\& \qquad \qquad \qquad \quad \; (equal? \; (assoc \; 'x \; env) \; 5)) \; start))
 \\& \quad \dots)
 \end{align*}
+\end{figure}
 
 In the above, our starting index would instead be 1, in order to begin at the first
 line of the imperative program and avoid the definition of the lambda used later on
 in the procedure.
 
-If the `define` of the prior example had instead occurred within a function definition, 
+If the $define$ of the prior example had instead occurred within a function definition, 
 as in the following, it would only be accessible from within that function, or other 
 functions defined within it.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; scope \; (\text{lambda} \; (x)
 \\& \quad (\text{define} \; y \; x)))
 \\& (scope \; 5)
 \\& y
-\\& ;; \; The \; written \; variable, \; `y`, \; will \; be \; inaccessible.
+\\& ;; \; The \; written \; variable, \; y, \; will \; be \; inaccessible.
 \end{align*}
+\end{figure}
 
 In the above we demonstrate definition with a single-function scope. Thus the 
-`define` is fulfilling the same role as `let` did in prior programs. However, since 
-`define` does not accept an expression which it will govern, the example definition 
+$define$ is fulfilling the same role as $let$ did in prior programs. However, since 
+$define$ does not accept an expression which it will govern, the example definition 
 is of no effect. In the following section we display a means of making use of this 
-sort of `define` statement.
+sort of $define$ statement.
 
 To simulate this, we would need to add a sort of inner scope to our function calls, 
 exhibited in the form of jumping to another instruction. We will, for the sake of
-simplicity, create an inner environment, known as a *closure*, as a value on the
+simplicity, create an inner environment, known as a \emph{closure}, as a value on the
 outer, or normal, environment. Then, prior to returning, we will clear the inner 
-environment by setting it to `nil`.
+environment by setting it to $nil$.
 
 \clearpage
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; 
 \\& \quad main \; 
@@ -256,8 +288,9 @@ environment by setting it to `nil`.
 \\& \qquad start))
 \\& \quad \dots)
 \end{align*}
+\end{figure}
 
-Of note is the fact that the `define` from within a closure translated into a `set`
+Of note is the fact that the $define$ from within a closure translated into a $set$
 upon the inner environment. If we were aiming to automate this process, we would
 instead maintain an image of the original environment, and simply revert to that 
 image after execution of the function.
@@ -270,11 +303,14 @@ a procedure may utilize multiple expressions, each contributing its own mutation
 a final effect. The following is an example of this in practice; the syntax is 
 simply a chain of expressions where an individual would have previously existed.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; incr \; (\text{lambda} \; (x)
 \\& \quad (\text{define} \; y \; (+ \; x \; 1))
 \\& \quad y))
 \end{align*}
+\end{figure}
 
 Obviously, this example is of no utility. The desired function could be just as 
 easily achieved with a single expression. Useful examples, however, will present 
@@ -286,17 +322,22 @@ programs will often iterate, mutating the environment in each step. For convenie
 in utilization of this approach, we define a function for constructing a range over 
 which to iterate.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; range \; (\text{lambda} \; (x)
 \\& \quad (if \; (equal? \; x \; 0)
 \\& \qquad nil
 \\& \qquad (cons \; (- \; x \; 1) \; (range \; (- \; x \; 1))))))
 \end{align*}
+\end{figure}
 
 The above definition is pretty straight-forward, much like earlier function 
 definitions. Note that the ranges are of the form 0, 1, ..., n-1. Here's an example 
 of this function being used to calculate a factorial.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; fact \; (\text{lambda} \; (x)
 \\& \quad (\text{define} \; ans \; 1)
@@ -304,12 +345,15 @@ of this function being used to calculate a factorial.
 \\& \qquad (set! \; ans \; (* \; and \; (+ \; 1 \; n)))))
 \\& \quad ans))
 \end{align*}
+\end{figure}
 
 The starting value of the answer is 1, just like the sort of inductive definitions we 
 provided earlier in the book. The final answer is then achieved by repeated 
-multiplication performed on the previous `ans`. In the case of 5, for example, the 
-accumulator `ans` takes on the following values.
+multiplication performed on the previous $ans$. In the case of 5, for example, the 
+accumulator $ans$ takes on the following values.
 
+\begin{figure}[ht]
+\caption{}\label{}
 \begin{align*}
 & 1
 \\& \implies \; 1*1 \; \implies \; 1
@@ -318,6 +362,7 @@ accumulator `ans` takes on the following values.
 \\& \implies \; 4*6 \; \implies \; 24
 \\& \implies \; 5*24 \; \implies \; 120
 \end{align*}
+\end{figure}
 
 \subsection{An Imperative Solution}
 Now we will jump right in to the non-trivial problem at hand, restated below.
@@ -328,9 +373,11 @@ given the list of characters $'(a \text{<} b c \text{>} d)$ return $'(a (b c) d)
 
 Since we are taking an imperative approach, think, "What is the easily defined iterative 
 process underlying this problem?" The answer is clearly navigation of the string, and so 
-we begin with a `range`-based loop that will cycle through each character of the string 
+we begin with a $range$-based loop that will cycle through each character of the string 
 in order.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad (map \; (range \; (length \; expr)) \; (\text{lambda} \; (i)
@@ -338,6 +385,7 @@ in order.
 \\& \qquad // \; \dots
 \\& \quad )))
 \end{align*}
+\end{figure}
 
 Now we will need to describe a slightly more specific strategy in performing the desired 
 process.
@@ -347,13 +395,15 @@ process.
   \item Once a parenthetical has been removed, we will need to recurse on these segments, i.e., the parenthetical and the portion after it.
 \end{itemize}
 
-To make our way toward this implementation, we will define a variable `before` that will 
-hold the segment of the string occurring prior to any parenthetical; a variable `accum` 
+To make our way toward this implementation, we will define a variable $before$ that will 
+hold the segment of the string occurring prior to any parenthetical; a variable $accum$ 
 that will hold characters that have been read in but whose destination has yet to be 
-determined, in this way serving as a cache; `paren` which will hold a separated out 
-parenthetical; and `found` which will be true if and only if a parenthetical has been 
+determined, in this way serving as a cache; $paren$ which will hold a separated out 
+parenthetical; and $found$ which will be true if and only if a parenthetical has been 
 parsed.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad (\text{define} \; before)
@@ -365,6 +415,7 @@ parsed.
 \\& \qquad // \; \dots
 \\& \quad )))
 \end{align*}
+\end{figure}
 
 In order to parse out the parenthetical, however, we will need an additional variable. 
 This variable will aid us in parsing nested parentheses to separate out the top-level parenthetical.
@@ -379,8 +430,10 @@ We will need to handle three obvious classes of characters in our parsing of the
 
 Additionally, the class of a character may be disregarded if we have already parsed a 
 top-level parenthetical. Its parsing will be handled when we are ready to recurse. Given 
-these additions of case-handling, we insert `if ... else` statements as in the following.
+these additions of case-handling, we insert $if ... else$ statements as in the following.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad (\text{define} \; before)
@@ -396,11 +449,14 @@ these additions of case-handling, we insert `if ... else` statements as in the f
 \\& \qquad \qquad (\dots"2. \; a \; closing \; parenthesis"\dots)
 \\& \qquad \qquad (\dots"3. \; any \; other \; character"\dots))))))
 \end{align*}
+\end{figure}
 
 Of course, we will need to combine any separated out parenthetical with the components 
 occurring before and after it to form the designated response. Hence we provide the 
-following `return` statement.
+following $return$ statement.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad \dots"variables"\dots
@@ -410,6 +466,7 @@ following `return` statement.
 \\& \qquad (concat \; (push \; before \; paren) \; (parse \; accum))
 \\& \qquad expr)))
 \end{align*}
+\end{figure}
 
 Now we implement our nesting logic and the final algorithm. Nesting will be handled 
 based on one of the following occurrences.
@@ -429,11 +486,13 @@ accumulator and the setting of the various components to the accumulator. We wil
 implement these portions in the following code.
 
 \begin{itemize}
-  \item When the parenthetical is closed, it is recursively `parsed` and set to the `paren` variable.
-  \item When a parenthetical is open, `before` receives the accumulator value.
+  \item When the parenthetical is closed, it is recursively $parsed$ and set to the $paren$ variable.
+  \item When a parenthetical is open, $before$ receives the accumulator value.
 \end{itemize}
 
 \clearpage
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; parse \; (\text{lambda} \; (expr) \; 
 \\& \quad (\text{define} \; before)
@@ -461,6 +520,7 @@ implement these portions in the following code.
 \\& \qquad (concat \; (push \; before \; paren) \; (parse \; accum))
 \\& \qquad expr)))
 \end{align*}
+\end{figure}
 
 \subsection{From Imperative to Functional}
 From the above final implementation of our program we can derive a functional 
@@ -485,6 +545,8 @@ navigating the list is maintained, and idiomatic as you have seen in prior progr
 written in our Symbolic Language.
 
 \clearpage
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; funparse \; (\text{lambda} \; (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
@@ -510,15 +572,18 @@ written in our Symbolic Language.
 \\& (\text{define} \; funparse\_ \; (\text{lambda} \; (expr)
 \\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))) \; 
 \end{align*}
+\end{figure}
 
-The final portion of our program includes a definition of `funparse\_`. This was merely 
-for convenience, as `funparse\_` provides all of the initialization values as argument 
-to `funparse`.
+The final portion of our program includes a definition of $funparse\_$. This was merely 
+for convenience, as $funparse\_$ provides all of the initialization values as argument 
+to $funparse$.
 
 We now remove mutation to achieve implementation of the final principle we listed. Our 
 means of achieving this is by allowing all values to be function arguments or expressions 
 operating on arguments.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{define} \; funparse \; (\text{lambda} \; (expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (if \; (null? \; expr)
@@ -552,6 +617,7 @@ operating on arguments.
 \\& (\text{define} \; funparse\_ \; (\text{lambda} \; (expr)
 \\& \quad (funparse \; expr \; 0 \; '() \; '() \; '() \; \#f))) \; 
 \end{align*}
+\end{figure}
 
 You should begin to see how our rewrite of this algorithm reads much more as an inductive 
 definition than as a description of a process. In the following section we will make this 
@@ -559,10 +625,12 @@ even more evident.
 
 \subsection{Adopting a Few Conventions}
 There are a few vestiges of our initial, imperative implementation which we will now remove. 
-Of note is the prior `define` keyword that was appropriately substituted by `letrec`, with 
-`funparse\_` then being another definition within the `letrec` procedure.
+Of note is the prior $define$ keyword that was appropriately substituted by $letrec$, with 
+$funparse\_$ then being another definition within the $letrec$ procedure.
 
 \clearpage
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; funparse \; (\text{lambda} \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
 \\& \quad (\text{let} \; 
@@ -597,15 +665,19 @@ Of note is the prior `define` keyword that was appropriately substituted by `let
 \\& \qquad \qquad before \; paren \; 
 \\& \qquad \qquad (push \; accum \; (car \; expr)) \; found)))))) \; \dots)
 \end{align*}
+\end{figure}
 
 \subsection{The Parser}
 The parser now works as in the following example.
 
+\begin{figure}[ht]
+\caption{}\label{scheme}
 \begin{align*}
 & (\text{letrec} \; parse \; (\text{lambda} \; (\dots) \; \dots)
 \\& \quad (parse \; '(< \; a \; > \; < \; b \; < \; c \; > \; > \; < \; d \; >)))
 \\& \implies \; ((a) \; (b \; (c)) \; (d))
 \end{align*}
+\end{figure}
 
 \subsection{Evaluation}
 Combining the prior evaluator with the new addition of the parser, we have the behavior you would have expected.

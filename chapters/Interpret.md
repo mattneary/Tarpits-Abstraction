@@ -212,7 +212,7 @@ functions defined within it.
   (define y x)))
 (scope 5)
 y
-;; The written variable, `y`, will be inaccessible.
+;; The written variable, y, will be inaccessible.
 ```
 
 In the above we demonstrate definition with a single-function scope. Thus the 
