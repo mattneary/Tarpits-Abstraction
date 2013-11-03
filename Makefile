@@ -39,4 +39,4 @@ compile: chapters/*.md
 	dvipdf build/dvi/book.dvi build/pdf/book.pdf	
 
 clean:
-	- $(RM) *.aux *.log
+	- $(RM) *.log

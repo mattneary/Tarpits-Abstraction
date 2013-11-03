@@ -13,7 +13,7 @@ different meanings based on their matching of patterns which we will define.
 
 Here's an example:
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (+ \; 2 \; 3)
@@ -33,7 +33,7 @@ later interpretation or compilation.
 
 A Symbolic Expression
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & <expr> \; &::= \; <sexpr> \; | \; <atom>
@@ -52,7 +52,7 @@ begin, unsurprisingly, with an S-Expression which serves to create lambdas. All
 forms matching the patterns which we discuss will be converted to the provided
 form, labeled as the consequent.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{lambda} \; (var) \; expr) \; &\implies \; \lambda var \; expr
@@ -68,7 +68,7 @@ mentioned pattern be a match to a given expression, we will default to function
 invocation. In other words, the following is a pattern we will match, with $fn$
 being some foreign form not selected for elsewhere. 
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (fn \; val) \; &= \; (fn)val
@@ -92,7 +92,7 @@ To begin gaining familiarity with our language, we look at a function of two
 variables. The function that follows performs $f$ on a value $x$, and then $f$
 once more on the resultant value.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{lambda} \; (f \; x) \; (f \; (f \; x)))
@@ -103,7 +103,7 @@ Now we will look at a similar form, a function of three variables. Below is a
 function of values $g$, $f$, and $x$. The result is similar to that of the one
 above, but this time replacing $(f x)$ with $(g f x)$.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{lambda} \; (g \; f \; x) \; (f \; (g \; f \; x)))
@@ -115,7 +115,7 @@ been of the lambda definition form. Furthermore, they have lacked any concrete
 meaning. To explore the additional notation we have defined, we will apply the
 former expression to the latter, which expands into the following.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & ((\text{lambda} \; (g \; f \; x) \; (f \; (g \; f \; x))) \; (\text{lambda} \; (f \; x) \; (f \; (f \; x))))
@@ -128,7 +128,7 @@ of multiple variables evaluated for one results in a function of one-less variab
 than the initial form. Hence we begin by substituting our argument for $g$
 throughout the expression; later steps are of a similar nature.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & &((\text{lambda} \; (g \; f \; x) \; (f \; (g \; f \; x))) \; (\text{lambda} \; (f \; x) \; (f \; (f \; x))))
@@ -154,7 +154,7 @@ now expand our numeric function representing some number $n$ to accept two
 operators, and return the application of the first parameter $n$ times to the
 second parameter. Hence, the number four would look like the following.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{lambda} \; (f \; n) \; (f \; (f \; (f \; (f \; n)))))
@@ -164,7 +164,7 @@ second parameter. Hence, the number four would look like the following.
 This notation, of course, translates just as well into an expression of any
 number. The number three would look like the following.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{lambda} \; (f \; n) \; (f \; (f \; (f \; n))))
@@ -193,7 +193,7 @@ constituent of functions. We begin with a means of defining all natural numbers
 inductively, via the successor.
 
 Numbers
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & 0 \; &= \; \lambda \; f \; \lambda \; x \; x
@@ -214,7 +214,7 @@ definitions are pretty straightforward; nearly all of them consist exclusively o
 iterative application of a more primitive function to a base value.
 
 Arithmetic
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & + \; &= \; \lambda \; n \; \lambda \; m \; ((n)succ)m
@@ -233,7 +233,7 @@ We'll begin our exploration of the $pred$ function by looking at the value of tw
 Since two equals $(succ)(succ)0$ we can work out its Lambda form, or simply take
 as a given that is the following.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & 2 \; = \; \lambda \; f \; \lambda \; x \; (f)(f)x
@@ -245,7 +245,7 @@ let's briefly render it in the following more succinct form. The form below is
 very easily translated back to Lambda Calculus and should serve to cut through at
 least a portion of the complexity of the definition.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & pred \; = \; \lambda \; n \; \lambda \; f \; \lambda \; z \; ((\lambda \; g \; \lambda \; h \; (h)(g)f)^{n} \; \lambda \; u \; z) \; \lambda \; u \; u
@@ -255,7 +255,7 @@ least a portion of the complexity of the definition.
 With the above rendering of the definition in mind, we aim to reduce an
 application of $pred$ to $2$ to a result.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\lambda \; n \; \lambda \; f \; \lambda \; z \; ((\lambda \; g \; \lambda \; h \; (h)(g)f)^{n} \; \lambda \; u \; z) \; \lambda \; u \; u) \; 2
@@ -266,7 +266,7 @@ Now that we have reduced the expression to the form of our prior rendering of
 $pred$, we will expand it into a true Lambda Calculus form and continue our
 reduction.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\lambda \; f \; \lambda \; z \; (((\lambda \; g \; \lambda \; h \; (h)(g)f) \; (\lambda \; g \; \lambda \; h \; (h)(g)f)) \; \lambda \; u \; z) \; \lambda \; u \; u)
@@ -278,7 +278,7 @@ a right-to-left direction when evaluating expressions of the form $(f)(g)x$.
 Recall that our goal here is to reduce a complex form to simplistic result, and we 
 have already made significant progress.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\lambda \; f \; \lambda \; z \; ((\lambda \; g \; \lambda \; h \; (h)(g)f) \; (\lambda \; h \; (h)(\lambda \; u \; z)f)) \; \lambda \; u \; u)
@@ -291,7 +291,7 @@ The above were all mere substitutions, as should be expected. If any were unclea
 try working those steps out in a notebook. We are now finally ready to reduce the
 application of the identity ($lambda u u$) and achieve our final result.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & \lambda \; f \; \lambda \; z \; (\lambda \; u \; u)(f)z
@@ -320,7 +320,7 @@ that we are able to form a multitude of inductive definitions, as well as other
 important forms.
 
 Booleans
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & \#t \; &= \; \lambda \; a \; \lambda \; b \; (a)id
@@ -342,7 +342,7 @@ either argument is true. Their definitions follow easily from our $if$ function.
 Keep in mind that both of these functions operate only on booleans.
 
 Boolean Algebra
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & and \; &= \; \lambda \; a \; \lambda \; b \; (((if)a)b)\#f
@@ -356,7 +356,7 @@ $eq$ will be very useful in later developments; it is one of McCarthy's elementa
 functions.
 
 Numerical Predicates
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & zero? \; &= \; \lambda \; n \; ((n)λx\#f)\#t
@@ -379,7 +379,7 @@ definition, each readily revealing their type by opting for either the passed $c
 or $n$ function.
 
 Pairs
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & cons \; &= \; \lambda \; a \; \lambda \; b \; \lambda \; c \; \lambda \; n \; ((c)a)b
@@ -400,7 +400,7 @@ are quite historical and refer to address access of a pair in memory, but you ca
 just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
 
 Pair Operations
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & car \; &= \; \lambda \; l \; (((l)\lambda \; a \; \lambda \; b \; a)id)
@@ -429,7 +429,7 @@ Our last definition will be a bit more esoteric, or at least complex. We define 
 itself as an argument.
 
 Self-Reference by a Combinator
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & Y \; = \; λf(λx(f)(x)x)λx(f)(x)x
@@ -441,7 +441,7 @@ Let's say you want to define a function that will evaluate the factorial of a
 number $n$. Well then the fundamental idea would be to do something like the 
 following.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & fact \; = \; (\text{lambda} \; (n) \; (* \; n \; \dots))
@@ -454,7 +454,7 @@ you recall from Mathematics, the factorial has an inductive definition like the
 following.
 
 Inductive Definition of Factorial
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & 0! \; &= \; 1
@@ -467,7 +467,7 @@ generalize this idea a bit, not to add a special expression type for every
 inductive definition we think of. Hence our duty is to make a factorial function 
 which is self-aware, if you will. The following is a rough form of the concept.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & fact \; = \; (\text{lambda} \; (fact \; n) \; (* \; n \; (fact \; (pred \; n))))
@@ -478,7 +478,7 @@ There remains one issue! We have not handled the base case present in our prior
 definition. To achieve this in the Lambda Calculus we will utilize an if 
 statement; this use case was alluded to earlier.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & fact \; = \; (\text{lambda} \; (fact \; n) \; (if \; (zero? \; n) \; (succ \; 0) \; (* \; n \; (fact \; (pred \; n))))
@@ -502,7 +502,7 @@ strings of decimal digits. As you can see, the following defines numbers by eith
 matching single digits and defining them as a successor, or by matching leading 
 digits and a final digit and evaluating them separately.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & 1 \; &= \; (succ \; 0)
@@ -526,7 +526,7 @@ matching will be at the heart of our language constructs.
 In order that functions may have a sense for the value with which they have been 
 presented, we provide a predicate for determining whether a given value is atomic.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (atom? \; (a \; b\dots)) \; &\implies \; \#f
@@ -548,7 +548,7 @@ is being matched. This is unique from most cases in which a portion of a pattern
 is being labeled by a variable. Additionally, the italicized \emph{ab...} is meant to 
 label the first letter and rest of a string as $a$ and $b$, respectively.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (quote \; (a)) \; &\implies \; cons \; a \; nil
@@ -569,7 +569,7 @@ In addition to defining the $quote$ function, we will provide a shorthand for th
 operation. So often will we need to define list literals that it makes perfect 
 sense for us to make it as brief as possible.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & 'a \; \implies \; (quote \; a)
@@ -586,7 +586,7 @@ we need a way of recognizing them, by means of equivalence. $eq$ already solves
 this problem for numbers, but not for other quoted atoms. We generalize $eq$ to 
 all expressions in our definition of $equal?$.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (equal? \; (a \; b\dots) \; (c \; d\dots)) \; &\implies \; (and \; (equal? \; a \; c) \; (equal? \; (b\dots) \; (d\dots)))
@@ -605,7 +605,7 @@ values, respectively, to be utilized in a given expression. $letrec$ takes this
 idea in another direction, performing the Y-Combinator on a passed function to 
 prepare it for recursion in the passed expression.
 
-\begin{figure}[ht]
+\begin{figure}[htp]
 \caption{}\label{scheme}
 \begin{align*}
 & (\text{let} \; var \; val \; expr) \; &\implies \; ((\text{lambda} \; (var) \; expr) \; val)

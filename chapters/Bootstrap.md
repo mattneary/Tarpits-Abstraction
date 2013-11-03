@@ -162,7 +162,7 @@ all else is possible.
            (#t (cons (succ (car x)) (cdr x))))))) ...)
 ```
 
-The implementation in Figure~\ref{fig:suchDef} is pretty simple; it is a very
+The implementation in Figure~\ref{fig:succDef} is pretty simple; it is a very
 basic definition of the meaning of numbers in our decimal system. It says, "One
 follows zero; two follows one; etc." Next, it communicates the intricacies of
 place value. A number with a ones digit of nine will increment to a ones digit
@@ -200,7 +200,7 @@ Our Booleans will be defined on the prelude by the names of `#t` and `#f`, as
 you have come to expect. Now, rather than decide on an arbitrary atom to 
 which they will map, we will allow `#f` to equal `nil` and `#t` to equal `1`. 
 Hence we would have a `set-booleans` definition to append to `let*` that 
-looks like Figure~\ref{fig:setBooleanDef}.
+looks like Figure~\ref{fig:setBooleansDef}.
 
 ```fig:setBooleansDef
 (set-booleans (lambda (env)

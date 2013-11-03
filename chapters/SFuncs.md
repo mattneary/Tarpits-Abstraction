@@ -29,11 +29,12 @@ trivial to define.
 (> &(lambda (x y) (not (leq x y))))
 ```	
 
-An important conveniency to note in the forms of Figure~\ref{ltGtDefs}, is their nature given their 
-Lambda Calculus definitions. That is, since they compile down to a curried form of 
-a function, in other words, a function returning a function, they are very nice to 
-work with. Let's look at an example form and apply appropriate reductions to get a 
-better view of this function's nature.
+An important conveniency to note in the forms of Figure~\ref{fig:ltGtDefs}, is
+their nature given their Lambda Calculus definitions. That is, since they
+compile down to a curried form of a function, in other words, a function
+returning a function, they are very nice to work with. Let's look at an example
+form and apply appropriate reductions to get a better view of this function's
+nature.
 
 ```fig:gtNature
 (> 2)
@@ -115,9 +116,12 @@ functional languages.
 
 We begin with a couple of type (c) HOFs. The first of the functions in
 Figure~\ref{fig:flipAndCompose} serves to flip the argument ordering of a given
-function, and the second composes two functions.  ```fig:flipAndCompose (flip
-&(lambda (func a b) (func b a))) (compose &(lambda (f g) (lambda (arg) (f (g
-arg))))) ```	
+function, and the second composes two functions.  
+
+```fig:flipAndCompose 
+(flip &(lambda (func a b) (func b a))) 
+(compose &(lambda (f g) (lambda (arg) (f (g arg))))) 
+```	
 
 The function `flip` is very convenient when aiming to apply only the second
 argument of a function, leaving the other free. The design of `flip` is quite

@@ -146,7 +146,7 @@ function and achieve our final goal of simulation.
 ###A Simulator All of the above principles can be combined to form a Turing
 Machine simulator.  The definition of `iterate` is dependent upon a few helper
 functions. First of all, there are a couple very basic shorthands which are
-defined in Figure~\ref{shorthandDefs}.
+defined in Figure~\ref{fig:shorthandDefs}.
 
 ```fig:shorthandDefs
 (cadr &(lambda (x) (car (cdr x))))
@@ -420,7 +420,7 @@ one in Figure~\ref{fig:makeGateDef}.
 Given this structure, we redefine our gate getter and setter to simplify 
 interfacing with this structure as follows.
 
-```fig:getSetGateDefs
+```fig:getSetGateWrapperDefs
 (get-gate
   (lambda
     (name env)
@@ -513,7 +513,7 @@ simulator in Figure~\ref{fig:circuitFullSimulator}.
 ```
 
 ###Computation with Circuits
-A half-adder utilizing our simulator would look like Figure~\ref{halfAdderSimulated}.
+A half-adder utilizing our simulator would look like Figure~\ref{fig:halfAdderSimulated}.
 
 ```fig:halfAdderSimulated
 (let*
