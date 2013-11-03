@@ -394,7 +394,7 @@ McCarthy, we will provide `car` and `cdr` as additional elementary functions, wi
 `pair?` and `null?` serving as complements to each other in determining the end of 
 a list. `car` returns the first value of a pair, and `cdr` the second. Their names 
 are quite historical and refer to address access of a pair in memory, but you can 
-just think of them as $/k \alpha r/$ and $/k \mho d e r/$.
+just think of them as $/k \alpha r/$ and $/k u d e r/$.
 
 ```listFuncDefs
 car &= \lambda l (((l)\lambda a \lambda b a)id)

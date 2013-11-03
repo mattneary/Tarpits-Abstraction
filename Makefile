@@ -1,4 +1,4 @@
-LATEX = latex -quiet
+LATEX = xelatex
 TEXODE = texode
 FLAGS = -b book
 DVIOUT = dvi
@@ -26,8 +26,7 @@ sfuncs: chapters/SFuncs.md
 	
 compile: chapters/*.md
 	$(LATEX) $(TEXOUT)/book.tex
-	mv book.dvi build/dvi/
-	dvipdf build/dvi/book.dvi build/pdf/book.pdf	
+	mv book.pdf build/pdf/
 
 clean:
 	- $(RM) *.log

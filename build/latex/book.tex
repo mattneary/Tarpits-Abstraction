@@ -1,10 +1,21 @@
-\documentclass{book}
+\documentclass[12pt]{book}
+
+\usepackage{bigfoot}
+\usepackage{xltxtra}
+\setmainfont{Garamond}
+
 \usepackage[nouppercase]{scrpage2}
 \pagestyle{scrheadings}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[margin=1in, paperwidth=6in, paperheight=9in]{geometry}
+
+\title{\Huge Tarpits \& Abstraction}
+\author{Matt Neary}
+\date{}
+
 \begin{document}
+\maketitle
 \tableofcontents
 \input{build/latex/Computation.md}
 \input{build/latex/SFuncs.md}
