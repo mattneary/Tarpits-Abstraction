@@ -31,6 +31,7 @@ earlier chapter; this time we will explicate the characters allowed in an
 $atom$.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:sexprGrammar}
 \begin{align*}
 & <expr> \; &::= \; <sexpr> \; | \; <atom>
@@ -58,6 +59,7 @@ interpret. Our first task is to enable the Lambda Calculus in these forms,
 not unlike in our earliest definition of the language.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:lambdaCalculusEval}
 \begin{align*}
 & (letrec \; eval \; (eval \; expr \; env)
@@ -86,6 +88,7 @@ application and variable reference components to reflect a lazy approach to
 evaluation.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:lazinessEval}
 \begin{align*}
 & (letrec \; eval \; (eval \; expr \; env)
@@ -123,6 +126,7 @@ implementation of arbitrary numbers. For now, we will start with single
 digits.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalPrelude}
 \begin{align*}
 & (let \; \text{eval-prelude} \; (lambda \; (expr \; env)
@@ -147,6 +151,7 @@ of a prelude. Given the lazy nature of our interpreter in which all variable
 access is reduction of a lambda, we will need to lambda wrap each set value.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:lazySetDef}
 \begin{align*}
 & (let \; \text{lazy-set} \; (lambda \; (env \; hash)
@@ -167,6 +172,7 @@ by means of a $succ$ function. As we have already shown, from this definition
 all else is possible.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:succDef}
 \begin{align*}
 & (let \; succ \; (lambda \; (x)
@@ -192,6 +198,7 @@ We will now expand our $\text{eval-prelude}$ to be more extensible and to includ
 the $succ$ function.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalPreludeExtension}
 \begin{align*}
 & (let* \; 
@@ -225,6 +232,7 @@ Hence we would have a $\text{set-booleans}$ definition to append to $let*$ that
 looks like Figure~\ref{fig:setBooleansDef}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:setBooleansDef}
 \begin{align*}
 & (\text{set-booleans} \; (lambda \; (env)
@@ -236,6 +244,7 @@ Given these definitions of true and false, we will now define an $if$
 function which follows very naturally from our native $if$ function.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:preludeIfDef}
 \begin{align*}
 & (\text{set-booleans} \; (lambda \; (env) \; 
@@ -266,6 +275,7 @@ discussed. The following is a list of these primitives.
 These will be exposed to the interpreted language by means of the prelude.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:preludePrimitives}
 \begin{align*}
 & (\text{set-primitives} \; (lambda \; (env)
@@ -291,6 +301,7 @@ $if$ statement is not; this is the key to our dependence on laziness. In
 Figure~\ref{fig:preludeY}, we set a Y-Combinator on the prelude.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:preludeY}
 \begin{align*}
 & (\text{set-Y} \; (lambda \; (env)
@@ -313,6 +324,7 @@ interpreter. $let$ is merely syntactic sugar for reduction of a lambda; hence
 we provide the implementation of let-forms seen in Figure~\ref{fig:syntaxSugarEval}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:syntaxSugarEval}
 \begin{align*}
 & (letrec \; eval \; (eval \; expr \; env)
@@ -355,6 +367,7 @@ until there are no more definitions to apply. At that time, it returns the
 expression.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:letSetDef}
 \begin{align*}
 & (letrec \; \text{let-set} \; 
@@ -380,6 +393,7 @@ Now, our last let-form is $letrec$. This syntax will be defined using the Y-
 combinator, as alluded to earlier.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:letRecDef}
 \begin{align*}
 & (letrec \; eval \; (eval \; expr \; env)
@@ -403,6 +417,7 @@ applying the Y-Combinator prior to execution of $let$.
 The full evaluator is displayed in Figure~\ref{fig:fullEval} on page \pageref{fig:fullEval}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:fullEval}
 \begin{align*}
 & (letrec \; \text{let-set} \; 
@@ -500,6 +515,7 @@ a couting Monad which boxes by forming a tuple including the value and $1$ and u
 a box of a box by adding together the number labels as follows.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{}
 \begin{align*}
 & T(x) \; = \; x \; \times \; \mathbb{N}
@@ -519,6 +535,7 @@ Monads, namely, to focus on $unit$ and $bind$ functions rather than $unit$ and $
 The bind function can be defined in terms of join quite simply.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{}
 \begin{align*}
 & bind_{x}: \; T(A) \; \to \; (A \; \to \; T(B)) \; \to \; T(B)
@@ -544,6 +561,7 @@ course, these forms are also forced to interface with the new return values of
 $eval$ in order to bear the same effect as before.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:monadicEval}
 \begin{align*}
 & (letrec \; eval \; (eval \; expr \; env)
@@ -584,6 +602,7 @@ a list of expressions and perform them one after the other on a gradually
 mutating environment.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalSeqDef}
 \begin{align*}
 & (letrec \; \text{eval-seq} \; (lambda \; (\text{eval-seq} \; exprs \; m)
@@ -598,6 +617,7 @@ Hence we would achieve the behavior exhibited by the
 Figure~\ref{fig:evalSeqExample}. 
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalSeqExample}
 \begin{align*}
 & (car \; (\text{eval-seq} \; '((set! \; c \; 1) \; (c)))) \; \implies \; 1
@@ -622,6 +642,7 @@ that we have modified the function definition to return the full
 value-environment pair, rather than just the value.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalSeqPrelude}
 \begin{align*}
 & (set! \; \text{eval-seq} \; (Y \; (lambda \; (\text{eval-seq} \; exprs \; m)
@@ -636,6 +657,7 @@ Now we can utilize $\text{eval-seq}$ from within the $eval$ function; we will ca
 it from within the evaluation of a lambda.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:multiExprEvalLambda}
 \begin{align*}
 & (set! \; \text{eval-lambda} \; (lambda \; (eval \; expr \; env)
@@ -678,6 +700,7 @@ code in Figure~\ref{fig:takeForkedEnvApply} would take on the environment value
 of the forked environment.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:takeForkedEnvApply}
 \begin{align*}
 & (\#t \; (\text{apply-set} \; 
@@ -696,6 +719,7 @@ Figure~\ref{fig:performBubblesDef} handles the updating of the primary
 environment.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:performBubblesDef}
 \begin{align*}
 & (set! \; \text{perform-bubbles} \; (lambda \; (m \; env)
@@ -725,6 +749,7 @@ environment from within the forked environment. This can be achieved by some
 tweaks to variable access and setting.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:scopeReflectionTweaks}
 \begin{align*}
 & ((atom? \; expr) \; 
@@ -766,6 +791,7 @@ changes to local variables. To resolve this issue, we will need to change our
 initial value for forked environments.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:separateBubbleEnv}
 \begin{align*}
 & (set! \; \text{eval-lambda} \; (lambda \; (eval \; expr \; env)
@@ -790,6 +816,7 @@ $define$ will pin down a variable to a specific scope, if you will. Its
 implementation is merely a reuse of our original, naive set function.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:defineDef}
 \begin{align*}
 & ((equal? \; (car \; expr) \; 'define)

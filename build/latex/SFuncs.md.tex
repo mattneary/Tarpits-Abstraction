@@ -17,6 +17,7 @@ conditional behavior; if $x$ is true, it results in $f$, but if $x$ is false, it
 results in $t$.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:notDef}
 \begin{align*}
 & (not \; (lambda \; (x) \; (if \; x \; \#f \; \#t)))
@@ -29,6 +30,7 @@ With less-than-equal-to already defined as $leq$, both of these relations are
 trivial to define.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:ltGtDefs}
 \begin{align*}
 & (< \; &(lambda \; (x \; y) \; (and \; (leq \; x \; y) \; (not \; (eq \; x \; y)))))
@@ -44,6 +46,7 @@ form and apply appropriate reductions to get a better view of this function's
 nature.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:gtNature}
 \begin{align*}
 & (> \; 2)
@@ -65,6 +68,7 @@ functionality. The predicate is $<$ with the first argument supplied as two, the
 step is the $pred$ function, and the combinator is multiplication.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:inductiveCalculator}
 \begin{align*}
 & (letrec \; 
@@ -87,6 +91,7 @@ the definition, and once again of partial function application. This time we
 induce addition up to and at five, stepping by two in each step up from one.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:inductive1to5}
 \begin{align*}
 & (letrec \; 
@@ -111,6 +116,7 @@ check for a specific value of the modulus division by two applied to a number;
 this is the essence of parity.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:oddEvenDef}
 \begin{align*}
 & (odd? \; &(lambda \; (x) \; (eq \; (mod \; x \; 2) \; 1)))
@@ -138,6 +144,7 @@ Figure~\ref{fig:flipAndCompose} serves to flip the argument ordering of a given
 function, and the second composes two functions.  
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:flipAndCompose}
 \begin{align*}
 & (flip \; &(lambda \; (func \; a \; b) \; (func \; b \; a))) \; 
@@ -155,6 +162,7 @@ Figure~\ref{fig:singletonConstructor}, that is, a creator of a pair with a
 single element.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:singletonConstructor}
 \begin{align*}
 & ((flip \; cons) \; nil)
@@ -167,6 +175,7 @@ another. A beautiful example of this is a linear function creator. Below is the
 function accepting slope and y-intercept as its two arguments.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:linearFuncGen}
 \begin{align*}
 & (lambda \; (m \; b) \; 
@@ -183,6 +192,7 @@ $letrec$. Other functions accepting their name as the first argument should be
 assumed to follow the same practice.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:foldDef}
 \begin{align*}
 & (fold \; (lambda \; (fold \; func \; accum \; lst)
@@ -198,6 +208,7 @@ list and an accumulator as determined by the passed function. If the meaning of
 $fold$ is still unclear to you, consider some of these examples.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:foldExamples}
 \begin{align*}
 & (fold \; + \; 0 \; '(1 \; 2 \; 3)) \; \implies \; 6
@@ -210,6 +221,7 @@ sequence $a, b, c, ...$ is the nested application of the operation, or the
 effect exhibited by Figure~\ref{fig:foldVisual}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:foldVisual}
 \begin{align*}
 & ( \; \dots \; ((a \; \bullet \; b) \; \bullet \; c) \; \dots \; )
@@ -221,6 +233,7 @@ right-associative; Hence the function applications are nested just like the $con
 basis of these lists.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:reduceDef}
 \begin{align*}
 & (reduce \; (lambda \; (reduce \; func \; end \; lst)
@@ -238,6 +251,7 @@ achieve something like the visual in Figure~\ref{fig:reduceVisual} when dealing
 with a list $... , x, y, z$
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:reduceVisual}
 \begin{align*}
 & ( \; \dots \; (x \; \bullet \; (y \; \bullet \; z)) \; \dots \; )
@@ -249,6 +263,7 @@ we will provide an inverse operation for constructing a list given a constructio
 criterion. $unfold$ serves to invert a folding.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:unfoldDef}
 \begin{align*}
 & (unfold \; (lambda \; (unfold \; func \; init \; pred)
@@ -262,6 +277,7 @@ To clarify the distinction between $fold$ and $reduce$, we display the manner in
 which they can be thought of as opposites.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:foldVsReduce}
 \begin{align*}
 & (fold \; (flip \; cons) \; nil \; '(1 \; 2 \; 3)) \; &\implies \; '(1 \; 2 \; 3)
@@ -295,6 +311,7 @@ definitions of these forms are intuitive, each with an infix operator which fits
 the role very intuitively.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:folders}
 \begin{align*}
 & (sum \; (lambda \; (lst) \; &(fold \; + \; 0 \; lst))
@@ -310,6 +327,7 @@ value, swapping if a new extreme is found. The definition of $max$ follows, a
 simple folding onto the higher value.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:maxDef}
 \begin{align*}
 & (max \; (list)
@@ -326,6 +344,7 @@ implementation of $min$ is nearly identical, simply changing the criterion of th
 fold.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:minDef}
 \begin{align*}
 & (min \; 
@@ -345,6 +364,7 @@ of operation; it folds by means of a swap operation, $(flip cons)$, in this way
 forming a fully reversed list.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:lengthAndRevDefs}
 \begin{align*}
 & (length \; &(lambda \; (lst) \; (fold \; (lambda \; (x \; y) \; (+ \; x \; 1)) \; 0 \; lst)))
@@ -358,6 +378,7 @@ Figure~\ref{fig:hashExample}, where each element is a list, with the first
 element serving as a key, and the second serving as a value.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:hashExample}
 \begin{align*}
 & '((apple \; &red)
@@ -370,6 +391,7 @@ In determining the association, we $fold$ with the aim of reaching a value with 
 key matching that for which we are searching.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:assocDef}
 \begin{align*}
 & (assoc \; (lambda \; (x \; list)
@@ -390,6 +412,7 @@ as a key, it would evaluate to $yellow$. Here is the full form, with $table$
 referring to the aforementioned table.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:assocExample}
 \begin{align*}
 & (assoc \; 'banana \; table) \; \implies \; 'yellow
@@ -401,6 +424,7 @@ Before we delve too far into manipulation of lists, we will define a very helpfu
 list constructor as follows.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:listDef}
 \begin{align*}
 & (list \; 
@@ -417,6 +441,7 @@ argument to the $list$ function, ending with $nil$.
 Figure~\ref{fig:listExample} has an example of usage.   
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:listExample}
 \begin{align*}
 & (list \; 1 \; 2 \; 3 \; nil) \; &\implies \; '(1 \; 2 \; 3)
@@ -434,6 +459,7 @@ filter out items based on a predicate. These functions are very useful, imagine
 for example finding a sum of squares or constructing a list of primes.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:mapDef}
 \begin{align*}
 & (map \; 
@@ -453,6 +479,7 @@ $filter$ takes advantage of the same aspect of $reduce$; however, in its
 definition it casts away values not matching a predicate.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:filterDef}
 \begin{align*}
 & (filter \; 
@@ -470,6 +497,7 @@ usefulness was alluded to earlier, but in Figure~\ref{fig:mapAndFilterExamples}
 are some examples to clarify their usage.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:mapAndFilterExamples}
 \begin{align*}
 & (map \; &(* \; 2) \; &'(1 \; 2 \; 3)) \; &\implies \; '(2 \; 4 \; 6)
@@ -486,6 +514,7 @@ the two which were defined above, as they allow for expansion to supersets, and
 the earlier two allow only for constructing a subset.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:pushAndConcatDefs}
 \begin{align*}
 & (push \; &(lambda \; (a \; b) \; (reverse \; (cons \; b \; (reverse \; a)))))
@@ -498,6 +527,7 @@ were very concise and clear in definition. Below are some examples of $push$ and
 $concat$ applications.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:pushAndConcatExamples}
 \begin{align*}
 & (push \; &4 \; &'(1 \; 2 \; 3)) \; &\implies \; '(1 \; 2 \; 3 \; 4)

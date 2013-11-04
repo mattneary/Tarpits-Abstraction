@@ -31,6 +31,7 @@ expressions. Hence an example of an expression which could be evaluated is the
 one presented in Figure~\ref{fig:sexprLambda}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:sexprLambda}
 \begin{align*}
 & '(lam \; x \; lam \; y \; (x) \; y)
@@ -43,6 +44,7 @@ $apply$ function. This function accepts a function and list of arguments, and
 then applies each of these arguments to a lambda one by one.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:applySetDef}
 \begin{align*}
 & (define \; (\text{apply-set} \; fn \; args)
@@ -71,6 +73,7 @@ argument and the evaluated arguments. This architecture is an explicit choice
 \emph{not} to opt for a lazy method of evaluation.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evallamDef}
 \begin{align*}
 & (evallam \; (lambda \; (evallam \; expr \; env)
@@ -95,6 +98,7 @@ argument and the evaluated arguments. This architecture is an explicit choice
 An example of a form which could be evaluated is presented in Figure~\ref{fig:evalFormExample}. 
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:evalFormExample}
 \begin{align*}
 & '(lam \; x \; lam \; y \; ((x) \; y) \; 1)
@@ -112,6 +116,7 @@ represent parenthetical expressions.  The expression in
 Figure~\ref{fig:flatInputExample} is an example of this new flat structure.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:flatInputExample}
 \begin{align*}
 & '(lam \; x \; lam \; y \; < \; x \; > \; y)
@@ -149,6 +154,7 @@ set to a new value after their definition. The code in
 Figure~\ref{fig:defineSetExample} is an example of this behavior.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:defineSetExample}
 \begin{align*}
 & (define \; x \; 5)
@@ -174,6 +180,7 @@ sections. What follows is an implementation using these concepts of the prior
 imperative procedure.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:recursiveImper}
 \begin{align*}
 & (letrec \; 
@@ -195,6 +202,7 @@ accessible. The scoping of a variable is specified by the define operator; hence
 code in Figure~\ref{fig:setScopeExample} is another example of this behavior.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:setScopeExample}
 \begin{align*}
 & (define \; x \; 5)
@@ -218,6 +226,7 @@ All other methods in Figure~\ref{fig:imperFunc} are similar to those in prior
 procedures.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:imperFunc}
 \begin{align*}
 & (letrec \; 
@@ -240,6 +249,7 @@ definition, as in Figure~\ref{fig:strictScopeExample}, it would only be
 accessible from within that function, or other functions defined within it.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:strictScopeExample}
 \begin{align*}
 & (define \; scope \; (lambda \; (x)
@@ -263,6 +273,7 @@ outer, or normal, environment. Then, prior to returning, we will clear the inner
 environment by setting it to $nil$.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:closureScope}
 \begin{align*}
 & (letrec \; 
@@ -309,6 +320,7 @@ is simply a chain of expressions where an individual would have previously
 existed.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:multiExprExample}
 \begin{align*}
 & (define \; incr \; (lambda \; (x)
@@ -328,6 +340,7 @@ in utilization of this approach, we define a function for constructing a range o
 which to iterate.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:rangeLoopDef}
 \begin{align*}
 & (define \; range \; (lambda \; (x)
@@ -343,6 +356,7 @@ much like earlier function definitions. Note that the ranges are of the form 0,
 factorial.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:imperFactExample}
 \begin{align*}
 & (define \; fact \; (lambda \; (x)
@@ -359,6 +373,7 @@ multiplication performed on the previous $ans$. In the case of 5, for example, t
 accumulator $ans$ takes on the values presented in Figure~\ref{fig:ansValues}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:ansValues}
 \begin{align*}
 & 1
@@ -383,6 +398,7 @@ we begin with a $range$-based loop that will cycle through each character of the
 in order.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:loopParse}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
@@ -409,6 +425,7 @@ parenthetical; and $found$ which will be true if and only if a parenthetical has
 parsed.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:definsPrelude}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
@@ -440,6 +457,7 @@ to recurse. siven these additions of case-handling, we insert $if \dots else$
 statements as in Figure~\ref{fig:imperParseApproach}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:imperParseApproach}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
@@ -463,6 +481,7 @@ occurring before and after it to form the designated response. Hence we provide 
 following $return$ statement in Figure~\ref{fig:postscriptReturn}.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:postscriptReturn}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
@@ -498,6 +517,7 @@ implement these portions in the code of Figure~\ref{fig:fullImperParser}.
 \end{itemize}
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:fullImperParser}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
@@ -551,6 +571,7 @@ navigating the list is maintained, and idiomatic as you have seen in prior progr
 written in our Symbolic Language.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:funParse}
 \begin{align*}
 & (define \; funparse \; (lambda \; 
@@ -589,6 +610,7 @@ means of achieving this is by allowing all values to be function arguments or ex
 operating on arguments.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:immutableFunparse}
 \begin{align*}
 & (define \; funparse \; (lambda \; (expr \; nested \; before \; paren \; accum \; found) \; 
@@ -635,6 +657,7 @@ Of note is the prior $define$ keyword that was appropriately substituted by $let
 $funparse\_$ then being another definition within the $letrec$ procedure.
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:letrecFunparse}
 \begin{align*}
 & (letrec \; funparse \; (lambda \; (funparse \; expr \; nested \; before \; paren \; accum \; found) \; 
@@ -676,6 +699,7 @@ $funparse\_$ then being another definition within the $letrec$ procedure.
 The parser now works as in Figure~\ref{fig:parserExample}. 
 
 \begin{figure}[htp]
+\footnotesize
 \caption{}\label{fig:parserExample}
 \begin{align*}
 & (letrec \; parse \; (lambda \; (\dots) \; \dots)
