@@ -467,16 +467,17 @@ applications like this one, programmers usually prefer to take a different outlo
 Monads, namely, to focus on `unit` and `bind` functions rather than `unit` and `join`.
 The bind function can be defined in terms of join quite simply.
 
-```
+```fig:bindDef
 bind_{x}: T(A) \to (A \to T(B)) \to T(B)
 bind_{x}(a, f) = join(T(f)(a))
 ```
 
-As you can see, `bind` essentially elevates a function from unboxed to boxed to boxed
-to boxed. Its innerworkings are as simple as getting the boxed morphism defined by the
-category which accepts a function from $A$ to $T(B)$ and returns a function from $T(A)$
-to $T(T(B))$. However, since we are seeking a function onto $T(B)$, we then unbox the
-return value with `join`.
+As you can see in Figure~\ref{fig:bindDef}, `bind` essentially elevates a
+function from unboxed to boxed to boxed to boxed. Its innerworkings are as
+simple as getting the boxed morphism defined by the category which accepts a
+function from $A$ to $T(B)$ and returns a function from $T(A)$ to $T(T(B))$.
+However, since we are seeking a function onto $T(B)$, we then unbox the return
+value with `join`.
 
 ###A New Eval
 In our new eval function we will form a function which boxes our previous

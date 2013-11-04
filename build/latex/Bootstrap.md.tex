@@ -536,18 +536,19 @@ The bind function can be defined in terms of join quite simply.
 
 \begin{figure}[htp]
 \footnotesize
-\caption{}\label{}
+\caption{}\label{fig:bindDef}
 \begin{align*}
 & bind_{x}: \; T(A) \; \to \; (A \; \to \; T(B)) \; \to \; T(B)
 \\& bind_{x}(a, \; f) \; = \; join(T(f)(a))
 \end{align*}
 \end{figure}
 
-As you can see, $bind$ essentially elevates a function from unboxed to boxed to boxed
-to boxed. Its innerworkings are as simple as getting the boxed morphism defined by the
-category which accepts a function from $A$ to $T(B)$ and returns a function from $T(A)$
-to $T(T(B))$. However, since we are seeking a function onto $T(B)$, we then unbox the
-return value with $join$.
+As you can see in Figure~\ref{fig:bindDef}, $bind$ essentially elevates a
+function from unboxed to boxed to boxed to boxed. Its innerworkings are as
+simple as getting the boxed morphism defined by the category which accepts a
+function from $A$ to $T(B)$ and returns a function from $T(A)$ to $T(T(B))$.
+However, since we are seeking a function onto $T(B)$, we then unbox the return
+value with $join$.
 
 \subsection{A New Eval}
 In our new eval function we will form a function which boxes our previous
