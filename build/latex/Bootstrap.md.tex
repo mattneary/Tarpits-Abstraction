@@ -500,12 +500,12 @@ to be a map from one category to another, along with two transformations.
 Given the previous explanation of Monads, it is probably still unclear how the
 structure would relate to computation. We will now take a look at the traits of
 the transformations $\nu$ and $\mu$. Let $T$ refer to the Functor of a given Monad.
-The transformation $\nu$ then yields $\nu\_x$ such that $\nu\_x$ is a function from
-$x$ to $T(x)$. Similarly, the transformation $\mu$ yields $\mu\_x$ such that
-$\mu\_x$ is a function from $T(T(x))$ to $T(x)$. Thus, we can see that a Monad
+The transformation $\nu$ then yields $\nu_{x}$ such that $\nu_{x}$ is a function from
+$x$ to $T(x)$. Similarly, the transformation $\mu$ yields $\mu_{x}$ such that
+$\mu_{x}$ is a function from $T(T(x))$ to $T(x)$. Thus, we can see that a Monad
 includes a way of adding and taking away mappings by the Functor. If we consider
-a map by the Functor to be a boxing of the value, we have that $\nu\_x$ boxes
-members of $x$, and that $\mu\_x$ unboxes a box of boxes. In a similar vein, we will
+a map by the Functor to be a boxing of the value, we have that $\nu_{x}$ boxes
+members of $x$, and that $\mu_{x}$ unboxes a box of boxes. In a similar vein, we will
 refer to $\nu$ as unit and $\mu$ as join.
 
 Now, one might be wondering why such a structure is valuable. The reason is that
