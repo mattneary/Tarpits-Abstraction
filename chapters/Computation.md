@@ -44,6 +44,13 @@ the Backus-Naur definition in Figure~\ref{fig:lambdaExprGrammar}.
 &| &<var>
 ```
 
+The BNF notation is a very expressive notation for the description of a
+grammar. For example, for Lambda Calculus grammar, an expression (*expr*)
+is said to be one of three forms. The first form is a lambda followed by
+a variable, its argument, and finally followed by another expression. The
+next is simply the application of one expression to another, and the last
+is simpe variable reference.
+
 These are the only forms, a data-type like numbers is not provided. However,
 we will for now take its potential to represent such data as granted. Let's
 explore this notation.
