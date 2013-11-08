@@ -9,6 +9,8 @@ programs throughout this book on its foundation. We will, in a sense, climb
 out of its tarpit by means of abstraction. In order to do so, we will build up
 a scaffolding of abstraction, building layer upon layer as we construct an
 edifice of procedures.
+-- Section 1.1
+
 
 Tarpits & Abstraction is a book beginning with a discussion on computation and
 the Lambda Calculus, and then exploring layers of abstraction, and 
