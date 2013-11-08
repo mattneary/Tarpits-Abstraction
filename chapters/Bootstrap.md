@@ -6,12 +6,8 @@ solve, because it allowed us to form a grammar of expression from within our
 working language; then allowing us to expand upon this grammar dynamically.
 
 This achievement opens one up to question the limitations of the embedded
-language. In other words, can we reach the language analog of *The 
-Singularity*. The Singularity is the point at which sufficiently intelligent 
-technology has been developed, as to enable this technology to form ever more 
-advanced successive generations. In the analog of interest to us, we would be 
-concerned with a language sufficiently advanced to form an interpreter of 
-itself, and to then add features.
+language. Specifically, we would be concerned with a language sufficiently
+advanced to form an interpreter of itself, and to then add features.
 
 This phenomenon, the so-called singularity, is known in computation as a 
 bootstrapped interpreter. In this section, we will aim to bootstrap our 
@@ -726,8 +722,9 @@ a reuse of our old `set!` function.
 
 ##Conclusion
 We have defined a means of evaluating our language from within the language
-itself. Once this was done, we were able to expand upon the language's constructs,
-adding imperative constructs amongst other features. This is not merely an
-academic exercise, but the way in which programmiing have evolved from the time
-of the first computers. Henceforth, the grammar of our language will be dynamic
-fully and extensible.
+itself. Once this was done, we were able to expand upon the language's
+constructs, adding imperative features, amongst other features. This is not
+merely an academic exercise, but the way in which programming languages have
+evolved from the time of the first computers. Henceforth, the grammar of our
+language will be dynamic and fully extensible.
+
