@@ -71,10 +71,19 @@ f(x) = x
 f(3)
 ```
 
+The Lambda Calculus is a fully-versatile language; however, it is what some
+describe as a *Turing tarpit*. Alan Perlis describes a Turing tarpit as a
+language "in which everything is possible but nothing of interest is easy."
+Despite this nature of the Lambda Calculus, we will be forming quite complex
+programs throughout this book on its foundation. We will, in a sense, climb
+out of its tarpit by means of abstraction. In order to do so, we will build up
+a scaffolding of abstraction, building layer upon layer as we construct an
+edifice of procedures.
+
 ##A Symbolic Language 
 In the previous section, we utilized numbers within the Lambda Calculus; however,
 we do not accept them as primitive. Rather, we will need to define them in
-terms of the Lambda Calculus. Of course, the ability to refer to numbers as name
+terms of the Lambda Calculus. Of course, the ability to refer to numbers by name
 would be helpful. For this reason, amongst many others, we will begin by
 defining a new, symbolic language on top of the Lambda Calculus, adding a layer
 of abstraction to our computation.
@@ -125,10 +134,10 @@ form, labeled as the consequent.
 Essentially, we are saying that any expression of the given form
 should be a function of the provided arguments bearing the provided expression. 
 
-Additionally, we provide a default case for our S-Expressions. Should no other
-mentioned pattern be a match to a given expression, we will default to function
-invocation. In other words, the equations in Figure~\ref{fig:sexprApplication} 
-is a pattern we will match, with `fn` being some foreign form not selected for elsewhere. 
+Additionally, we provide a default case for our S-Expressions. Should certain 
+expression match none of our provided patterns, we will default to function
+invocation. In other words, in Figure~\ref{fig:sexprApplication} we define a pattern
+for those values which match no other patterns.
 
 ```fig:sexprApplication
 (fn val) &= (fn)val
