@@ -458,9 +458,9 @@ implement these portions in the code of Figure~\ref{fig:fullImperParser}.
 ```
 
 ###From Imperative to Functional
-From the above final implementation of our program we can derive a functional 
-version. The differences will be based on the following principles of functional 
-programming:
+From the final implementation of our program in the previous section we can
+derive a functional version. The differences will be based on the following
+principles of functional programming:
 
 - Values shall not be mutated.
 - Control-flow shall not be explicit.

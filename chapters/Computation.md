@@ -115,7 +115,7 @@ form, labeled as the consequent.
 (lambda (var rest...) expr) &\implies #{\lambda var} (lambda rest expr)
 ```
 
-Essentially, we are saying that any expression of the form `(lambda args expr)`
+Essentially, we are saying that any expression of the given form
 should be a function of the provided arguments bearing the provided expression. 
 
 Additionally, we provide a default case for our S-Expressions. Should no other

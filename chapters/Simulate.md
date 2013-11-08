@@ -40,10 +40,10 @@ so this should not be a surprising design decision.
   ...)
 ```
 
-A ruleset like the one above serves to tell a simulation in what way to behave 
-given a certain input state. Hence together with our earlier defined `assoc` 
-function and an actual executor of the matching behavior, this ruleset will handle 
-all state logic.
+A ruleset like the one in Figure~\ref{fig:rulesetExample} serves to tell a
+simulation in what way to behave given a certain input state. Hence together
+with our earlier defined `assoc` function and an actual executor of the
+matching behavior, this ruleset will handle all state logic.
 
 ###Fundamental States
 In order for our simulation to ever end we will need to designate a specific state 
@@ -132,14 +132,14 @@ Figure~\ref{fig:iterateDef}.
       tape)))
 ``` 
 
-The `iterate` function definition above utilized `letrec` to receive itself as an 
+This `iterate` function definition utilized `letrec` to receive itself as an 
 argument. Its use of this value is subtly different from our past use cases. In 
 `iterate`, we pass the function itself as an argument to another function, 
 `iterate-rule`. For this reason, we can call `iterate` and `iterate-rule` 
 *mutually recursive*, that is, because `iterate` invokes `iterate-rule` and 
 `iterate-rule` in turn invokes `iterate`.     
 
-There are multiple dependencies to the above function which we have not yet 
+There are multiple dependencies to the function definition which we have not yet 
 defined. In the following section we will put them all together with the `iterate` 
 function and achieve our final goal of simulation.
 
@@ -167,13 +167,13 @@ i.e., `'R` direction as an upward shift, as well as any other cases.
     (- 1 index))))
 ```  
 
-The definition of `move` above is very simple in nature. A current index and 
-direction of motion are received as argument, and a new index is then returned. If 
-the direction is `'R` then the index will increase, but if it is not, i.e., if it 
-is `'L`, it will decrease. Furthermore, keeping in mind the earlier definition of 
-subtraction based on Lambda Calculus primitives, you will recall that subtracting 
-one from zero will result in zero. This behavior is convenient in this case, avoid 
-strange edge-case behavior.
+The definition of `move` in Figure~\ref{fig:moveDef} is very simple in nature.
+A current index and direction of motion are received as argument, and a new
+index is then returned. If the direction is `'R` then the index will increase,
+but if it is not, i.e., if it is `'L`, it will decrease. Furthermore, keeping
+in mind the earlier definition of subtraction based on Lambda Calculus
+primitives, you will recall that subtracting one from zero will result in zero.
+This behavior is convenient in this case, avoid strange edge-case behavior.
 
 Example usage of the `move` function would be as follows.
 
@@ -293,10 +293,11 @@ operators listed above as primitives.
     (cons r (cons s nil)))))
 ```
 
-The above procedure is known as a half-adder. Given two bits as input, this 
-procedure determines the added value, including any carried value. Recall that our 
-language was designed not only for evaluation by machine, but for representation 
-of ideas like the one presented above.
+The procedure in Figure~\ref{fig:halfAdderCircuitExample} is known as a
+half-adder. Given two bits as input, this procedure determines the added value,
+including any carried value. Recall that our language was designed not only for
+evaluation by machine, but for representation of ideas like the one presented
+above.
 
 The methodology of the half-adder should be for the most part apparent. Given 
 input values named `a` and `b`, output values named `s` and `r` need to be 
@@ -313,10 +314,11 @@ Let's look at some examples of the behavior of a half-adder.
 (half-adder #t #t) &\implies '(#t #f)
 ```
 
-If you are not familiar with the behavior of binary digits when adding, note that 
-the above examples exhibit the basics of this behavior. If we were to represent 
-current instead by either `1` or `0`, we would achieve the more clearly 
-binary behavior shown in Figure~\ref{fig:halfAdderBinaryTable}.
+If you are not familiar with the behavior of binary digits when adding, note
+that the examples in Figure~\ref{fig:halfAdderTruthTable} exhibit the basics of
+this behavior. If we were to represent current instead by either `1` or `0`, we
+would achieve the more clearly binary behavior shown in
+Figure~\ref{fig:halfAdderBinaryTable}.
 
 ```fig:halfAdderBinaryTable
 (half-adder 0 0) &\implies '(0 0)
@@ -362,11 +364,12 @@ manipulations of the circuit. We begin with a basic realization of this idea.
     (set name value env)))
 ```
 
-The above definitions are simply aliases to the `assoc` and `set` functions of 
-regular hash-tables. We have yet to implement the idea of gates as manipulations 
-of the circuit. In order to do this, we will need a clear means of applying a 
-manipulation to a given object. This idea is key to an object-oriented outlook on 
-programming which we will discuss in the following.
+The definitions in Figure~\ref{fig:getSetGateDefs} are simply aliases to the
+`assoc` and `set` functions of regular hash-tables. We have yet to implement
+the idea of gates as manipulations of the circuit. In order to do this, we will
+need a clear means of applying a manipulation to a given object. This idea is
+key to an object-oriented outlook on programming which we will discuss in the
+following.
 
 ###Methods on Objects
 There is a paradigm in programming known as object oriented programming. Under 
@@ -393,13 +396,14 @@ Figure~\ref{fig:methodExample}, applying a named function to an object.
 (method person 'greet)
 ```
 
-In this case `person` serves as an object, and `greet` as a named method on that 
-object. What does it mean to be an object? In the case of our implementation, an 
-object is merely a data-structure, like any other table; however, the distinctive 
-trait is the inclusion of methods. Methods allow for the coupling of functions to 
-a specific data-set. In our example above, a greet function is attached to the 
-`person`, and easily called by name to perform some action in the specific context 
-of the `person` object.
+In this case `person` serves as an object, and `greet` as a named method on
+that object. What does it mean to be an object? In the case of our
+implementation, an object is merely a data-structure, like any other table;
+however, the distinctive trait is the inclusion of methods. Methods allow for
+the coupling of functions to a specific data-set. In our example in
+Figure~\ref{fig:methodExample}, a greet function is attached to the `person`,
+and easily called by name to perform some action in the specific context of the
+`person` object.
 
 We will utilize the concepts of object-oriented programming (OOP) in our design of 
 gates. A gate will be a table containing some values and some methods. The only 
@@ -473,14 +477,14 @@ object.
     (lambda (obj value) obj))))
 ```
 
-The above definition makes the value of the gate a method as well. The getter then 
-applies the `value` method to the `get`-wrapped values of the two input 
-components. The relation tying together these input components is passed as the 
-first argument to the `fn-gate` constructor. This is to say that when getting the 
-value of an `fn-gate`, the values upon which it depends will be gotten as well in 
-a sort of cascading dependency. These dependencies will then be assessed based on 
-the function specific to that instance of `fn-gate`, maybe logical or, for 
-example.
+The definition in Figure~\ref{fig:fnGateDef} makes the value of the gate a
+method as well. The getter then applies the `value` method to the `get`-wrapped
+values of the two input components. The relation tying together these input
+components is passed as the first argument to the `fn-gate` constructor. This
+is to say that when getting the value of an `fn-gate`, the values upon which it
+depends will be gotten as well in a sort of cascading dependency. These
+dependencies will then be assessed based on the function specific to that
+instance of `fn-gate`, maybe logical or, for example.
 
 We now define, in turn, children of the `fn-gate` constructor easily as follows.
 
