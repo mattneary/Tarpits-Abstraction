@@ -166,7 +166,7 @@ once more on the resultant value.
 
 Now we will look at a similar form, a function of three variables. In Figure~\ref{fig:examplegfx} is a
 function of values `g`, `f`, and `x`. The result is similar to that of the one
-in Figure~\ref{fig:examplefx}, but this time replacing `(f x)` with `(g f x)`.
+in Figure~\ref{fig:examplefx}, but this time replacing $(f x)$ with $(g f x)$.
 
 ```fig:examplegfx
 (lambda (g f x) (f (g f x)))
@@ -204,7 +204,7 @@ definitions. That means that, for example, the function
 $(lambda \; (a) \; (a \; (a \; (a \; a))))$ could serve to communicate the number four.
 
 The expressive power of this notation is clear; however, application of a function 
-to itself as in `(a a)` is very rarely appropriate, and so we will slightly expand 
+to itself as in $(a a)$ is very rarely appropriate, and so we will slightly expand 
 our expression of four to serve a more concrete purpose within the language. We
 now expand our numeric function representing some number `n` to accept two
 parameters, and return the application of the first parameter `n` times to the
@@ -297,9 +297,10 @@ in mind, we aim to reduce an application of `pred` to `2` to a result.
 (\lambda n \lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^{n} \lambda u z) \lambda u u) 2
 (\lambda f \lambda z ((\lambda g \lambda h (h)(g)f)^2 \lambda u z) \lambda u u)
 ```
+
 Now that we have reduced the expression to the form of our prior rendering of
-`pred`, we will expand it into a true Lambda Calculus form and continue our
-reduction.
+`pred`, we expand it into a true Lambda Calculus form, as seen in
+Figure~\ref{fig:predReducedLambda} and continue our reduction.
 
 ```fig:predReducedLambda
 (\lambda f \lambda z (((\lambda g \lambda h (h)(g)f) (\lambda g \lambda h (h)(g)f)) \lambda u z) \lambda u u)
@@ -327,25 +328,26 @@ We are now finally ready to reduce the application of the identity
 \lambda f \lambda z (f)z
 ```
 
-Our result was a single application of `f` to `z`, i.e., one. Hence you have seen 
-that at least in this case, the `pred` function did its job. Achieving an
-intuitive grasp of how it works is unfortunately not as straight-forward. If you
-wish to, keep in mind that $\lambda u z)$ maps a value to the numeric starting
-point, and $\lambda u u$ leaves an expression alone. So the decrement occurs by
-the setting of the origin later than it would normally occur.
+Our result, seen in Figure~\ref{fig:predFinalResult} was a single application
+of `f` to `z`, i.e., one. Hence you have seen that at least in this case, the
+`pred` function did its job. Achieving an intuitive grasp of how it works is
+unfortunately not as straight-forward. If you wish to, keep in mind that
+$\lambda u z$ maps a value to the numeric starting point, and $\lambda u u$
+leaves an expression alone. So the decrement occurs by the setting of the
+origin later than it would normally occur.
 
 With our complex definition of the predecessor complete, subtraction is trivial.
 Once again we perform an iterative process on a base value, this time that process 
 is `pred`.
 
 ###Booleans
-Having defined numbers and their manipulations, we will work on booleans. Booleans 
-are the values of true and false, or in our syntax, $#t$ and $#f$. Booleans are
-quite necessary in expressing conditional statements; thus the concomitant `if`
-function. These values will give us great power in their ability to branch results 
-to a function, in a sense constructing piece-wise functions. It is by this ability 
-that we are able to form a multitude of inductive definitions, as well as other 
-important forms.
+Having defined numbers and their manipulations, we will work on booleans.
+Booleans are the values of true and false, or in our syntax, $#t$ and $#f$.
+Booleans are quite necessary in expressing conditional statements; thus we
+provide the concomitant `if` function. These values will give us great power in
+their ability to branch results to a function, in a sense constructing
+piece-wise functions. It is by this ability that we are able to form a
+multitude of inductive definitions, as well as other important forms.
 
 ```fig:booleanDefs
 #t &= \lambda a \lambda b (a)id
@@ -361,7 +363,7 @@ realized in the lambda-underscores wrapping the branches of an `if` statement.
 
 Now, since of course no boolean system is complete without some boolean algebra, 
 we define `and` and `or`. These functions perform the operations you would expect; 
-`(and a b)` is true only when both `a` and `b` are true, but `(or a b)` is true if 
+$(and a b)$ is true only when both `a` and `b` are true, but $(or a b)$ is true if 
 either argument is true. Their definitions follow easily from our `if` function. 
 Keep in mind that both of these functions operate only on booleans.
 
@@ -390,10 +392,10 @@ two numbers are equal.
 Finally we reach the most important part of our S-Expressions, their underlying 
 lists. That is to say, every Symbolic Expression is innately a list of other 
 expressions, whether atomic or symbolic, and these lists serve as an analog to 
-that data-type. To construct lists we will opt for a sort of linked-list 
+a the list data-type. To construct lists we will opt for a sort of linked-list 
 implementation in our lambda definitions. We begin with a pair and a `nil` 
 definition, each readily revealing their type by opting for either the passed `c` 
-or `n` function.
+or `n` function. The function definitions are displayed in Figure~\ref{fig:pairFuncDefs}.
 
 ```fig:pairFuncDefs
 cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
