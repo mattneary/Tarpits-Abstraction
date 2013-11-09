@@ -1,66 +1,47 @@
-<!doctype html>
-<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
-<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Tarpits &amp; Abstraction by mattneary</title>
+  </head>
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
-
-  <title>Tarpits &amp; Abstraction</title>
-  <meta name="description" content="A book on abstraction of computation.">
-
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-</head>
-
-<body>
-
-  <div class="wrapper">
-    <header>
-      <h1 class="title">Tarpits &amp; Abstraction</h1>
-    </header>
+  <body>
     <div id="container">
-      <p class="tagline">A book on abstraction of computation.</p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/mattneary/Tarpits-Abstraction/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/mattneary/Tarpits-Abstraction/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/mattneary/Tarpits-Abstraction" class="code">View Tarpits &amp; Abstraction on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
+      <div class="inner">
+
+        <header>
+          <h1>Tarpits &amp; Abstraction</h1>
+          <h2>A book on abstraction of computation.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/mattneary/Tarpits-Abstraction/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/mattneary/Tarpits-Abstraction/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/mattneary/Tarpits-Abstraction" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
           <h1>
 <a name="tarpits--abstraction" class="anchor" href="#tarpits--abstraction"><span class="octicon octicon-link"></span></a>Tarpits &amp; Abstraction</h1>
-
-<blockquote>
-<p>The Lambda Calculus is a fully-versatile language; however, it is what some
-describe as a <em>Turing tarpit</em>. Alan Perlis describes a Turing tarpit as a
-language "in which everything is possible but nothing of interest is easy."
-Despite this nature of the Lambda Calculus, we will be forming quite complex
-programs throughout this book on its foundation. We will, in a sense, climb
-out of its tarpit by means of abstraction. In order to do so, we will build up
-a scaffolding of abstraction, building layer upon layer as we construct an
-edifice of procedures.
-— Section 1.1</p>
-</blockquote>
 
 <p>Tarpits &amp; Abstraction is a book beginning with a discussion on computation and
 the Lambda Calculus, and then exploring layers of abstraction, and 
 cross-interpreting until the reader can understand computation
 at any layer of abstraction.</p>
 
-<p>A preliminary print of the book will be maintained on 
-<a href="http://www.lulu.com/content/paperback-book/tarpits-abstraction/14062801">Lulu</a>.</p>
-
-<p>The full table of contents can be viewed in the book pdf located at 
-<code>build/pdf/book.pdf</code>, but the chapter breakdown follows.</p>
+<p>The full book can be purchased from 
+<a href="http://www.lulu.com/content/paperback-book/tarpits-abstraction/14062801">Lulu</a>.
+The chapter break-down is as follows.</p>
 
 <ol>
 <li>Computation - A Grammar and Data Structures</li>
@@ -68,65 +49,16 @@ at any layer of abstraction.</p>
 <li>Simulating Logical Devices - Representation of Objects and Rules in FP</li>
 <li>Interpreting a Language - Evaluating and Parsing</li>
 <li>A Self-Hosted Language - Bootstrapping and Extending Our Language's Grammar</li>
-</ol><h2>
-<a name="compilation" class="anchor" href="#compilation"><span class="octicon octicon-link"></span></a>Compilation</h2>
+</ol>
+        </section>
 
-<p>The Makefile generates LaTeX for all chapters, and then renders an index LaTeX
-file which joins all chapters together. This outputs a pdf to
-<code>build/pdf/book.pdf</code>, with all LaTeX sources stored in <code>build/latex</code>.  Before
-reading, verify that it is the newest version by running the following from the
-<em>project root</em>.</p>
+        <footer>
+          Tarpits &amp; Abstraction is maintained by <a href="https://github.com/mattneary">mattneary</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
 
-<div class="highlight highlight-sh"><pre><span class="nv">$ </span>make
-</pre></div>
-
-<h2>
-<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h2>
-
-<h3>
-<a name="defining-symbolic-expressions" class="anchor" href="#defining-symbolic-expressions"><span class="octicon octicon-link"></span></a>Defining Symbolic Expressions</h3>
-
-<ul>
-<li>Change <code>quote</code> function to allow for <code>atom?</code>
-</li>
-</ul><h3>
-<a name="a-library-of-symbolic-functions" class="anchor" href="#a-library-of-symbolic-functions"><span class="octicon octicon-link"></span></a>A Library of Symbolic Functions</h3>
-
-<ul>
-<li>Using conditionals and <code>cond</code> function</li>
-<li>Diverse Data Structures</li>
-</ul><h3>
-<a name="simulating-logical-devices" class="anchor" href="#simulating-logical-devices"><span class="octicon octicon-link"></span></a>Simulating Logical Devices</h3>
-
-<ul>
-<li>Register machines.</li>
-</ul><h3>
-<a name="pulling-our-language-up-by-its-bootstraps" class="anchor" href="#pulling-our-language-up-by-its-bootstraps"><span class="octicon octicon-link"></span></a>Pulling Our Language up by Its Bootstraps</h3>
-
-<ul>
-<li>examples of <code>define</code> and <code>set!</code>
-</li>
-</ul>
-        </article>
+        
       </div>
     </div>
-    <footer>
-      <div class="owner">
-      <p><a href="https://github.com/mattneary" class="avatar"><img src="https://0.gravatar.com/avatar/33d5a421ef68fa7d710dd0ff37e8c540?d=https%3A%2F%2Fidenticons.github.com%2F6b5ee966c7725789f05f98199ad5b76e.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/mattneary">mattneary</a> maintains <a href="https://github.com/mattneary/Tarpits-Abstraction">Tarpits &amp; Abstraction</a></p>
-
-
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
-    </footer>
-  </div>
-  <div class="current-section">
-    <a href="#top">Scroll to top</a>
-    <a href="https://github.com/mattneary/Tarpits-Abstraction/tarball/master" class="tar">tar</a><a href="https://github.com/mattneary/Tarpits-Abstraction/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
-    <p class="name"></p>
-  </div>
-
-  
-</body>
+  </body>
 </html>
