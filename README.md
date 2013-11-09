@@ -1,6 +1,8 @@
 Tarpits & Abstraction
 =====================
 
+*BUY NOW* on [Amazon](http://www.amazon.com/gp/product/1304608387).
+
 > The Lambda Calculus is a fully-versatile language; however, it is what some
 describe as a *Turing tarpit*. Alan Perlis describes a Turing tarpit as a
 language "in which everything is possible but nothing of interest is easy."
@@ -16,9 +18,6 @@ Tarpits & Abstraction is a book beginning with a discussion on computation and
 the Lambda Calculus, and then exploring layers of abstraction, and 
 cross-interpreting until the reader can understand computation
 at any layer of abstraction.
-
-A preliminary print of the book will be maintained on 
-[Lulu](http://www.lulu.com/content/paperback-book/tarpits-abstraction/14062801).
 
 The full table of contents can be viewed in the book pdf located at 
 `build/pdf/book.pdf`, but the chapter breakdown follows.
