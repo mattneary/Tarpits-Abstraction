@@ -266,9 +266,9 @@ simple folding onto the higher value.
     (cdr list)))
 ```
 
-The application of this function to $'(1 5 3 4)$, for example, would return 5. Our 
-implementation of `min` is nearly identical, simply changing the criterion of the 
-fold.
+The application of this function to $'(1 \; 5 \; 3 \; 4)$, for example, would
+return 5. Our implementation of `min` is nearly identical, simply changing the
+criterion of the fold.
 
 ```fig:minDef
 (min 

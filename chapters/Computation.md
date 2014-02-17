@@ -396,13 +396,14 @@ the first number is less than or equal to the second, and `eq` determines whethe
 two numbers are equal.
 
 ###Pairs
-Finally we reach the most important part of our S-Expressions, their underlying 
-lists. That is to say, every Symbolic Expression is innately a list of other 
-expressions, whether atomic or symbolic, and these lists serve as an analog to 
-a the list data-type. To construct lists we will opt for a sort of linked-list 
-implementation in our lambda definitions. We begin with a pair and a `nil` 
-definition, each readily revealing their type by opting for either the passed `c` 
-or `n` function. The function definitions are displayed in Figure~\ref{fig:pairFuncDefs}.
+Finally we reach the most important part of our S-Expressions, their underlying
+lists. To say that these expressions have an underlying list means that every
+Symbolic Expression is inherently a list of other expressions, whether atomic
+or symbolic; these lists can be modeled by a list data-type. To construct lists
+we will opt for a sort of linked-list implementation in our lambda definitions.
+We begin with a pair and a `nil` definition, each readily revealing their type
+by opting for either the passed `c` or `n` function. The function definitions
+are displayed in Figure~\ref{fig:pairFuncDefs}.
 
 ```fig:pairFuncDefs
 cons &= \lambda a \lambda b \lambda c \lambda n ((c)a)b
@@ -436,10 +437,10 @@ returning either `#t` or `#f` as is appropriate.
 
 Together, these functions are sufficient for designing a list implementation. The 
 implementation that comes naturally is known as a linked-list. A linked-list is 
-essentially either a pair of an element and a linked-list or `nil`. If that is 
+essentially either a pair of both an element and a linked-list or merely `nil`. If that is 
 unclear, think of a tree with a fractal structure. The tree consists of a leaf and 
 a child tree, which in turn has both leaf and child tree, until the tree ends with 
-`nil` for a child tree.
+`nil` for its child tree.
 
 ###Recursion
 Our last definition will be a bit more esoteric, or at least complex. We define a 
@@ -531,22 +532,6 @@ inductive definition, and (b) multiplication by ten. This pattern of recursive
 definition and symbolic pattern matching will be at the heart of our language
 constructs.
 
-###Predicate for Atoms
-We will at times need a way of telling whether a given value is a list of an
-atom; however, because of our decision to use the untyped lambda calculus, we
-do not have such abilities innately. We will for now take the existence of such
-a function for granted, as it could be created by simply opting for atoms which
-wrapped their values in a list describing type, for example. The reason that we
-feel comfortable skipping over this defintion is that we will eventually define
-the language in terms of itself. At that time, the `atom` function would not be
-necessary, as we could wrap the atoms. Rather than dwell on this concept, we
-will define an `atom?` function as a special syntax.
-
-```fig:atomPredicate
-(atom? (a b...)) &\implies #f
-(atom? a) &\implies #t
-```
-
 ###List Literals
 We define our lists inductively based on the pair-constructing `cons` function we 
 defined earlier. We choose to name this function `quote` because it is treating 
@@ -563,7 +548,7 @@ Additionally, the italicized *ab...* is meant to label the first letter and
 rest of a string as `a` and `b`, respectively.
 
 ```fig:quotePatterns
-(quote (a)) &\implies cons a nil
+(quote (a)) &\implies (cons a nil)
 (quote (a rest...)) &\implies (cons (quote a) (quote (rest...))
 (quote a rest...) &\implies (cons (quote a) (quote (rest...)))
 (quote "0") &\implies 0
@@ -588,6 +573,20 @@ Quoted forms will come up often in writing list literals, atomic values derived
 from strings, i.e., *atoms*, and forming more complex data-structures from lists 
 such as tables.
 
+###Predicate for Atoms
+
+We will at times need a way of telling whether a given value is a list of an
+atom; however, because of our decision to use the untyped lambda calculus, we
+do not have such abilities innately. Given the nature of these definitions,
+namely, since they are definitions intended for human execution, we can define
+syntax in terms of pattern-matching. Hence we are able to provide the following
+definition for the `atom?` function.
+
+```fig:atomPredicate
+(atom? '(a b...)) &\implies #f
+(atom? 'a) &\implies #t
+```
+
 ###Equality
 We have built up an array of atomic values, and a way of keeping them literal. Now 
 we need a way of recognizing them, by means of equivalence. `eq` already solves 
@@ -596,10 +595,10 @@ all expressions in our definition of `equal?`.
 
 ```fig:equalDef
 (equal? (a b...) (c d...)) 
-  &\implies (and 
-              (equal? a c) 
-              (equal? (b...) (d...)))
-(equal? a b) &\implies (eq a b)
+  \implies (and 
+           (equal? a c) 
+           (equal? (b...) (d...)))
+(equal? a b) \implies (eq a b)
 ```
 
 The definition in Figure~\ref{fig:equalDef} is inductive in nature. It provides

@@ -175,7 +175,7 @@ code in Figure~\ref{fig:setScopeExample} is another example of this behavior.
 ((lambda (y)
   (set! x y)) 12)
 (equal? x 12)  
-;; #t
+\implies #t
 ```
 
 Of note is the fact that the `define` occurred separate from any function. This 
@@ -214,7 +214,7 @@ accessible from within that function, or other functions defined within it.
   (define y x)))
 (scope 5)
 y
-;; The written variable, y, will be inaccessible.
+\implies The written variable, y, will be inaccessible.
 ```
 
 In Figure~\ref{fig:strictScopeExample} we demonstrate definition with a
@@ -338,7 +338,7 @@ in order.
 (define parse (lambda (expr) 
   (map (range (length expr)) (lambda (i)
     (define read (get expr i))
-    // ...
+    ...
   )))
 ```
 
@@ -363,7 +363,7 @@ parsed.
   (define found #f)
   (map (range (length expr)) (lambda (i)
     (define read (get expr i))
-    // ...
+    ...
   )))
 ```
 
@@ -391,10 +391,10 @@ statements as in Figure~\ref{fig:imperParseApproach}.
   (map (range (length expr)) (lambda (i)
     (define read (get expr i))
     (if (and (equal? '< read) (not found))
-      (..."1. an opening parenthesis"...)
+      [1. an opening parenthesis]
       (if (and (equal? '> read) (not found))
-        (..."2. a closing parenthesis"...)
-        (..."3. any other character"...))))))
+        [2. a closing parenthesis]
+        [3. any other character])))))
 ```
 
 Of course, we will need to combine any separated out parenthetical with the components 
@@ -403,9 +403,9 @@ following `return` statement in Figure~\ref{fig:postscriptReturn}.
 
 ```fig:postscriptReturn
 (define parse (lambda (expr) 
-  ..."variables"...
+  [variables...]
   (map (range (length expr)) (lambda (i)
-    (..."parse"...))
+    [parsing...])
   (if paren
     (concat (push before paren) (parse accum))
     expr)))

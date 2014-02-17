@@ -201,7 +201,7 @@ code in Figure~\ref{fig:setScopeExample} is another example of this behavior.
 \\& ((lambda \; (y)
 \\& \quad (set! \; x \; y)) \; 12)
 \\& (equal? \; x \; 12) \; 
-\\& ;; \; \#t
+\\& \implies \; \#t
 \end{align*}
 \end{figure}
 
@@ -246,7 +246,7 @@ accessible from within that function, or other functions defined within it.
 \\& \quad (define \; y \; x)))
 \\& (scope \; 5)
 \\& y
-\\& ;; \; The \; written \; variable, \; y, \; will \; be \; inaccessible.
+\\& \implies \; The \; written \; variable, \; y, \; will \; be \; inaccessible.
 \end{align*}
 \end{figure}
 
@@ -388,7 +388,7 @@ in order.
 & (define \; parse \; (lambda \; (expr) \; 
 \\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
 \\& \qquad (define \; read \; (get \; expr \; i))
-\\& \qquad // \; \dots
+\\& \qquad \dots
 \\& \quad )))
 \end{align*}
 \end{figure}
@@ -418,7 +418,7 @@ parsed.
 \\& \quad (define \; found \; \#f)
 \\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
 \\& \qquad (define \; read \; (get \; expr \; i))
-\\& \qquad // \; \dots
+\\& \qquad \dots
 \\& \quad )))
 \end{align*}
 \end{figure}
@@ -451,10 +451,10 @@ statements as in Figure~\ref{fig:imperParseApproach}.
 \\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
 \\& \qquad (define \; read \; (get \; expr \; i))
 \\& \qquad (if \; (and \; (equal? \; '< \; read) \; (not \; found))
-\\& \qquad \quad (\dots"1. \; an \; opening \; parenthesis"\dots)
+\\& \qquad \quad [1. \; an \; opening \; parenthesis]
 \\& \qquad \quad (if \; (and \; (equal? \; '> \; read) \; (not \; found))
-\\& \qquad \qquad (\dots"2. \; a \; closing \; parenthesis"\dots)
-\\& \qquad \qquad (\dots"3. \; any \; other \; character"\dots))))))
+\\& \qquad \qquad [2. \; a \; closing \; parenthesis]
+\\& \qquad \qquad [3. \; any \; other \; character])))))
 \end{align*}
 \end{figure}
 
@@ -466,9 +466,9 @@ following $return$ statement in Figure~\ref{fig:postscriptReturn}.
 \caption{}\label{fig:postscriptReturn}
 \begin{align*}
 & (define \; parse \; (lambda \; (expr) \; 
-\\& \quad \dots"variables"\dots
+\\& \quad [variables\dots]
 \\& \quad (map \; (range \; (length \; expr)) \; (lambda \; (i)
-\\& \qquad (\dots"parse"\dots))
+\\& \qquad [parsing\dots])
 \\& \quad (if \; paren
 \\& \qquad (concat \; (push \; before \; paren) \; (parse \; accum))
 \\& \qquad expr)))
