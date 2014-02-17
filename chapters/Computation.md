@@ -80,12 +80,15 @@ a scaffolding of abstraction, building layer upon layer as we construct an
 edifice of procedures.
 
 ##A Symbolic Language 
-In the previous section, we utilized numbers within the Lambda Calculus; however,
-we do not accept them as primitive. Rather, we will need to define them in
-terms of the Lambda Calculus. Of course, the ability to refer to numbers by name
-would be helpful. For this reason, amongst many others, we will begin by
-defining a new, symbolic language on top of the Lambda Calculus, adding a layer
-of abstraction to our computation.
+In the previous section, we utilized numbers within the Lambda Calculus;
+however, we do not accept them as primitive. Rather, we will need to define
+them in terms of the Lambda Calculus and, of course, the ability to refer to
+numbers by name would be helpful. For this reason, amongst many others, we will
+begin by defining a new, symbolic language on top of the Lambda Calculus,
+adding a layer of abstraction to our computation. Our definitions of this
+language's semantics will be written for a human reader that its code can be
+translated by hand into the Lambda Calculus. However, we will define in this
+language an interpreter of itself, freeing us of manual translation.
 
 Our layer of abstraction will be a uniform language of Symbolic Expressions which
 is a dialect of the language called Lisp. 
@@ -114,7 +117,7 @@ compilation.
 ```fig:sexprBasicGrammar
 <expr> &::= <sexpr> | <atom>
 <sexpr> &::= (<list>)
-<list> &::= <expr> | <expr> <expr>
+<list> &::= <expr> | <list> <expr>
 ```
 
 ##Defining Semantics
@@ -214,7 +217,9 @@ second parameter. Hence, the number four would look like the function in Figure~
 ```
 
 This notation, of course, translates just as well into an expression of any
-number. The number three would look like the function in Figure~\ref{fig:exampleNumber3}.
+number, given that both zero and the successor function can be easily defined.
+The number three would look like the function in
+Figure~\ref{fig:exampleNumber3}.
 
 ```fig:exampleNumber3
 (lambda (f n) (f (f (f n))))
@@ -346,12 +351,15 @@ Booleans are quite necessary in expressing conditional statements; thus we
 provide the concomitant `if` function. These values will give us great power in
 their ability to branch results to a function, in a sense constructing
 piece-wise functions. It is by this ability that we are able to form a
-multitude of inductive definitions, as well as other important forms.
+multitude of inductive definitions, as well as other important forms. Finally,
+we build a `cond` syntax which will attempt multiple conditionals in sequence.
 
 ```fig:booleanDefs
 #t &= \lambda a \lambda b (a)id
 #f &= \lambda a \lambda b (b)id
 if &= \lambda p \lambda t \lambda f ((p)\lambda _ t)\lambda _ f
+(cond ((a b))) &\implies (if a b #f)
+(cond ((a b) ...)) &\implies (if a b (cond ...))
 ```
 
 The key to our booleans is that they accept two functions as parameters, functions 
