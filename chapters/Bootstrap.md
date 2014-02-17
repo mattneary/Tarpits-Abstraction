@@ -65,7 +65,7 @@ not unlike in our earliest definition of the language.
 ```
 
 This is all fine; however, notice that the arguments to the function are 
-evaluated all at once and passed to the an applier-function. In the next 
+evaluated all at once and passed to an applier-function. In the next 
 section, we will discuss a better approach to evaluation.
 
 ###Laziness
@@ -441,11 +441,13 @@ a map by the Functor to be a boxing of the value, we have that $\nu_{x}$ boxes
 members of $x$, and that $\mu_{x}$ unboxes a box of boxes. In a similar vein, we will
 refer to $\nu$ as unit and $\mu$ as join.
 
-Now, one might be wondering why such a structure is valuable. The reason is that
-Monads generalize the idea of boxing values. Why box values? One might box a value
-in a pair, with an annotation as the other element. For example, one could define
-a couting Monad which boxes by forming a tuple including the value and `1` and unboxes
-a box of a box by adding together the number labels as follows.
+Now, one might be wondering why such a structure is valuable. The reason is
+that Monads relate functions on a type of value to a similar function on a
+boxed form of this type. Why are we interested in boxed values? One might box a
+value in a pair, with an annotation as the other element. For example, one
+could define a couting Monad which boxes by forming a tuple including the value
+and `1` and unboxes a box of a box by adding together the number labels as
+follows.
 
 ```
 T(x) = x \times \mathbb{N}
@@ -469,16 +471,18 @@ bind_{x}(a, f) = join(T(f)(a))
 ```
 
 As you can see in Figure~\ref{fig:bindDef}, `bind` essentially elevates a
-function from unboxed to boxed to boxed to boxed. Its innerworkings are as
-simple as getting the boxed morphism defined by the category which accepts a
-function from $A$ to $T(B)$ and returns a function from $T(A)$ to $T(T(B))$.
-However, since we are seeking a function onto $T(B)$, we then unbox the return
-value with `join`.
+function from unboxed bearing boxed to boxed bearing boxed. Its innerworkings
+are as simple as getting the boxed morphism defined by the category which
+accepts a function from $A$ to $T(B)$ and returns a function from $T(A)$ to
+$T(T(B))$. However, since we are seeking a function onto $T(B)$, we then unbox
+the return value with `join`.
 
 ###A New Eval
 In our new eval function we will form a function which boxes our previous
-implementation with an environment. However, we will implement the unboxing
-and boxing by hand in a full rewrite, to drive home the innerworkings of it.
+implementation with an environment. Given the recursive nature of the `eval`
+function, we will elevate our previous function through a full rewrite of the
+function, rather than by `unit` or `bind`. However, the reader might wish to
+keep these ideas in mind.
 
 The code in Figure~\ref{fig:monadicEval} is a rewrite of the `eval` function to
 behave as this composite form. Note that macro forms behave the same as before,

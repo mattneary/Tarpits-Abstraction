@@ -13,16 +13,15 @@ expression like the following in a mathematical setting.
 f(x) = x^2
 ```
 
-The object $f(x)$ is more complex than primitive operators and numbers because
-it accepts argument to its computation. Objects like this one are formed by a
-process known as abstraction. Along with abstraction, the other fundamental
-aspects of computation are *variables* and *application*. A variable is a given
-token within an expression intended for substitution, and application is the
-reduction of an expression from an abstracted form. Here are some more concrete
-examples.
-
-In Figure~\ref{fig:mathApplication}, we have the abstraction of the expression $x^2$ in which x is
-a variable. We then apply $f(x)$ to $3$.
+The object $f(x)$ is more complex than a string of primitive operators and
+numbers because it accepts argument to its computation. Objects like this one
+are formed by a process known as abstraction. Along with abstraction, the other
+fundamental aspects of computation are *variables* and *application*. A
+variable is a given token within an expression intended for substitution, and
+application is the reduction of an expression from an abstracted form. As a
+more concrete example, in Figure~\ref{fig:mathApplication}, we have the
+abstraction of the expression $x^2$ in which x is a variable. We then apply
+$f(x)$ to $3$.
 
 ```fig:mathApplication
 f(x) = x^2
@@ -31,7 +30,7 @@ y = f(3) \implies y = 9
 
 ##A Foundational Grammar 
 
-We have discussed the features necessary for a langauge to facillitate
+We have discussed the features necessary for a language to facilitate
 computation; however, we have so far relied upon the familiar notation of
 mathematics. We will now switch to a language defined specifically as a
 foundation for computation. The Lambda Calculus is a language consisting of
@@ -45,15 +44,15 @@ the Backus-Naur definition in Figure~\ref{fig:lambdaExprGrammar}.
 ```
 
 BNF is perfect for the description of languages, both expressive and
-formal. In describing the Lambda Calculus, an expression (*expr*)
+precise. In describing the Lambda Calculus, an expression (*expr*)
 is said to be one of three forms. The first form is a lambda followed by
 a variable, its argument, and finally followed by another expression. The
 next is simply the application of one expression to another, and the last
 is simpe variable reference.
 
-These are the only forms, a data-type like numbers is not provided. However,
-we will for now take its potential to represent such data as granted. Let's
-explore this notation.
+These are the only forms, no primitive data-types are provided.  However, we
+will for now take its potential to represent data like numbers as granted.
+Let's explore this notation.
 
 The expression in Figure~\ref{fig:identity3} defines an identity function 
 and then applies it to the number $3$. The result, of course, is $3$.
@@ -64,7 +63,7 @@ and then applies it to the number $3$. The result, of course, is $3$.
 
 In the notation of traditional math, we would have defined this function
 prior to its invocation. Such a form would appear as in Figure~\ref{fig:mathDefAndApply} 
-and achieve the behavior of Figure~\ref{fig:identity3}. 
+but achieve the same behavior.
 
 ```fig:mathDefAndApply
 f(x) = x
@@ -525,16 +524,15 @@ definition and symbolic pattern matching will be at the heart of our language
 constructs.
 
 ###Predicate for Atoms
-We will at times need a way of telling whether a given value is a list of an atom;
-however, because of our decision to use the untyped lambda calculus, we do not have
-such abilities innately. We will for now take the existence of such a function for
-granted, as it could be created by simply opting for atoms which wrapped their values
-in a list describing type, for example. This practice of wrapping values is described
-as a Monad, and we will discuss these in a later chapter. The reason that we feel
-comfortable skipping over this defintion is that we will eventually define the language
-in terms of itself. At that time, the `atom` function would not be necessary, as we
-could wrap the atoms in a Monadic way. Rather than dwell on this concept, we will
-define an `atom?` function as a special syntax.
+We will at times need a way of telling whether a given value is a list of an
+atom; however, because of our decision to use the untyped lambda calculus, we
+do not have such abilities innately. We will for now take the existence of such
+a function for granted, as it could be created by simply opting for atoms which
+wrapped their values in a list describing type, for example. The reason that we
+feel comfortable skipping over this defintion is that we will eventually define
+the language in terms of itself. At that time, the `atom` function would not be
+necessary, as we could wrap the atoms. Rather than dwell on this concept, we
+will define an `atom?` function as a special syntax.
 
 ```fig:atomPredicate
 (atom? (a b...)) &\implies #f
@@ -632,3 +630,4 @@ sufficient for communication with machine, however, our language of Symbolic
 Expressions is far friendlier to a human reader. This motivation reveals the 
 additional motivation for our construction of this language, to form a clear, 
 formal, extensible, and uniform means of communicating ideas.
+

@@ -29,7 +29,7 @@ trivial to define.
 (> &(lambda (x y) (not (leq x y))))
 ```	
 
-An important conveniency to note in the forms of Figure~\ref{fig:ltGtDefs}, is
+An important convenience to note in the forms of Figure~\ref{fig:ltGtDefs}, is
 their nature given their Lambda Calculus definitions. That is, since they
 compile down to a curried form of a function, in other words, a function
 returning a function, they are very nice to work with. Let's look at an example
