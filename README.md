@@ -1,7 +1,11 @@
 Tarpits & Abstraction
 =====================
 
-*BUY NOW* on [Amazon](http://www.amazon.com/gp/product/1304608387).
+> A short book on the nature of computation as I saw it during the summer of
+2013.
+
+Introduction
+------------
 
 > The Lambda Calculus is a fully-versatile language; however, it is what some
 describe as a *Turing tarpit*. Alan Perlis describes a Turing tarpit as a
@@ -14,10 +18,10 @@ edifice of procedures.
 -- Section 1.1
 
 
-Tarpits & Abstraction is a book beginning with a discussion on computation and
-the Lambda Calculus, and then exploring layers of abstraction, and 
-cross-interpreting until the reader can understand computation
-at any layer of abstraction.
+"Tarpits & Abstraction" explores the nature of computation. It begins with a
+discussion of computation and the Lambda Calculus, enters into an exploration
+of layers of abstraction, and finally cross-interprets these layers, providing
+the reader with an intuition for computation at any layer of abstraction.
 
 The full table of contents can be viewed in the book pdf located at 
 `build/pdf/book.pdf`, but the chapter breakdown follows.
@@ -40,18 +44,3 @@ reading, verify that it is the newest version by running the following from the
 ```sh
 $ make
 ```
-
-TODO
-----
-###Defining Symbolic Expressions
-- Change `quote` function to allow for `atom?`
-
-###A Library of Symbolic Functions
-- Using conditionals and `cond` function
-- Diverse Data Structures
-
-###Simulating Logical Devices
-- Register machines.
-
-###Pulling Our Language up by Its Bootstraps
-- examples of `define` and `set!`
