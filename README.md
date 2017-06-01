@@ -1,8 +1,7 @@
 Tarpits & Abstraction
 =====================
 
-> A short book on the nature of computation as I saw it during the summer of
-2013.
+> A "What Is Computation?" thoughtstream from the summer of 2013
 
 Introduction
 ------------
@@ -15,7 +14,7 @@ programs throughout this book on its foundation. We will, in a sense, climb
 out of its tarpit by means of abstraction. In order to do so, we will build up
 a scaffolding of abstraction, building layer upon layer as we construct an
 edifice of procedures.
--- Section 1.1
+> <br>— Section 1.1
 
 
 "Tarpits & Abstraction" explores the nature of computation. It begins with a
