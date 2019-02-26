@@ -1,8 +1,6 @@
 Tarpits & Abstraction
 =====================
 
-> A "What Is Computation?" thoughtstream from the summer of 2013
-
 Introduction
 ------------
 
